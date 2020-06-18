@@ -1,0 +1,961 @@
+openapi: 3.0.0
+
+#
+# Info
+#
+info:
+  title: Geo Process API
+  description: |
+    This document describes the Airbus Defence and Space "Geo Process" API specification.
+    Geo Process services that are provided to or from Airbus Defense and Space should implement this specification.
+
+    The default execution mode for Geo Process Services is synchronous.
+    An optional asynchronous mode for long running processes and process that returns huge amount of data may be implemented.
+
+    This API provides two endpoints with a fixed path /api/v1/openapi and /api/v1/describe.
+    The path prefix for the others endpoints are implementation specific, for example the /jobs endpoint could be implemented at /jobs or /mypath/jobs or /api/v1/jobs.
+    As been the only fixed endpoint with implementation specific data, /api/v1/describe contains the _links attribute that has to reference all implemented endpoints for the service.
+    With this main service entry and the provided links it is possible for a client to discover and address others endpoints of the service.
+
+    OneAtlas Playground is an evaluation environment to test Geo Process on OneAtlas imagery from Airbus and Partners.
+    It is open on invitation only.
+    Registration should be done on OneAtlas Sandbox (https://www.intelligence-airbusds.com/sandbox).
+  contact:
+    name: Airbus Defence and Space
+    url: 'https://www.airbus.com/'
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.1
+  x-logo:
+    url: https://www.intelligence-airbusds.com/files/pmedia/public/r2421_9_airbus_rgb.png
+
+#
+# External docs
+#
+externalDocs:
+  description: OneAtlas Playground Documentation
+  url: 'http://playground-docs.readthedocs.io'
+
+#
+# Tags
+#
+tags:
+  - name: Mandatory
+    description: |
+      Mandatory resources.
+      Defines the main entry point of the service.
+  - name: Synchronous
+    description: |
+      Mandatory resources for the synchronous mode.
+      Endpoints may be specific to each implementation.
+      Referenced via the _links attribute of the describe resource.
+  - name: Asynchronous
+    description: |
+      Mandatory resources for the asynchronous mode.
+      Endpoints may be specific to each implementation.
+      Referenced via the result of the process execution resource.
+  - name: Optional
+    description: |
+      Optional, implementation specific resources for low level
+      description and monitoring.
+      Endpoints may be specific to each implementation.
+      Referenced via the _links attribute of the describe resource.
+
+#
+# Paths
+#
+paths:
+  #
+  # OpenAPI schema
+  #
+  /api/v1/openapi:
+    get:
+      tags:
+        - Mandatory
+      summary: Open API specification of this service in YAML format
+      description: |
+        Returns Open API specification of this service in YAML format.
+        Subset of this API with implemented services.
+      responses:
+        '200':
+          description: Process Open API web UI.
+
+  #
+  # Describe
+  #
+  /api/v1/describe:
+    get:
+      tags:
+        - Mandatory
+      summary: Describes process service
+      description: |
+        Returns the description of the process.
+      operationId: describe
+      responses:
+        '200':
+          description: Process description.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Describe'
+        '500':
+          description: Internal error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  #
+  # Job execution
+  #
+  /jobs:
+    servers:
+      - url: '/{customPath}'
+        variables:
+          customPath:
+            default: ''
+    post:
+      tags:
+        - Synchronous
+        - Asynchronous
+      summary: Launch process execution
+      description: |
+        Execute the process.
+
+        If synchronous process, the response contains a JSON object as defined
+        in the output attribute of the description resource.
+
+        If asynchronous process, the response contains a Reference JSON object
+        containing the link to the job status resource. The client must call the
+        resource defined the link to get execution status then results when
+        available.
+      operationId: process
+      parameters:
+        - in: header
+          name: X-Correlation-ID
+          description: System wide request identifier.
+          schema:
+            type: string
+        - in: header
+          name: X-ADS-Debug
+          description: Enable debug mode.
+          schema:
+            type: boolean
+      requestBody:
+        description: |
+          Process input parameters as defined by the JSON Schema in the input
+          attribute of the description resource.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessInput'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/responses/OutputResponse'
+                  - $ref: '#/components/schemas/Reference'
+        '400':
+          $ref: '#/components/responses/InvalidInput'
+        '500':
+          description: Internal error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: |
+            Service not available. Max number of simultaneous process execution
+            reached.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  #
+  # Asynchronous job management
+  #
+  '/jobs/{jobId}':
+    servers:
+      - url: '/{customPath}'
+        variables:
+          customPath:
+            default: ''
+    parameters:
+      - name: jobId
+        in: path
+        description: Job identifier
+        required: true
+        schema:
+          type: string
+          format: uuid
+    delete:
+      tags:
+        - Asynchronous
+      summary: Cancel the given job execution
+      operationId: delete_job
+      responses:
+        '204':
+          $ref: '#/components/responses/JobDeleted'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  #
+  # Asynchronous job status
+  #
+  '/jobs/{jobId}/status':
+    servers:
+      - url: '/{customPath}'
+        variables:
+          customPath:
+            default: ''
+    parameters:
+      - name: jobId
+        in: path
+        description: Job identifier
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Asynchronous
+      summary: Retrieve execution status
+      description: |
+        Retrieve the process status and available results if succeded.
+      operationId: get_status
+      responses:
+        '200':
+          description: Process execution status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Internal error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  #
+  # Asynchronous job results management
+  #
+  '/jobs/{jobId}/results':
+    servers:
+      - url: '/{customPath}'
+        variables:
+          customPath:
+            default: ''
+    parameters:
+      - name: jobId
+        in: path
+        description: Job identifier
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Asynchronous
+      summary: Get job results
+      description: |
+        Retrieve results of the given job.
+      operationId: get_results
+      responses:
+        '200':
+          $ref: '#/components/schemas/JobResults'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          description: Internal error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Asynchronous
+      summary: Delete all results
+      description: |
+        Delete all results.
+      operationId: delete_results
+      responses:
+        '204':
+          $ref: '#/components/responses/ResultDeleted'
+        '500':
+          description: Internal error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  #
+  # Asynchronous job result management
+  #
+  '/jobs/{jobId}/results/{resultId}':
+    servers:
+      - url: '/{customPath}'
+        variables:
+          customPath:
+            default: ''
+    parameters:
+      - name: jobId
+        in: path
+        description: Job identifier.
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: resultId
+        in: path
+        description: Result identifier.
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Asynchronous
+      summary: Retrieve a result
+      description: |
+        Retrieve a result from its id.
+      operationId: get_result
+      responses:
+        '200':
+          $ref: '#/components/responses/OutputResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          description: Internal error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Asynchronous
+      summary: Delete a result
+      description: |
+        Delete a result from its id.
+      operationId: delete_result
+      responses:
+        '204':
+          $ref: '#/components/responses/ResultDeleted'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          description: Internal error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  #
+  # Instance configuration
+  #
+  /config:
+    servers:
+      - url: '/{customPath}'
+        variables:
+          customPath:
+            default: ''
+    get:
+      tags:
+        - Optional
+      summary: Get instance configuration parameters
+      description: |
+        Implementation specific.
+        Returns the configuration parameters specific to this instance.
+        May be different depending on site, platform or environment deployments.
+      operationId: get_config
+      responses:
+        '200':
+          description: |
+            Configuration parameters as defined by the JSON schema in the
+            _links/config attribute the describe service.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Config'
+        '500':
+          description: Internal error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Optional
+      summary: Set instance configuration parameters
+      description: |
+        Implementation specific.
+        Set the values of configuration parameters specific to this instance.
+        May be different depending on site, platform or environment deployments.
+      operationId: set_config
+      requestBody:
+        description: |
+          Configuration parameters as defined by the JSON schema in the
+          _links/config attribute the describe service.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Config'
+      responses:
+        '200':
+          description: Configuration parameters.
+        '500':
+          description: Internal error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  #
+  # Instance versions
+  #
+  /version:
+    servers:
+      - url: '/{customPath}'
+        variables:
+          customPath:
+            default: ''
+    get:
+      tags:
+        - Optional
+      summary: Low level version description
+      description: |
+        Implementation specific.
+        Returns build, compiler or version control versions.
+      operationId: version
+      responses:
+        '200':
+          $ref: '#/components/responses/Version'
+
+  #
+  # Instance health check
+  #
+  /health:
+    servers:
+      - url: '/{customPath}'
+        variables:
+          customPath:
+            default: ''
+    get:
+      tags:
+        - Optional
+      summary: Check if the service is alive
+      description: |
+        The response is a HTTP status code 200 containing in the body 'OK'.
+      operationId: healthcheck
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+
+  #
+  # Instance metrics
+  #
+  /metrics:
+    servers:
+      - url: '/{customPath}'
+        variables:
+          customPath:
+            default: ''
+    get:
+      tags:
+        - Optional
+      summary: Execution usage metrics
+      description: |
+        Implementation specific.
+        Returns service usage metrics.
+      operationId: metrics
+      responses:
+        '200':
+          description: Service execution metrics.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metrics'
+        '500':
+          description: Internal error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+#
+# Components
+#
+components:
+
+  #
+  # Security
+  #
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT #recommended
+
+  #
+  # Responses
+  #
+  responses:
+    OutputResponse:
+      description: |
+        Process output as defined in the output attribute of the description resource.
+
+    NotFound:
+      description: Entity not found.
+
+    JobDeleted:
+      description: Job succesfully canceled.
+
+    ResultDeleted:
+      description: Result(s) succesfully deleted.
+
+    InvalidInput:
+      description: Invalid input for operation.
+
+    NotAvailable:
+      description: Service not available.
+
+    Version:
+      description: Version.
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    Success:
+      description: Success. OK as content.
+      content:
+        text/plain:
+          schema:
+            type: string
+
+  #
+  # Schemas
+  #
+  schemas:
+
+    #
+    # Describe schema
+    #
+    Describe:
+      description: |
+        Process description.
+      type: object
+      required:
+        - name
+        - title
+        - family
+        - version
+        - description
+        - organization
+        - email
+        - resources
+        - input
+        - output
+        - asynchronous
+        - _links
+      properties:
+        name:
+          description: Technical name of the process. May be the Docker image name.
+          type: string
+          example: eu.gcr.io/myproject/cat-detection:latest
+        title:
+          description: The title of the process.
+          type: string
+          example: Cat detection
+        family:
+          description: The process family.
+          type: string
+          example: object-detection
+        version:
+          description: The version of the process.
+          type: string
+          example: 1.0
+        description:
+          description: Gives a description of the process.
+          type: string
+          example: Detect cats on tiles
+        organization:
+          description: Identifier of the organization or entity publishing the process.
+          type: string
+          example: Airbus DS
+        email:
+          description: Contact email.
+          type: string
+          example: cat-detection@airbus.com
+        keywords:
+          description: List of keywords or tags.
+          type: array
+          items:
+            type: string
+          example: [ "cat", "dog" ]
+        template:
+          description: Template name for predefined interfaces.
+          type: string
+          example: cat-detection
+        resources:
+          description: Hardware resources needed for process execution.
+          $ref: '#/components/schemas/Resources'
+        input:
+          description: |
+            Process execution input interface.
+            JSON Schema object with ADS metadata extensions.
+          type: object
+          format: application/schema+json
+          example:
+            {
+              "$schema": "http://json-schema.org/draft-06/schema#",
+              "title": "tile-object-detection-input",
+              "description": "Geo Process API input schema for tile object detection",
+              "type": "object",
+              "required": [
+                "zoom",
+                "tile"
+              ],
+              "properties": {
+                "zoom": {
+                  "description": "Tile zoom level",
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 20
+                },
+                "tile": {
+                  "description": "The tile image base64 encoded, may be JPEG or PNG format",
+                  "type": "string",
+                  "contentEncoding": "base64"
+                }
+              }
+            }
+        output:
+          description: Process execution output interface.
+          $ref: '#/components/schemas/Output'
+        config:
+          description: Process execution configuration interface.
+          type: object
+          format: application/schema+json
+        asynchronous:
+          description: True if asynchronous mode provided.
+          type: boolean
+          default: false
+          example: false
+        _links:
+          $ref: '#/components/schemas/Links'
+
+    #
+    # Resources schema
+    #
+    Resources:
+      description: |
+        Hardware resources needed to execute the process service.
+      type: object
+      required:
+        - cpu
+        - ram
+      properties:
+        cpu:
+          description: Number of CPU cores.
+          type: integer
+          example: 2
+        cpuArch:
+          description: CPU architecture, the default value is amd64.
+          type: string
+          enum: [amd64, arm64]
+          example: amd64
+        cpuPlatform:
+          description: Minimum CPU microarchitecture platform.
+          type: string
+          example: Haswell
+        gpu:
+          description: Number of GPU cores.
+          type: integer
+          example: 0
+        ram:
+          description: Size of RAM (bytes).
+          type: integer
+          example: 2097152 # 2 Gb
+
+    #
+    # Output schema
+    #
+    Output:
+      description: |
+        Output interface definition.
+      type: object
+      required:
+        - description
+        - content
+      properties:
+        description:
+          description: A description of the interface.
+          type: string
+          example: Tile object detection output
+        headers:
+          description: |
+            Maps a header name to its definition. RFC7230 states header names
+            are case insensitive. If a response header is defined with
+            the name "Content-Type", it SHALL be ignored.
+          type: object
+        content:
+          description: |
+            A list of all possible contents as a map with key as content type
+            (MIME type) and value as object (json schema) or string (description)
+            for contents that do not need an extra definition (as for image/jpeg
+            or application/geo+json).
+
+            If a content is of type JSON (key as application/json) the value might
+            be a JSON Schema object with ADS metadata extensions.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MediaTypeObject'
+          example:
+            {
+                "application/geo+json": {},
+                "image/png": {}
+            }
+        links:
+          description: |
+            A map of operations links that can be followed from the response.
+            The key of the map is a short name for the link, following
+            the naming constraints of the names for Component Objects.
+          type: object
+
+    #
+    # Media Type Object schema
+    #
+    MediaTypeObject:
+      description: |
+        Each Media Type Object provides schema and examples for the media type
+        identified by its key.
+      type: object
+      required:
+        - schema
+      properties:
+        schema:
+          description: The schema defining the type used for the request body.
+          type: object
+        example:
+          description: |
+            Example of the media type. The example object SHOULD be in the correct
+            format as specified by the media type. The example object is mutually
+            exclusive of the examples object. Furthermore, if referencing a schema
+            which contains an example, the example value SHALL override the example
+            provided by the schema.
+          type: object
+        examples:
+          description: |
+            Examples of the media type. Each example object SHOULD match the media
+            type and specified schema if present. The examples object is mutually
+            exclusive of the example object. Furthermore, if referencing a schema
+            which contains an example, the examples value SHALL override the example
+            provided by the schema.
+          type: string
+          additionalProperties:
+            type: object
+        encoding:
+          description: |
+            A map between a property name and its encoding information. The key, being
+            the property name, MUST exist in the schema as a property. The encoding
+            object SHALL only apply to requestBody objects when the media type is multipart
+            or application/x-www-form-urlencoded.
+          type: string
+          additionalProperties:
+            type: string
+
+    #
+    # Links schema
+    #
+    Links:
+      description: |
+        Links to related resources.
+      type: object
+      required:
+        - self
+        - execution
+      properties:
+        self:
+          description: The resource that return this process description.
+          $ref: '#/components/schemas/Reference'
+        execution:
+          description: The target resource to execute this process.
+          $ref: '#/components/schemas/Reference'
+        config:
+          description: The target resource to get / set configuration of this process.
+          $ref: '#/components/schemas/Reference'
+        version:
+          description: |
+            The target resource to get the API version implemented by this
+            process.
+          $ref: '#/components/schemas/Reference'
+        health:
+          description: The target resource to check health of this process.
+          $ref: '#/components/schemas/Reference'
+        metrics:
+          description: The target resource to get usage metrics of this process.
+          $ref: '#/components/schemas/Reference'
+        icon:
+          description: The target resource to retrieve the icon of this process.
+          $ref: '#/components/schemas/Reference'
+        license:
+          description: The target resource to retrieve the license of this process.
+          $ref: '#/components/schemas/Reference'
+        documentation:
+          description: The target resource to retrieve the documentation of this process.
+          $ref: '#/components/schemas/Reference'
+
+    #
+    # Config schema
+    #
+    Config:
+      description: |
+        Process instance configuration.
+
+        Implementation specific.
+
+        Described by the JSON schema in the _links/config attribute of the
+        describe service.
+      type: object
+
+    #
+    # Metrics schema
+    #
+    Metrics:
+      description: |
+        Process metrics.
+
+        Implementation specific.
+      type: object
+
+    #
+    # Status schema
+    #
+    Status:
+      description: |
+        Status of a process execution
+      type: object
+      required:
+        - status
+        - progress
+      properties:
+        status:
+          description: Status of this execution.
+          type: string
+          default: UNKNOWN
+          enum:
+            - UNKNOWN
+            - ACCEPTED
+            - RUNNING
+            - FAILED
+            - SUCCEEDED
+            - CANCELLED
+            - PAUSED
+        progress:
+          description: Progress in % of this execution.
+          type: integer
+
+    #
+    # JobResults schema
+    #
+    JobResults:
+      description: Results of this execution if succeded.
+      type: array
+      items:
+        $ref: '#/components/schemas/Result'
+
+    #
+    # Result schema
+    #
+    Result:
+      description: ''
+      type: object
+      required:
+        - id
+        - _link
+      properties:
+        id:
+          description: Result identifier.
+          type: string
+        _link:
+          $ref: '#/components/schemas/Reference'
+
+    #
+    # ProcessInput schema
+    #
+    ProcessInput:
+      description: |
+        Process input parameters as defined by the JSON Schema in the input
+        attribute of the description resource.
+      type: object
+
+    #
+    # Reference schema
+    #
+    Reference:
+      description: |
+        Reference object.
+      type: object
+      required:
+        - href
+      properties:
+        relation:
+          description: Description of the relation.
+          type: string
+        href:
+          description: Determine the target URI of the related resource.
+          type: string
+          format: uri
+          example: http://myservice.com/api/v1/describe
+        type:
+          description: Expected content type of the response of the reference.
+          type: string
+          example: application/json
+        method:
+          description: |
+            HTTP verb to distinguish between several possible actions on the
+            same ressource. GET if omitted.
+          $ref: '#/components/schemas/ReferenceMethod'
+
+    #
+    # ReferenceMethod schema
+    #
+    ReferenceMethod:
+      description: |
+        HTTP verbs to access resources.
+      type: string
+      enum:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+
+    #
+    # Error schema
+    #
+    Error:
+      description: |
+        Error returned when request fails
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: End user error description.
+          type: string
+        hint:
+          description: Internal / developper error message (no trace).
+          type: string
+        correlationId:
+          description: System request identifier from request header.
+          type: string
+        timestamp:
+          description: Error timestamp.
+          type: string

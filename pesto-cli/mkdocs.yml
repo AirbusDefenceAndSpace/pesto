@@ -1,0 +1,53 @@
+# Project information
+site_name: "PESTO : ProcESsing facTOry"
+site_url: "https://airbusdefenceandspace.github.io/pesto"
+site_author: Airbus Defence and Space - Processing Factory Team
+site_description: Documentation for the PESTO toolbox
+
+# Repository
+repo_name: AirbusDefenceAndSpace/pesto
+repo_url: https://github.com/AirbusDefenceAndSpace/pesto
+edit_uri: ""
+
+
+use_directory_urls: false
+
+# Copyright
+copyright: Copyright &copy; 2020 Airbus Defence and Space
+
+# Configuration
+theme:
+    name: readthedocs
+    highlightjs: true
+
+# Plugins
+plugins:
+  - search
+  - markdownmermaid
+
+# Extensions
+markdown_extensions:
+  - markdown.extensions.admonition
+
+extra_javascript:
+#  - https://unpkg.com/mermaid@8.0.0/dist/mermaid.min.js
+  - js/mermaid.min.js
+
+# Page tree
+nav:
+  - About: index.md
+  - Installation & configuration:
+      - Get started: installation.md
+      - Configuration: configuration.md
+      - Conventions: conventions.md
+  - Tutorials:
+      - Deploying a pytorch model: tutorial_pytorch.md
+      - PESTO large scale deployment: tutorial_deployment.md
+  - PESTO commands:
+      - init:  pesto_init.md
+      - build: pesto_build.md
+      - test:  pesto_test.md
+  - PESTO in details:
+      - Web-service: endpoints.md
+      - Cookbook: cookbook.md
+      - Design : design.md

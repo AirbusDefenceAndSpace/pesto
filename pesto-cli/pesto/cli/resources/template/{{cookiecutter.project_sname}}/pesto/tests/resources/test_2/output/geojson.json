@@ -1,0 +1,73 @@
+{
+    "features": [
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            0,
+                            0
+                        ],
+                        [
+                            0,
+                            300
+                        ],
+                        [
+                            451,
+                            300
+                        ],
+                        [
+                            451,
+                            0
+                        ],
+                        [
+                            0,
+                            0
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "category": "cat",
+                "confidence": 0.99,
+                "name": "chelsea"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            112,
+                            75
+                        ],
+                        [
+                            112,
+                            225
+                        ],
+                        [
+                            337,
+                            225
+                        ],
+                        [
+                            337,
+                            75
+                        ],
+                        [
+                            112,
+                            75
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "category": "egyptian_cat",
+                "confidence": 0.42
+            },
+            "type": "Feature"
+        }
+    ]
+}

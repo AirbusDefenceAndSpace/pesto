@@ -1,0 +1,4 @@
+{
+  "description": "{{cookiecutter.project_short_description}}, stateful version",
+  "asynchronous": true
+}

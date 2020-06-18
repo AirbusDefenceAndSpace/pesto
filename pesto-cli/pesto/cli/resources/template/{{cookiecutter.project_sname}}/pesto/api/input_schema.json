@@ -1,0 +1,34 @@
+{
+  "image": {
+    "$ref": "#/definitions/Image",
+    "description": "Input image"
+  },
+  "dict_parameter": {
+    "$ref": "#/definitions/Metadata",
+    "description": "A dict parameter"
+  },
+  "object_parameter": {
+    "description": "A dict parameter with more spec, of the form {'key':'value'}",
+    "type": "object",
+    "properties": {
+      "key": {
+        "type": "string"
+      }
+    }
+  },
+  "number_parameter": {
+    "type": "number",
+    "description": "A (floating point) number parameter"
+  },
+  "integer_parameter": {
+    "type": "integer",
+    "description": "A (integer) number parameter"
+  },
+  "string_parameter": {
+    "type": "string",
+    "description": "A string parameter"
+  },
+  "required": [
+    "image"
+  ]
+}

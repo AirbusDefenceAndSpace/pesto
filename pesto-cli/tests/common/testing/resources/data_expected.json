@@ -1,0 +1,43 @@
+{
+  "dict_parameter": {
+    "key": "value"
+  },
+  "image": "file://resources/data/input/image.tif",
+  "int_array": [
+    5,
+    6,
+    1,
+    35
+  ],
+  "integer_parameter": 42,
+  "mixed_array": {
+    "0_first": "first",
+    "1_second": 42,
+    "22_internal_array": [
+      5,
+      6,
+      1,
+      35
+    ],
+    "2_third": 3.333,
+    "3_next": {
+      "some_numbers": [
+        0,
+        2,
+        4
+      ],
+      "text": "complex json file"
+    },
+    "4_image": "file://resources/data/input/mixed_array/4_image.png",
+    "5_image": "file://resources/data/input/mixed_array/5_image.tif",
+    "6_image": "file://resources/data/input/mixed_array/6_image.jpeg"
+  },
+  "number_parameter": 3.14159,
+  "string_array": [
+    "toto",
+    "gfs\n gfds\n  gds\n   g\n   fs\n    g\n    ds gfds gfds\n\n\ngfdsgfds g",
+    "fds qfdsq fq fdsq fdsq",
+    "35"
+  ],
+  "string_parameter": "toto is the value"
+}

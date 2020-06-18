@@ -1,0 +1,14 @@
+docker>=3.1.0
+wget
+cookiecutter
+loguru
+jsonschema
+sanic==19.12.2
+sanic-openapi==0.4.0
+requests-file
+numpy>1.11
+requests
+rasterio>1.x.y,<1.2.0
+jsonify
+jinja2
+Pillow

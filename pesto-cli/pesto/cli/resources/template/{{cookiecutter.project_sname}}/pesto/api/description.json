@@ -1,0 +1,20 @@
+{
+  "title": "{{cookiecutter.project_sname}}",
+  "name": "{{cookiecutter.project_sname}}",
+  "version": "{{cookiecutter.project_version}}",
+  "description": "{{cookiecutter.project_short_description}}",
+  "family": "detection",
+  "template": "object-detection",
+  "keywords": [
+    "detection"
+  ],
+  "resources": {
+    "cpu": 4,
+    "gpu": 0,
+    "ram": 8
+  },
+  "asynchronous": false,
+  "organization": "{{cookiecutter.maintainer_fullname}}",
+  "email": "{{cookiecutter.maintainer_email}}",
+  "licence": "Property of {{cookiecutter.maintainer_fullname}}, all rights reserved"
+}

@@ -1,0 +1,5 @@
+{
+  "version": "{{cookiecutter.project_version}}",
+  "other": "other version description",
+  "notice": "This file must be a valid json"
+}

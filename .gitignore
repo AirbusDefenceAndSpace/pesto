@@ -1,0 +1,13 @@
+.idea
+.vscode
+
+pesto-cli/dist
+pesto-cli/build
+*.egg-info
+*.pyc
+
+site
+tmp
+cache
+.pytest_cache
+.mypy_cache

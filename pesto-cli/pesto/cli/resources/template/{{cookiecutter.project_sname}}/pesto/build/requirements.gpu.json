@@ -1,0 +1,3 @@
+{
+  "dockerBaseImage": "gcr.io/kaggle-gpu-images/python:latest"
+}

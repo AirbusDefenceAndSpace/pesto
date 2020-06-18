@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "title": "Service Schema",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "family": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "organization": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "licence": {
+      "type": "string"
+    },
+    "template": {
+      "type": "string"
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "input": {
+      "type": "object"
+    },
+    "output": {
+      "type": "object"
+    },
+    "config": {
+      "type": "object",
+      "description": "Json schema to validate the algorithm configurations"
+    },
+    "asynchronous": {
+      "type": "boolean"
+    },
+    "batched": {
+      "type": "boolean"
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "static_memory": {
+          "type": "string"
+        },
+        "dynamic_memory": {
+          "type": "string"
+        },
+        "max_batch_size": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "definitions": {
+  },
+  "required": [
+    "name",
+    "version",
+    "config",
+    "input",
+    "output",
+    "resources"
+  ],
+  "additionalProperties": true
+}

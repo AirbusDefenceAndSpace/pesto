@@ -1,0 +1,327 @@
+{
+  "family": "detection",
+  "version": "{{cookiecutter.project_version}}",
+  "name": "{{cookiecutter.project_sname}}",
+  "email": "computervision@airbus.com",
+  "resources": {
+    "cpu": 4,
+    "gpu": 0,
+    "ram": 8
+  },
+  "asynchronous": true,
+  "title": "{{cookiecutter.project_sname}}",
+  "organization": "{{cookiecutter.maintainer_fullname}}",
+  "description": "{{cookiecutter.project_short_description}}",
+  "keywords": [
+    "detection"
+  ],
+  "config": {
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "description": "Geo Process API config schema for tile change detection",
+    "properties": {
+      "padding": {
+        "description": "Padding / border needed to process the tile. 0 for no padding.",
+        "maximum": 256,
+        "minimum": 0,
+        "type": "number"
+      },
+      "zoom": {
+        "description": "Zoom levels that can be processed",
+        "items": {
+          "maximum": 17,
+          "minimum": 1,
+          "type": "number"
+        },
+        "minItems": 1,
+        "type": "array"
+      }
+    },
+    "required": [
+      "zoom",
+      "padding"
+    ],
+    "title": "tile-object-detection-config",
+    "type": "object"
+  },
+  "template": "object-detection",
+  "input": {
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "",
+    "type": "object",
+    "description": "Expected format",
+    "definition": {},
+    "definitions": {
+      "Image": {
+        "$schema": "http://json-schema.org/draft-06/schema#",
+        "description": "Image to process : it can be an url or the raw bytes encoded in base64",
+        "type": "string"
+      },
+      "Images": {
+        "items": {
+          "$ref": "#/definitions/Image"
+        },
+        "type": "array"
+      },
+      "Metadata": {
+        "type": "object"
+      },
+      "Metadatas": {
+        "items": {
+          "$ref": "#/definitions/Metadata"
+        },
+        "type": "array"
+      },
+      "Polygon": {
+        "$schema": "http://json-schema.org/draft-06/schema#",
+        "description": "GeoJSON Polygon",
+        "properties": {
+          "bbox": {
+            "items": {
+              "type": "number"
+            },
+            "minItems": 4,
+            "type": "array"
+          },
+          "coordinates": {
+            "items": {
+              "items": {
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "type": "array"
+              },
+              "minItems": 4,
+              "type": "array"
+            },
+            "type": "array"
+          },
+          "type": {
+            "enum": [
+              "Polygon"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "coordinates"
+        ],
+        "title": "Polygon",
+        "type": "object"
+      },
+      "Polygons": {
+        "items": {
+          "$ref": "#/definitions/Polygon"
+        },
+        "type": "array"
+      }
+    },
+    "properties": {
+      "dict_parameter": {
+        "$ref": "#/definitions/Metadata",
+        "description": "A dict parameter"
+      },
+      "image": {
+        "$ref": "#/definitions/Image",
+        "description": "Input image"
+      },
+      "integer_parameter": {
+        "description": "A (integer) number parameter",
+        "type": "integer"
+      },
+      "number_parameter": {
+        "description": "A (floating point) number parameter",
+        "type": "number"
+      },
+      "object_parameter": {
+        "description": "A dict parameter with more spec, of the form {'key':'value'}",
+        "properties": {
+          "key": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "string_parameter": {
+        "description": "A string parameter",
+        "type": "string"
+      }
+    },
+    "required": [
+      "image"
+    ]
+  },
+  "output": {
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "",
+    "type": "object",
+    "description": "Expected format",
+    "definition": {},
+    "definitions": {
+      "Image": {
+        "$schema": "http://json-schema.org/draft-06/schema#",
+        "description": "Image to process : it can be an url or the raw bytes encoded in base64",
+        "type": "string"
+      },
+      "Images": {
+        "items": {
+          "$ref": "#/definitions/Image"
+        },
+        "type": "array"
+      },
+      "Metadata": {
+        "type": "object"
+      },
+      "Metadatas": {
+        "items": {
+          "$ref": "#/definitions/Metadata"
+        },
+        "type": "array"
+      },
+      "Polygon": {
+        "$schema": "http://json-schema.org/draft-06/schema#",
+        "description": "GeoJSON Polygon",
+        "properties": {
+          "bbox": {
+            "items": {
+              "type": "number"
+            },
+            "minItems": 4,
+            "type": "array"
+          },
+          "coordinates": {
+            "items": {
+              "items": {
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "type": "array"
+              },
+              "minItems": 4,
+              "type": "array"
+            },
+            "type": "array"
+          },
+          "type": {
+            "enum": [
+              "Polygon"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "coordinates"
+        ],
+        "title": "Polygon",
+        "type": "object"
+      },
+      "Polygons": {
+        "items": {
+          "$ref": "#/definitions/Polygon"
+        },
+        "type": "array"
+      }
+    },
+    "properties": {
+      "areas": {
+        "$ref": "#/definitions/Polygons"
+      },
+      "dict_output": {
+        "$ref": "#/definitions/Metadata"
+      },
+      "geojson": {
+        "description": "A Geojson.FeatureCollection containing only Polygons as geometries",
+        "properties": {
+          "features": {
+            "items": {
+              "$schema": "http://json-schema.org/draft-06/schema#",
+              "properties": {
+                "geometry": {
+                  "$ref": "#/definitions/Polygon"
+                },
+                "properties": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "object"
+                    }
+                  ]
+                },
+                "type": {
+                  "enum": [
+                    "Feature"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "properties",
+                "geometry"
+              ],
+              "title": "GeoJSON Feature",
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "image": {
+        "$ref": "#/definitions/Image"
+      },
+      "image_list": {
+        "$ref": "#/definitions/Images"
+      },
+      "integer_output": {
+        "type": "integer"
+      },
+      "number_output": {
+        "type": "number"
+      },
+      "string_output": {
+        "type": "string"
+      }
+    }
+  },
+  "_links": {
+    "self": {
+      "relation": "Access to describe resource",
+      "href": "http://localhost:4000/api/v1/describe",
+      "type": "application/json",
+      "method": "GET"
+    },
+    "execution": {
+      "relation": "Processing resource",
+      "href": "http://localhost:4000/api/v1/process",
+      "type": "Complex type, see output in describe content for more information",
+      "method": "POST"
+    },
+    "config": {
+      "relation": "Processing configuration",
+      "href": "http://localhost:4000/api/v1/config",
+      "type": "application/json",
+      "method": "GET"
+    },
+    "version": {
+      "relation": "Processing version",
+      "href": "http://localhost:4000/api/v1/version",
+      "type": "application/json",
+      "method": "GET"
+    },
+    "health": {
+      "relation": "Processing health",
+      "href": "http://localhost:4000/api/v1/health",
+      "type": "text/plain",
+      "method": "GET"
+    }
+  }
+}

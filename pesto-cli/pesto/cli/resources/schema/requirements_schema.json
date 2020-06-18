@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "title": "Build instruction Schema",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "dockerBaseImage": {
+      "type": "string",
+      "description": "Base of image docker to build"
+    },
+
+    "environments": {
+      "type": "object"
+    },
+
+    "requirements": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "dockerBaseImage",
+    "requirements",
+    "environments"
+  ],
+  "additionalProperties": false
+}

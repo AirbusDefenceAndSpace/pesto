@@ -1,0 +1,7 @@
+{
+  "environments": {
+  },
+  "requirements": {
+  },
+  "dockerBaseImage": "python:3.6-stretch"
+}

@@ -1,0 +1,66 @@
+{
+  "image": {
+    "$ref": "#/definitions/Image"
+  },
+  "areas": {
+    "$ref": "#/definitions/Polygons"
+  },
+  "number_output": {
+    "type": "number"
+  },
+  "integer_output": {
+    "type": "integer"
+  },
+  "dict_output": {
+    "$ref": "#/definitions/Metadata"
+  },
+  "string_output": {
+    "type": "string"
+  },
+  "image_list": {
+    "$ref": "#/definitions/Images"
+  },
+  "geojson": {
+    "description": "A Geojson.FeatureCollection containing only Polygons as geometries",
+    "type": "object",
+    "properties": {
+      "features": {
+        "type": "array",
+        "items": {
+          "$schema": "http://json-schema.org/draft-06/schema#",
+          "title": "GeoJSON Feature",
+          "type": "object",
+          "required": [
+            "type",
+            "properties",
+            "geometry"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "Feature"
+              ]
+            },
+            "properties": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object"
+                }
+              ]
+            },
+            "geometry": {
+              "$ref": "#/definitions/Polygon"
+            }
+          }
+        }
+      },
+      "type": {
+        "type": "string"
+      }
+    }
+  }
+}

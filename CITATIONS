@@ -1,0 +1,10 @@
+If you use PESTO for any published work, please cite it using the reference
+below:
+
+@Misc{,
+  author =    {PESTO Contributors},
+  organization = {Airbus Defence And Space},
+  title =     {PESTO: ProcESsing facTOry for {Python} data scientists},
+  year =      {2018--},
+  url = "https://github.com/AirbusDefenceAndSpace/pesto"
+}

@@ -1,0 +1,6 @@
+{
+  "someKey": "someValue",
+  "object": {
+    "key": "value"
+  }
+}

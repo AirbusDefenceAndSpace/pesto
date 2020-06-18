@@ -1,0 +1,67 @@
+{
+  "Image": {
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "description": "Image to process : it can be an url or the raw bytes encoded in base64",
+    "type": "string"
+  },
+  "Images": {
+    "type": "array",
+    "items": {
+      "$ref": "#/definitions/Image"
+    }
+  },
+  "Polygon": {
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Polygon",
+    "description": "GeoJSON Polygon",
+    "type": "object",
+    "required": [
+      "type",
+      "coordinates"
+    ],
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": [
+          "Polygon"
+        ]
+      },
+      "coordinates": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "minItems": 4,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "bbox": {
+        "type": "array",
+        "minItems": 4,
+        "items": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "Polygons": {
+    "type": "array",
+    "items": {
+      "$ref": "#/definitions/Polygon"
+    }
+  },
+  "Metadata": {
+    "type": "object"
+  },
+  "Metadatas": {
+    "type": "array",
+    "items": {
+      "$ref": "#/definitions/Metadata"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "{{cookiecutter.project_sname}}",
+  "version": "{{cookiecutter.project_version}}",
+  "algorithm_path": null,
+  "workspace": null
+}
