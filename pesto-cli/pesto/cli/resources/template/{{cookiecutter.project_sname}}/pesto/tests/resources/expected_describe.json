@@ -2,13 +2,13 @@
   "family": "detection",
   "version": "{{cookiecutter.project_version}}",
   "name": "{{cookiecutter.project_sname}}",
-  "email": "computervision@airbus.com",
+  "email": "pesto@airbus.com",
   "resources": {
     "cpu": 4,
     "gpu": 0,
     "ram": 8
   },
-  "asynchronous": true,
+  "asynchronous": false,
   "title": "{{cookiecutter.project_sname}}",
   "organization": "{{cookiecutter.maintainer_fullname}}",
   "description": "{{cookiecutter.project_short_description}}",
@@ -17,7 +17,7 @@
   ],
   "config": {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "description": "Geo Process API config schema for tile change detection",
+    "description": "Geo Process API config schema for algo-service",
     "properties": {
       "padding": {
         "description": "Padding / border needed to process the tile. 0 for no padding.",

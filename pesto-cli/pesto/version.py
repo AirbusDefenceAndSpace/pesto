@@ -1,1 +1,1 @@
-PESTO_VERSION = '1.0.0-rc1'
+PESTO_VERSION = '1.0.0'
