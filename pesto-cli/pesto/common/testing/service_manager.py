@@ -5,11 +5,11 @@ from typing import Any
 import docker
 import docker.errors
 import requests
+
 from pesto.common.testing import logger
 
 
 class ServiceManager:
-    CLIENT = docker.from_env()
 
     def __init__(
         self,
@@ -34,10 +34,11 @@ class ServiceManager:
         else:
             self.network = network
 
-        self._container, self._existing_container = self._check_existing_container()
+        self._docker_client = docker.from_env()
+        self._docker_container, self._existing_container = self._check_existing_container()
 
     def _check_existing_container(self):
-        containers = ServiceManager.CLIENT.containers.list()
+        containers = self._docker_client.containers.list()
         for container in containers:
             ports = container.ports  # {'8080/tcp': [{'HostIp': '', 'HostPort': '4000'}]}
             tags = container.image.tags
@@ -63,61 +64,47 @@ class ServiceManager:
 
     def pull(self):
         try:
-            self.CLIENT.images.get(self.docker_image)
+            self._docker_client.images.get(self.docker_image)
         except docker.errors.ImageNotFound:
             logger.info("Pulling {}".format(self.docker_image))
-            self.CLIENT.images.pull(self.docker_image)
+            self._docker_client.images.pull(self.docker_image)
             logger.info("Pulled image")
         except docker.errors.APIError:
             logger.info("Can't pull image {} you should have it in local other it will not work !".format(
                 self.docker_image))
 
     def attach(self):
-        if self._container is not None:
+        if self._docker_container is not None:
             logger.info("Attaching in subprocess to container")
-            cmd = "docker attach {}".format(self._container.id)
+            cmd = "docker attach {}".format(self._docker_container.id)
             logger.info(cmd)
             subprocess.Popen(cmd, shell=True)
             time.sleep(5)
 
     def run(self):
-        if self._container is None and self.is_alive:
+        if self._docker_container is None and self.is_alive:
             logger.warn("There is a container running at {} but it does not match {}.\n"
                         "We assume that you know what you are doing".format(
                 self.server_url, self.docker_image))
             return None
 
-        if self._container is None:
+        if self._docker_container is None:
             self.pull()
             logger.info("Starting container with {} on port {}".format(self.docker_image, self.host_port))
 
-            if self.network is "host":
-                self._container = self.CLIENT.containers.run(
-                    self.docker_image,
-                    network=self.network,
-                    detach=True,
-                    remove=True,
-                    runtime="nvidia" if self.nvidia else None,
-                    volumes={self.image_volume_path: {
-                        "bind": self.host_volume_path,
-                        "mode": "rw",
-                    }},
-                )
-            else:
-                self._container = self.CLIENT.containers.run(
-                    self.docker_image,
-                    network=self.network,
-                    ports={self.service_port: self.host_port},
-                    detach=True,
-                    remove=True,
-                    runtime="nvidia" if self.nvidia else None,
-                    volumes={self.image_volume_path: {
-                        "bind": self.host_volume_path,
-                        "mode": "rw",
-                    }},
-                )
+            self._docker_container = self._docker_client.containers.run(
+                self.docker_image,
+                ports={self.service_port: self.host_port},
+                detach=True,
+                remove=True,
+                runtime="nvidia" if self.nvidia else None,
+                volumes={self.image_volume_path: {
+                    "bind": self.host_volume_path,
+                    "mode": "rw",
+                }},
+            )
             time.sleep(2)
-            logger.info("Container {} started, available at {}".format(self._container.id, self.server_url))
+            logger.info("Container {} started, available at {}".format(self._docker_container.id, self.server_url))
 
         # Healthcheck until service responds
         num_tries = 0
@@ -139,12 +126,12 @@ class ServiceManager:
         if self.attach_when_running:
             self.attach()
 
-        return self._container.id
+        return self._docker_container.id
 
     def stop(self):
-        if self._container is not None:
-            logger.info("Stopping container {}".format(self._container.id))
-            self._container.stop()
+        if self._docker_container is not None:
+            logger.info("Stopping container {}".format(self._docker_container.id))
+            self._docker_container.stop()
 
     def __enter__(self) -> "ServiceManager":
         self.run()
