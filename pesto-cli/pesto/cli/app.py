@@ -39,6 +39,8 @@ def parse_args() -> argparse.Namespace:
                               default=None)
     parser_build.add_argument('--proxy', help='Define a proxy url to use during docker construction',
                               default=None)
+    parser_build.add_argument('-n', '--network', help='Define a specific network for docker construction',
+                              default="host")
 
     # test
     parser_test = subparsers.add_parser('test')
@@ -59,7 +61,7 @@ def main() -> None:
     if args.subcommand == 'init':
         init.init(args.target, args.template)
     elif args.subcommand == 'build':
-        build.build(search_build_config(args), args.profile, args.proxy)
+        build.build(search_build_config(args), args.profile, args.proxy, args.network)
     elif args.subcommand == 'test':
         test.test(search_build_config(args), args.profile, nvidia=args.nvidia)
     elif args.subcommand == 'list':
