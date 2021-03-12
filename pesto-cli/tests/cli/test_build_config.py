@@ -1,5 +1,5 @@
 from pesto.cli.core.build_config import BuildConfig
-
+from pesto.cli.core.docker_builder import DockerBuilder
 
 def test_docker_image_name():
     # given
@@ -25,3 +25,21 @@ def test_network():
         network='test_network')
     assert config.network == "test_network"
     
+
+def test_pythonpath():
+    # given
+    build_config = BuildConfig(
+        name='my-service',
+        version='1.2.3',
+        profiles=['p1', 'p2'],
+        workspace=".")
+    requirements={"dockerBaseImage":{}, "requirements":{}, "environments":{}}
+
+    dockerbuilder = DockerBuilder(requirements, build_config).dockerfile()
+
+    # when
+    actual =  dockerbuilder.split("\n")[17]
+
+    # then
+    expected = 'ENV PYTHONPATH=$PYTHONPATH:/opt/my-service'
+    assert actual == expected
