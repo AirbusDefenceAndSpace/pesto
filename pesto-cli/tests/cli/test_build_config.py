@@ -24,3 +24,4 @@ def test_network():
         profiles=['p1', 'p2'],
         network='test_network')
     assert config.network == "test_network"
+    
