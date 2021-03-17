@@ -12,7 +12,7 @@ TMP_PATH = Path("/tmp/pesto/")
 
 
 class TestRunner:
-    def __init__(self, docker_image_name: str, network: str = "host", nvidia=False):
+    def __init__(self, docker_image_name: str, network: str = None, nvidia=False):
         self.docker_image_name = docker_image_name
         self.nvidia = nvidia
         self.network = network
