@@ -65,7 +65,7 @@ def main() -> None:
     elif args.subcommand == 'build':
         build.build(search_build_config(args), args.profile, args.proxy, args.network)
     elif args.subcommand == 'test':
-        test.test(search_build_config(args), args.profile, nvidia=args.nvidia)
+        test.test(search_build_config(args), args.profile, nvidia=args.nvidia, network=args.network)
     elif args.subcommand == 'list':
         list_builds.list_builds(PESTO_WORKSPACE)
 
