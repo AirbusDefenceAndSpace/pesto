@@ -48,8 +48,8 @@ def parse_args() -> argparse.Namespace:
     parser_test.add_argument('-p', '--profile', nargs='+', help='Select specific files to update',
                              default=None)
     parser_test.add_argument('--nvidia',  action='store_true', default=False, help='Run docker with nvidia-runtime')
-    parser_test.add_argument('-n', '--network', help='Define a specific network for docker construction',
-                              default="host")
+    parser_test.add_argument('-n', '--network', help='Define a specific network to run docker',
+                              default=None)
 
     # # list builds
     # parser_list = subparsers.add_parser('list')
