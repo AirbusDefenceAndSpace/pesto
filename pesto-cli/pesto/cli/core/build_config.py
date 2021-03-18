@@ -15,7 +15,7 @@ class BuildConfig:
                   profiles: List[str] = None,
                   proxy: str = None,
                   pip_extra_index: str = None,
-                  network: str = "host"
+                  network: str = None
                   ):
         assert path is not None
 

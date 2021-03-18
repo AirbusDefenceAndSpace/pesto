@@ -38,7 +38,10 @@ class DockerBuilder(object):
             file.write(dockerfile)
 
         docker_image_name = self.build_config.docker_image_name
-        cmd = "docker build --no-cache --network='{}' -t {} {}".format(self.build_config.network, docker_image_name, self.build_config.workspace)
+        cmd = "docker build --no-cache"
+        if network is not None:
+            cmd = "{} --network='{}'".format(cmd, self.build_config.network)
+        cmd = "{} -t {} {}".format(cmd, docker_image_name, self.build_config.workspace)
         subprocess.call(shlex.split(cmd))
 
     def dockerfile(self):
