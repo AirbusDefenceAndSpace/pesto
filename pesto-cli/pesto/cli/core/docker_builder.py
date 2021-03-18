@@ -39,7 +39,7 @@ class DockerBuilder(object):
 
         docker_image_name = self.build_config.docker_image_name
         cmd = "docker build --no-cache"
-        if network is not None:
+        if self.build_config.network is not None:
             cmd = "{} --network='{}'".format(cmd, self.build_config.network)
         cmd = "{} -t {} {}".format(cmd, docker_image_name, self.build_config.workspace)
         subprocess.call(shlex.split(cmd))

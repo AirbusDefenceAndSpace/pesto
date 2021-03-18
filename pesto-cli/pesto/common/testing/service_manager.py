@@ -88,10 +88,10 @@ class ServiceManager:
             self.pull()
             logger.info("Starting container with {} on port {}".format(self.docker_image, self.host_port))
 
-            if self.network is None :
+            if self.network is "host":
                 self._container = self.CLIENT.containers.run(
                     self.docker_image,
-                    ports={self.service_port: self.host_port},
+                    network=self.network,
                     detach=True,
                     remove=True,
                     runtime="nvidia" if self.nvidia else None,
@@ -104,6 +104,7 @@ class ServiceManager:
                 self._container = self.CLIENT.containers.run(
                     self.docker_image,
                     network=self.network,
+                    ports={self.service_port: self.host_port},
                     detach=True,
                     remove=True,
                     runtime="nvidia" if self.nvidia else None,
