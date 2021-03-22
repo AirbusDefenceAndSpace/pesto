@@ -38,17 +38,8 @@ def test_pythonpath():
     dockerbuilder = DockerBuilder(requirements, build_config).dockerfile()
 
     # when
-    dockerfile_lines = dockerbuilder.split("\n")
-    pythonpath_lines = []
-    for line in dockerfile_lines:
-       if line[:14] == "ENV PYTHONPATH":
-           pythonpath_lines.append(line)
+    actual =  dockerbuilder.split("\n")[17]
 
     # then
-    expected = 'ENV PYTHONPATH=${PYTHONPATH:-/opt/my-service}'
-    assert pythonpath_lines[0] == expected
-
-    expected = 'ENV PYTHONPATH=${PYTHONPATH:+$PYTHONPATH:/opt/my-service}'
-    assert pythonpath_lines[1] == expected
-
-
+    expected = 'ENV PYTHONPATH=$PYTHONPATH:/opt/my-service'
+    assert actual == expected

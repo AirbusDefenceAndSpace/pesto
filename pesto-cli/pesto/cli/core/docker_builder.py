@@ -52,7 +52,6 @@ class DockerBuilder(object):
             pip_extra_index=self.build_config.pip_extra_index,
             pip_proxies=self.build_config.pip_proxies,
             env_variables=self._env_variables(),
-            python_env_variables=self._python_env_variables(),
             pip_requirements=self._pip_requirements(),
             resources_requirements=self._resources()
         )
@@ -60,15 +59,8 @@ class DockerBuilder(object):
     def _env_variables(self):
         return {
             'PESTO_PROFILE': self.build_config.full_version,
-            **self.environments
-        }
-
-    def _python_env_variables(self):
-        return {
-            ":".join(["${PYTHONPATH", "+$PYTHONPATH",
-                                    "".join([self._python_path, "}"])]),
-            ":".join(["${PYTHONPATH",
-                                    "".join(["-", self._python_path, "}"])])
+            **self.environments,
+            'PYTHONPATH': ":".join(["$PYTHONPATH", self._python_path])
         }
 
     @property

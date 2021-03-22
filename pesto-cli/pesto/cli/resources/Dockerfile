@@ -20,9 +20,6 @@ RUN echo '***** define ENV variables ******************************'
 {% for key, value in env_variables.items() -%}
     ENV ${key}=${value}
 {% endfor %}
-{% for value in python_env_variables -%}
-    ENV PYTHONPATH=${value}
-{% endfor %}
 
 RUN echo '***** configuration files ******************************'
     COPY pesto/api_geo_process_v1.0.yaml /etc/pesto/
