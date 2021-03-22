@@ -39,6 +39,8 @@ def parse_args() -> argparse.Namespace:
                               default=None)
     parser_build.add_argument('--proxy', help='Define a proxy url to use during docker construction',
                               default=None)
+    parser_build.add_argument('-n', '--network', help='Define a specific network for docker construction',
+                              default="host")
 
     # test
     parser_test = subparsers.add_parser('test')
@@ -46,6 +48,8 @@ def parse_args() -> argparse.Namespace:
     parser_test.add_argument('-p', '--profile', nargs='+', help='Select specific files to update',
                              default=None)
     parser_test.add_argument('--nvidia',  action='store_true', default=False, help='Run docker with nvidia-runtime')
+    parser_test.add_argument('-n', '--network', help='Define a specific network to run docker',
+                              default=None)
 
     # # list builds
     # parser_list = subparsers.add_parser('list')
@@ -59,9 +63,9 @@ def main() -> None:
     if args.subcommand == 'init':
         init.init(args.target, args.template)
     elif args.subcommand == 'build':
-        build.build(search_build_config(args), args.profile, args.proxy)
+        build.build(search_build_config(args), args.profile, args.proxy, args.network)
     elif args.subcommand == 'test':
-        test.test(search_build_config(args), args.profile, nvidia=args.nvidia)
+        test.test(search_build_config(args), args.profile, nvidia=args.nvidia, network=args.network)
     elif args.subcommand == 'list':
         list_builds.list_builds(PESTO_WORKSPACE)
 
