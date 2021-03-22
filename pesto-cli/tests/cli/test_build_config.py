@@ -24,7 +24,7 @@ def test_network():
         profiles=['p1', 'p2'],
         network='test_network')
     assert config.network == "test_network"
-    
+
 
 def test_pythonpath():
     # given
@@ -38,7 +38,7 @@ def test_pythonpath():
     dockerbuilder = DockerBuilder(requirements, build_config).dockerfile()
 
     # when
-    actual =  dockerbuilder.split("\n")[17]
+    actual = dockerbuilder.split("\n")[17]
 
     # then
     expected = 'ENV PYTHONPATH=$PYTHONPATH${PYTHONPATH:+:}/opt/my-service'
