@@ -41,5 +41,5 @@ def test_pythonpath():
     actual =  dockerbuilder.split("\n")[17]
 
     # then
-    expected = 'ENV PYTHONPATH=$PYTHONPATH:/opt/my-service'
+    expected = 'ENV PYTHONPATH=$PYTHONPATH${PYTHONPATH:+:}:/opt/my-service'
     assert actual == expected
