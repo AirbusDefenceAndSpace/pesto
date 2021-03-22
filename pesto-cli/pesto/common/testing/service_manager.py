@@ -29,7 +29,10 @@ class ServiceManager:
         self.image_volume_path = image_volume_path
         self.nvidia = nvidia
         self.attach_when_running = attach_when_running
-        self.network = network
+        if network is None:
+            self.network = "bridge"
+        else:
+            self.network = network
 
         self._container, self._existing_container = self._check_existing_container()
 
