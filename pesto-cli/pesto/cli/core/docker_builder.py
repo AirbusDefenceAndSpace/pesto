@@ -60,7 +60,7 @@ class DockerBuilder(object):
         return {
             'PESTO_PROFILE': self.build_config.full_version,
             **self.environments,
-            'PYTHONPATH': ":".join(["$PYTHONPATH${PYTHONPATH:+:}", self._python_path])
+            'PYTHONPATH': "".join(["$PYTHONPATH${PYTHONPATH:+:}", self._python_path])
         }
 
     @property
