@@ -10,7 +10,7 @@ entry_points = {
 }
 
 setup(
-    name='pesto-cli',
+    name='processing-factory',
     version=version.PESTO_VERSION,
     packages=find_packages(),
     maintainer='Airbus Defense & Space',

@@ -34,7 +34,7 @@ If you have many project sharing some information (your company, email, requirem
 - Copy the default template to a new place for your own template :
 
 ```bash
-pip show pesto-cli | grep Location | awk '{print $NF}' > /tmp/pesto_site_packages.txt
+pip show processing-factory | grep Location | awk '{print $NF}' > /tmp/pesto_site_packages.txt
 cp -r `cat /tmp/pesto_site_packages.txt`/pesto_cli/resources/pesto-template /path/to/my_pesto_template
 ```
 

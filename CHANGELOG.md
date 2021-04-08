@@ -1,6 +1,9 @@
 
 # Change Log
 
+## 1.2.0 - 2021-04-08
+- Change the package name from `pesto-cli` to `processing-factory`
+
 ## 1.1.0 - 2021-04-06
 - Append `PYTHONPATH` during `pesto build` instead of overwriting.
 - Add `--network` command line option to `pesto build` and `pesto test`.
