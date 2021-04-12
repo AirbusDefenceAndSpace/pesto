@@ -1,3 +1,4 @@
+ARG ENV
 FROM ${base_image}
 CMD  [ "processing" ]
 ENTRYPOINT []

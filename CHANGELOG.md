@@ -1,6 +1,11 @@
 
 # Change Log
 
+## 1.3.0 - WIP
+- Move from Sanic to FastAPI
+- Log based on Loguru
+- Fix test procedure un Makefile
+
 ## 1.2.2 - 2021-06-17
 - Fix potential memory leak in the web service
 
