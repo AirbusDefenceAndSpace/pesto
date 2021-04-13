@@ -1,5 +1,7 @@
 {
   "environments": {
+    "LOGURU_SERIALIZE": "TRUE",
+    "LOGURU_LEVEL": "DEBUG"
   },
   "requirements": {
   },

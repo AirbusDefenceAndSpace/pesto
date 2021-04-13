@@ -27,9 +27,10 @@ async def startup_event():
     processing_semaphore = asyncio.Semaphore(1)
     ProcessService.init()
 
-@v1.route('/openapi')
-async def openapi(request: Request) -> FileResponse:
-    return await FileResponse('/etc/pesto/api_geo_process_v1.0.yaml')
+#TODO : remplacer par le download du JSON spécifique
+@v1.get('/openapi')
+def openapi(request: Request) -> FileResponse:
+    return FileResponse('/etc/pesto/api_geo_process_v1.0.yaml')
 
 #TODO : Create a model of response for describe
 @v1.get('/describe')
@@ -68,19 +69,19 @@ def jobs_get(request: Request) -> JSONResponse:
     result = JobListService().job_list(url_root)
     return JSONResponse(content=result)
 
-@v1.get('/jobs/<job_id>/status')
+@v1.get('/jobs/{job_id}/status')
 def jobs_id_status_get(request: Request, job_id: str) -> JSONResponse:
     url_root = _get_url_root(request)
     status = JobStatusService(url_root, job_id).get_status()
     return JSONResponse(content=status)
 
-@v1.get('/jobs/<job_id>/results')
+@v1.get('/jobs/{job_id}/results')
 def jobs_id_results_get(request: Request, job_id: str) -> JSONResponse:
     url_root = _get_url_root(request)
     results = JobResultService(url_root, job_id).get_results()
     return JSONResponse(content=results)
 
-@v1.get('/jobs/<job_id>/results/<result_id>')
+@v1.get('/jobs/{job_id}/results/{result_id}')
 async def jobs_results_id_get(request: Request, job_id: str, result_id: str) -> JSONResponse:
     try:
         url_root = _get_url_root(request)
@@ -91,7 +92,7 @@ async def jobs_results_id_get(request: Request, job_id: str, result_id: str) -> 
         message = 'Error while retrieving results : job_id = {}, result_id = {}'.format(job_id, result_id)
         raise HTTPException(detail=message, status_code=500)
 
-@v1.delete('/jobs/<job_id>/results/<result_id>')
+@v1.delete('/jobs/{job_id}/results/{result_id}')
 def jobs_results_id_delete(request: Request, job_id: str, result_id: str) -> JSONResponse:
     try:
         url_root = _get_url_root(request)
@@ -107,7 +108,7 @@ def jobs_results_id_delete(request: Request, job_id: str, result_id: str) -> JSO
 @v1.post('/process')
 async def process_post(request: Request) -> JSONResponse:
     url_root = _get_url_root(request)
-    request_payload = request.json
+    request_payload = await request.json()
     if request_payload is None:
         raise HTTPException(detail='json payload is empty, or payload is not json', status_code=500)
 
@@ -128,7 +129,7 @@ async def process_post(request: Request) -> JSONResponse:
 
 
 def _get_url_root(request: Request) -> str:
-    return '{0.scheme}://{0.host}'.format(request)
+    return '{}://{}'.format(request.url.scheme,request.url.port)
 
 
 async def _prepare_response(output: Any, data_type: ResultType):

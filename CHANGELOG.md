@@ -1,7 +1,7 @@
 
 # Change Log
 
-## 1.3.0 - WIP
+## 1.3.0
 - Move from Sanic to FastAPI
 - Log based on Loguru
 - Fix test procedure un Makefile

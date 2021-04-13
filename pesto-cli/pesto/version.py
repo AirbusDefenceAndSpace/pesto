@@ -1,1 +1,1 @@
-PESTO_VERSION = '1.2.2-fastapi'
+PESTO_VERSION = '1.3.0'

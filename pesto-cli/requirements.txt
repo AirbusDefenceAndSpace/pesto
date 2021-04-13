@@ -11,3 +11,4 @@ jsonify
 jinja2
 Pillow
 uvicorn
+loguru
