@@ -1,6 +1,9 @@
 
 # Change Log
 
+## 1.2.1 - 2021-06-08
+- Fix wrong wheel name in Dockerfile
+
 ## 1.2.0 - 2021-04-08
 - Change the package name from `pesto-cli` to `processing-factory`
 
