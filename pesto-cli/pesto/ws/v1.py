@@ -179,4 +179,6 @@ async def _prepare_response(output: Any, data_type: ResultType):
     elif data_type == ResultType.file:
         return response.text(output)
     elif data_type == ResultType.image:
-        return await response.file(output)
+        with open(output, "rb") as f:
+            image = f.read()
+        return response.raw(body=image, headers={"Content-Type": "image/png"})

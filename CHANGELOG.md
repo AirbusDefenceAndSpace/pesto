@@ -1,6 +1,12 @@
 
 # Change Log
 
+## 1.2.2 - 2021-06-17
+- Fix potential memory leak in the web service
+
+## 1.2.1 - 2021-06-08
+- Fix wrong wheel name in Dockerfile
+
 ## 1.2.1 - 2021-06-08
 - Fix wrong wheel name in Dockerfile
 
