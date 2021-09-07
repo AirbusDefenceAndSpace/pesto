@@ -29,18 +29,43 @@ class DockerBuilder(object):
         self.base_image = requirements['dockerBaseImage']
         self.requirements = requirements['requirements']
         self.environments = requirements['environments']
+        self._index_url_secret_path = 'pip_index_url.txt'
+        self._extra_index_url_secret_path = 'pip_extra_index_url.txt'
 
     def build(self, path: str) -> None:
         dockerfile = self.dockerfile()
 
-        path = os.path.join(path, 'Dockerfile')
-        with open(path, 'w+') as file:
+        dockerfile_path = os.path.join(path, 'Dockerfile')
+        with open(dockerfile_path, 'w+') as file:
             file.write(dockerfile)
 
         docker_image_name = self.build_config.docker_image_name
         cmd = "docker build --no-cache"
         if self.build_config.network is not None:
             cmd = "{} --network='{}'".format(cmd, self.build_config.network)
+        # add secret mount options if use_buildkit=True
+        index_url_full_path = os.path.join(path, self._index_url_secret_path)
+        extra_index_url_full_path = os.path.join(path, self._extra_index_url_secret_path)
+        if self.build_config.use_buildkit:
+            if self.build_config.pip_index:
+                # write secret into file
+                with open(index_url_full_path, 'w') as fd:
+                    fd.write(self.build_config.pip_index)
+                # add mount option
+                cmd += " --secret id=index_url,src="+self._index_url_secret_path
+            if self.build_config.pip_extra_index:
+                # write secret into file
+                with open(extra_index_url_full_path, 'w') as fd:
+                    fd.write(self.build_config.pip_extra_index)
+                # add mount option
+                cmd += " --secret id=extra_index_url,src="+self._extra_index_url_secret_path
+        else:
+            # clean any secret file in the build context
+            if os.path.exists(index_url_full_path):
+                os.remove(index_url_full_path)
+            if os.path.exists(extra_index_url_full_path):
+                os.remove(extra_index_url_full_path)
+        # add tag name and context path
         cmd = "{} -t {} {}".format(cmd, docker_image_name, self.build_config.workspace)
         subprocess.call(shlex.split(cmd))
 
@@ -49,8 +74,9 @@ class DockerBuilder(object):
         return template.render(
             base_image=self.base_image,
             algo_name=self.algo_name,
+            pip_index=self.build_config.pip_index,
             pip_extra_index=self.build_config.pip_extra_index,
-            pip_proxies=self.build_config.pip_proxies,
+            use_buildkit=self.build_config.use_buildkit,
             env_variables=self._env_variables(),
             pip_requirements=self._pip_requirements(),
             resources_requirements=self._resources()
