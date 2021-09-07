@@ -14,7 +14,9 @@ class BuildConfig:
     def from_path(path: str,
                   profiles: List[str] = None,
                   proxy: str = None,
+                  pip_index: str = None,
                   pip_extra_index: str = None,
+                  use_buildkit: bool = False,
                   network: str = None
                   ):
         assert path is not None
@@ -29,7 +31,9 @@ class BuildConfig:
             workspace=build_config.get('workspace'),
             algorithm_path=build_config.get('algorithm_path') or str(Path(path).parent.parent.parent),
             proxy=proxy,
+            pip_index=pip_index,
             pip_extra_index=pip_extra_index,
+            use_buildkit=use_buildkit,
             network=network)
 
     def __init__(self,
@@ -39,7 +43,9 @@ class BuildConfig:
                  workspace: str = None,
                  algorithm_path: str = None,
                  proxy: str = None,
+                 pip_index: str = None,
                  pip_extra_index: str = None,
+                 use_buildkit: bool = False,
                  network: str = None):
         self.name = name
         self.version = version
@@ -48,7 +54,9 @@ class BuildConfig:
         self.profiles = profiles or []
         self.proxy = proxy or ''
         self.network = network
+        self.pip_index = pip_index or os.environ.get('PIP_INDEX_URL')
         self.pip_extra_index = pip_extra_index or os.environ.get('PIP_EXTRA_INDEX_URL')
+        self.use_buildkit = use_buildkit or (os.environ.get('DOCKER_BUILDKIT') == '1')
         self.workspace = workspace or os.path.join(PESTO_WORKSPACE, self.name, self.full_version)
 
     @property
@@ -61,20 +69,6 @@ class BuildConfig:
     @property
     def docker_image_name(self):
         return '{}:{}'.format(self.name, self.full_version)
-
-    @property
-    def pip_proxies(self):
-        proxies = ['pypi.python.org', 'pypi.org', 'files.pythonhosted.org']
-
-        pip_extra_index = self.pip_extra_index
-        if pip_extra_index:
-            parsed_uri = urlparse(pip_extra_index)
-            parsed_uri = parsed_uri.netloc
-            proxies.append(parsed_uri)
-
-        pip_string = ' '.join(['--trusted-host={}'.format(_) for _ in proxies])
-        index_string = ' -i {}'.format(pip_extra_index) if pip_extra_index else ''
-        return '{}{}'.format(pip_string, index_string)
 
     def to_dict(self) -> dict:
         return {
