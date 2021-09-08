@@ -2,6 +2,7 @@ import os
 import shlex
 import subprocess
 from typing import List
+import shutil
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -29,7 +30,6 @@ class DockerBuilder(object):
         self.base_image = requirements['dockerBaseImage']
         self.requirements = requirements['requirements']
         self.environments = requirements['environments']
-        self._index_url_secret_path = 'pip_index_url.txt'
         self._extra_index_url_secret_path = 'pip_extra_index_url.txt'
 
     def build(self, path: str) -> None:
@@ -44,15 +44,14 @@ class DockerBuilder(object):
         if self.build_config.network is not None:
             cmd = "{} --network='{}'".format(cmd, self.build_config.network)
         # add secret mount options if use_buildkit=True
-        index_url_full_path = os.path.join(path, self._index_url_secret_path)
+        pip_config_full_path = os.path.join(path, 'pip.conf')
         extra_index_url_full_path = os.path.join(path, self._extra_index_url_secret_path)
         if self.build_config.use_buildkit:
-            if self.build_config.pip_index:
-                # write secret into file
-                with open(index_url_full_path, 'w') as fd:
-                    fd.write(self.build_config.pip_index)
+            if self.build_config.pip_config_file:
+                # copy pip config file into workspace
+                shutil.copy(self.build_config.pip_config_file, pip_config_full_path)
                 # add mount option
-                cmd += " --secret id=index_url,src="+self._index_url_secret_path
+                cmd += " --secret id=pip_config,src=pip.conf"
             if self.build_config.pip_extra_index:
                 # write secret into file
                 with open(extra_index_url_full_path, 'w') as fd:
@@ -61,8 +60,8 @@ class DockerBuilder(object):
                 cmd += " --secret id=extra_index_url,src="+self._extra_index_url_secret_path
         else:
             # clean any secret file in the build context
-            if os.path.exists(index_url_full_path):
-                os.remove(index_url_full_path)
+            if os.path.exists(pip_config_full_path):
+                os.remove(pip_config_full_path)
             if os.path.exists(extra_index_url_full_path):
                 os.remove(extra_index_url_full_path)
         # add tag name and context path
@@ -74,7 +73,7 @@ class DockerBuilder(object):
         return template.render(
             base_image=self.base_image,
             algo_name=self.algo_name,
-            pip_index=self.build_config.pip_index,
+            pip_config_file=self.build_config.pip_config_file,
             pip_extra_index=self.build_config.pip_extra_index,
             use_buildkit=self.build_config.use_buildkit,
             env_variables=self._env_variables(),
