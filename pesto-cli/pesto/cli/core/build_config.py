@@ -14,7 +14,7 @@ class BuildConfig:
     def from_path(path: str,
                   profiles: List[str] = None,
                   proxy: str = None,
-                  pip_index: str = None,
+                  pip_config_file: str = None,
                   pip_extra_index: str = None,
                   use_buildkit: bool = False,
                   network: str = None
@@ -31,7 +31,7 @@ class BuildConfig:
             workspace=build_config.get('workspace'),
             algorithm_path=build_config.get('algorithm_path') or str(Path(path).parent.parent.parent),
             proxy=proxy,
-            pip_index=pip_index,
+            pip_config_file=pip_config_file,
             pip_extra_index=pip_extra_index,
             use_buildkit=use_buildkit,
             network=network)
@@ -43,7 +43,7 @@ class BuildConfig:
                  workspace: str = None,
                  algorithm_path: str = None,
                  proxy: str = None,
-                 pip_index: str = None,
+                 pip_config_file: str = None,
                  pip_extra_index: str = None,
                  use_buildkit: bool = False,
                  network: str = None):
@@ -54,7 +54,7 @@ class BuildConfig:
         self.profiles = profiles or []
         self.proxy = proxy or ''
         self.network = network
-        self.pip_index = pip_index or os.environ.get('PIP_INDEX_URL')
+        self.pip_config_file = pip_config_file or os.environ.get('PIP_CONFIG_FILE')
         self.pip_extra_index = pip_extra_index or os.environ.get('PIP_EXTRA_INDEX_URL')
         self.use_buildkit = use_buildkit or (os.environ.get('DOCKER_BUILDKIT') == '1')
         self.workspace = workspace or os.path.join(PESTO_WORKSPACE, self.name, self.full_version)

@@ -3,11 +3,11 @@ FROM ${base_image}
 CMD  [ "processing" ]
 ENTRYPOINT []
 
-{% if pip_index != None %}
+{% if pip_config_file != None %}
 {% if use_buildkit != True %}
-ARG PIP_INDEX_URL=${pip_index}
+COPY pip.conf /etc
 {%  else %}
-  {%  set secret_mount = secret_mount ~ ' --mount=type=secret,id=index_url PIP_INDEX_URL=`cat /run/secrets/index_url`' %}
+  {%  set secret_mount = secret_mount ~ ' --mount=type=secret,id=pip_config,dst=/etc/pip.conf' %}
 {%  endif %}
 {%  endif %}
 

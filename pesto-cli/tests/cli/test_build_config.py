@@ -2,7 +2,7 @@ from pesto.cli.core.build_config import BuildConfig
 from pesto.cli.core.docker_builder import DockerBuilder
 import os
 
-_sample_pip_index_url="https://MYUSER:MYSECRET@some.artifactory.com/public/repo/simple"
+_sample_pip_config_file="some/dir/pip.conf"
 _sample_pip_extra_index_url="https://MYUSER:MYSECRET@some.artifactory.com/private/repo/simple"
 
 def test_docker_image_name():
@@ -55,7 +55,7 @@ def test_pythonpath():
 def test_pip_indexes_arg():
     # given
     env_backup = dict(os.environ)
-    os.environ["PIP_INDEX_URL"] = _sample_pip_index_url
+    os.environ["PIP_CONFIG_FILE"] = _sample_pip_config_file
     os.environ["PIP_EXTRA_INDEX_URL"] = _sample_pip_extra_index_url
     if 'DOCKER_BUILDKIT' in os.environ:
         del os.environ['DOCKER_BUILDKIT']
@@ -68,10 +68,10 @@ def test_pip_indexes_arg():
 
     dockerbuilder = DockerBuilder(requirements, build_config).dockerfile()
 
-    if "PIP_INDEX_URL" in env_backup:
-        os.environ["PIP_INDEX_URL"] = env_backup["PIP_INDEX_URL"]
+    if "PIP_CONFIG_FILE" in env_backup:
+        os.environ["PIP_CONFIG_FILE"] = env_backup["PIP_CONFIG_FILE"]
     else:
-        del os.environ["PIP_INDEX_URL"]
+        del os.environ["PIP_CONFIG_FILE"]
     if "PIP_EXTRA_INDEX_URL" in env_backup:
         os.environ["PIP_EXTRA_INDEX_URL"] = env_backup["PIP_EXTRA_INDEX_URL"]
     else:
@@ -79,10 +79,10 @@ def test_pip_indexes_arg():
 
     # when
     dockerfile_lines = dockerbuilder.split("\n")
-    actual_index = "LINE_NOT_FOUND"
+    pipconf_line = "LINE_NOT_FOUND"
     for line in dockerfile_lines:
-        if line.startswith("ARG PIP_INDEX_URL="):
-            actual_index = line
+        if line.startswith("COPY pip.conf"):
+            pipconf_line = line
             break
 
     actual_extra_index = "LINE_NOT_FOUND"
@@ -92,14 +92,14 @@ def test_pip_indexes_arg():
             break
 
     # then
-    assert actual_index == 'ARG PIP_INDEX_URL='+_sample_pip_index_url
+    assert pipconf_line == 'COPY pip.conf /etc'
     assert actual_extra_index == 'ARG PIP_EXTRA_INDEX_URL='+_sample_pip_extra_index_url
 
 
 def test_pip_indexes_secret():
     # given
     env_backup = dict(os.environ)
-    os.environ["PIP_INDEX_URL"] = _sample_pip_index_url
+    os.environ["PIP_CONFIG_FILE"] = _sample_pip_config_file
     os.environ["PIP_EXTRA_INDEX_URL"] = _sample_pip_extra_index_url
     os.environ['DOCKER_BUILDKIT'] = '1'
     build_config = BuildConfig(
@@ -111,10 +111,10 @@ def test_pip_indexes_secret():
 
     dockerbuilder = DockerBuilder(requirements, build_config).dockerfile()
 
-    if "PIP_INDEX_URL" in env_backup:
-        os.environ["PIP_INDEX_URL"] = env_backup["PIP_INDEX_URL"]
+    if "PIP_CONFIG_FILE" in env_backup:
+        os.environ["PIP_CONFIG_FILE"] = env_backup["PIP_CONFIG_FILE"]
     else:
-        del os.environ["PIP_INDEX_URL"]
+        del os.environ["PIP_CONFIG_FILE"]
     if "PIP_EXTRA_INDEX_URL" in env_backup:
         os.environ["PIP_EXTRA_INDEX_URL"] = env_backup["PIP_EXTRA_INDEX_URL"]
     else:
@@ -132,5 +132,5 @@ def test_pip_indexes_secret():
     # then
     assert len(pip_install_lines) > 0
     for line in pip_install_lines:
-        assert " --mount=type=secret,id=index_url " in line
+        assert " --mount=type=secret,id=pip_config,dst=/etc/pip.conf " in line
         assert " --mount=type=secret,id=extra_index_url " in line
