@@ -49,15 +49,15 @@ class DockerBuilder(object):
         if self.build_config.use_buildkit:
             if self.build_config.pip_config_file:
                 # copy pip config file into workspace
-                shutil.copy(self.build_config.pip_config_file, pip_config_full_path)
+                shutil.copyfile(self.build_config.pip_config_file, pip_config_full_path)
                 # add mount option
-                cmd += " --secret id=pip_config,src=pip.conf"
+                cmd += " --secret id=pip_config,src="+pip_config_full_path
             if self.build_config.pip_extra_index:
                 # write secret into file
                 with open(extra_index_url_full_path, 'w') as fd:
                     fd.write(self.build_config.pip_extra_index)
                 # add mount option
-                cmd += " --secret id=extra_index_url,src="+self._extra_index_url_secret_path
+                cmd += " --secret id=extra_index_url,src="+extra_index_url_full_path
         else:
             # clean any secret file in the build context
             if os.path.exists(pip_config_full_path):
