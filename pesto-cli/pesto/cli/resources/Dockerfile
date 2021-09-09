@@ -14,7 +14,7 @@ COPY pip.conf /etc
 {% if use_buildkit != True %}
 ARG PIP_EXTRA_INDEX_URL=${pip_extra_index}
 {%  else %}
-  {%  set secret_mount = secret_mount ~ ' --mount=type=secret,id=extra_index_url PIP_EXTRA_INDEX_URL=`cat /run/secrets/extra_index_url`;' %}
+  {%  set secret_mount = secret_mount ~ ' --mount=type=secret,id=extra_index_url export PIP_EXTRA_INDEX_URL=`cat /run/secrets/extra_index_url` &&' %}
 {%  endif %}
 {%  endif %}
 

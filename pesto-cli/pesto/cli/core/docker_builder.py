@@ -66,6 +66,7 @@ class DockerBuilder(object):
                 os.remove(extra_index_url_full_path)
         # add tag name and context path
         cmd = "{} -t {} {}".format(cmd, docker_image_name, self.build_config.workspace)
+
         subprocess.call(shlex.split(cmd))
 
     def dockerfile(self):
