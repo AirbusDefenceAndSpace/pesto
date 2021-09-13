@@ -41,7 +41,7 @@ class DockerBuilder(object):
 
         docker_image_name = self.build_config.docker_image_name
         cmd = "docker build --no-cache"
-        if self.build_config.network is not None:
+        if self.build_config.network:
             cmd = "{} --network='{}'".format(cmd, self.build_config.network)
         # add secret mount options if use_buildkit=True
         pip_config_full_path = os.path.join(path, 'pip.conf')
