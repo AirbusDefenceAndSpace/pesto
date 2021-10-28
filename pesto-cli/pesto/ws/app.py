@@ -1,5 +1,7 @@
 import sys
-import uvicorn
+import json
+
+from uvicorn import Config, Server
 from fastapi import FastAPI, APIRouter
 from pesto.ws.v1 import v1
 from pesto.version import PESTO_VERSION
@@ -7,18 +9,22 @@ from pydantic import BaseSettings
 
 import logging
 from loguru import logger
-from loguru._defaults import LOGURU_FORMAT
 
-_logging_format = '[%(asctime)s] %(process)d-%(levelname)s '
-_logging_format += '%(module)s::%(funcName)s():l%(lineno)d: '
-_logging_format += '%(message)s'
+
+def sink(message):
+    serialized = json.loads(message)
+    simplified = {
+        'level': serialized['record']['level']['name'],
+        'message': serialized['record']['message'],
+        'timestamp' : serialized['record']['time'],
+    }
+    print(simplified, flush=True)
 
 class InterceptHandler(logging.Handler):
     """
     Default handler from examples in loguru documentaion.
     See https://loguru.readthedocs.io/en/stable/overview.html#entirely-compatible-with-standard-logging
     """
-
     def emit(self, record):
         # Get corresponding Loguru level if it exists
         try:
@@ -36,15 +42,13 @@ class InterceptHandler(logging.Handler):
             level, record.getMessage()
         )
 
-logging.basicConfig(handlers=[InterceptHandler()], level=0)
-# Configure loguru logging
-# Use LOGURU env variables to pimp the format 
-## LOGURU_SERIALIZE=TRUE for JSON
-logger.configure(
-    handlers=[{"sink": sys.stdout}]
-)
-# Configure loguru also for uvicorn
-logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
+def setup_logging():
+    logging.root.handlers = [InterceptHandler()]
+    logging.root.setLevel(level="DEBUG")
+    for name in logging.root.manager.loggerDict.keys():
+        logging.getLogger(name).handlers = []
+        logging.getLogger(name).propagate = True
+    logger.configure(handlers=[{"sink": sink, "serialize": True}])
 
 TIMEOUT = 1_000_000
 
@@ -67,7 +71,9 @@ app = FastAPI(
 app.include_router(v1)
 
 def main():
-    uvicorn.run(app, host="0.0.0.0", port=8080)    
+    server = Server(Config(app,host="0.0.0.0",port=8080))
+    setup_logging()
+    server.run()   
 
 if __name__ == '__main__':
     main()
