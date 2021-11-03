@@ -1,7 +1,8 @@
 {
   "environments": {
-    "LOGURU_SERIALIZE": "TRUE",
-    "LOGURU_LEVEL": "DEBUG"
+    "LOGURU_LEVEL": "DEBUG",
+    "PESTO_LOG_SERIALIZE": "TRUE",
+    "PESTO_LOG_FORMAT": "time:application_date,message:application_message,level:application_severity"
   },
   "requirements": {
   },

@@ -1,5 +1,6 @@
 import sys
 import json
+import os
 
 from uvicorn import Config, Server
 from fastapi import FastAPI, APIRouter
@@ -9,15 +10,47 @@ from pydantic import BaseSettings
 
 import logging
 from loguru import logger
+from datetime import datetime
 
+## Some words on logging
+# Logging in PESTO is highly customizable and based on Loguru
+# There is 2 way of logging : 
+#     * Log in text format on standard output
+#     * Log serialized in JSON with custom fields
+# Env var PESTO_LOG_SERIALIZE=TRUE activate the JSON serialization
+# Env var PESTO_LOG_FORMAT='str' give the mapping for serialization
+# For example : 'date:application_date,message:application_message,level:application_severity' map date from log record in a field name application_date etc...
+# When the application is started, all log handlers are removed and replaced by the InterceptHandler below to ensure all logs are handle by loguru
+
+def log_mapping(conf:str):
+    """
+    Split str of log format into a dict
+    Example : date:application_date,message:application_message is split in : 
+    {'date':'application_date','message':'application_message'}
+    """
+    mapping = dict()
+    for i in conf.split(','):
+        mapping[i.split(':')[0]] = i.split(':')[1]
+    return mapping
 
 def sink(message):
+    """
+    Custom sink function for serialization
+    """
+    mapping = log_mapping(os.environ['PESTO_LOG_FORMAT'])
     serialized = json.loads(message)
-    simplified = {
-        'level': serialized['record']['level']['name'],
-        'message': serialized['record']['message'],
-        'timestamp' : serialized['record']['time'],
-    }
+    simplified = dict()
+    for k in mapping.keys():
+        if k != 'level' and k !='time':
+            simplified[mapping[k]] = serialized['record'][k]
+        elif k != 'time':
+            simplified[mapping[k]] = serialized['record']['level']['name']
+        else:
+            simplified[mapping[k]] = datetime.utcfromtimestamp(serialized['record']['time']['timestamp']).strftime('%Y-%m-%dT%H:%M:%S:%fZ')
+
+    # Add extra key which don't correspond to record first level of information
+    for k in serialized['record']['extra']:
+        simplified[k] = serialized['record']['extra']['k']
     print(simplified, flush=True)
 
 class InterceptHandler(logging.Handler):
@@ -48,7 +81,10 @@ def setup_logging():
     for name in logging.root.manager.loggerDict.keys():
         logging.getLogger(name).handlers = []
         logging.getLogger(name).propagate = True
-    logger.configure(handlers=[{"sink": sink, "serialize": True}])
+    if os.environ['PESTO_LOG_SERIALIZE'] == 'TRUE':
+        logger.configure(handlers=[{"sink": sink, "serialize": True}])
+    else:
+        logger.configure(handlers=[{"sink": sys.stdout}])
 
 TIMEOUT = 1_000_000
 
@@ -60,6 +96,8 @@ class Settings(BaseSettings):
     request_timeout: int = TIMEOUT
     response_timeout: int = TIMEOUT
     keep_alive_timeout: int = TIMEOUT
+    log_serialize = (os.environ['PESTO_LOG_SERIALIZE'] == 'TRUE')
+    log_format = os.environ['PESTO_LOG_FORMAT']
 
 # Declare FastAPI application
 app = FastAPI(
