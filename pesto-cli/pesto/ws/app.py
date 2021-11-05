@@ -6,11 +6,12 @@ from uvicorn import Config, Server
 from fastapi import FastAPI, APIRouter
 from pesto.ws.v1 import v1
 from pesto.version import PESTO_VERSION
-from pydantic import BaseSettings
+from pesto.ws.config import settings
 
 import logging
 from loguru import logger
 from datetime import datetime
+
 
 ## Some words on logging
 # Logging in PESTO is highly customizable and based on Loguru
@@ -37,21 +38,25 @@ def sink(message):
     """
     Custom sink function for serialization
     """
-    mapping = log_mapping(os.environ['PESTO_LOG_FORMAT'])
-    serialized = json.loads(message)
-    simplified = dict()
-    for k in mapping.keys():
-        if k != 'level' and k !='time':
-            simplified[mapping[k]] = serialized['record'][k]
-        elif k != 'time':
-            simplified[mapping[k]] = serialized['record']['level']['name']
-        else:
-            simplified[mapping[k]] = datetime.utcfromtimestamp(serialized['record']['time']['timestamp']).strftime('%Y-%m-%dT%H:%M:%S:%fZ')
+    # If we are here, log_serialize is True, check format is specified
+    if settings.log_format is not None:
+        mapping = log_mapping(settings.log_format)
+        serialized = json.loads(message)
+        simplified = dict()
+        for k in mapping.keys():
+            if k != 'level' and k !='time':
+                simplified[mapping[k]] = serialized['record'][k]
+            elif k != 'time':
+                simplified[mapping[k]] = serialized['record']['level']['name']
+            else:
+                simplified[mapping[k]] = datetime.utcfromtimestamp(serialized['record']['time']['timestamp']).strftime('%Y-%m-%dT%H:%M:%S:%fZ')
 
-    # Add extra key which don't correspond to record first level of information
-    for k in serialized['record']['extra']:
-        simplified[k] = serialized['record']['extra']['k']
-    print(simplified, flush=True)
+        # Add extra key which don't correspond to record first level of information
+        for k in serialized['record']['extra']:
+            simplified[k] = serialized['record']['extra']['k']
+        print(simplified, flush=True)
+    else:
+        print(message,flush=True)
 
 class InterceptHandler(logging.Handler):
     """
@@ -77,29 +82,15 @@ class InterceptHandler(logging.Handler):
 
 def setup_logging():
     logging.root.handlers = [InterceptHandler()]
-    logging.root.setLevel(level="DEBUG")
+    logging.root.setLevel(level=settings.log_level)
     for name in logging.root.manager.loggerDict.keys():
         logging.getLogger(name).handlers = []
         logging.getLogger(name).propagate = True
-    if os.environ['PESTO_LOG_SERIALIZE'] == 'TRUE':
+    if settings.log_serialize:
         logger.configure(handlers=[{"sink": sink, "serialize": True}])
     else:
         logger.configure(handlers=[{"sink": sys.stdout}])
 
-TIMEOUT = 1_000_000
-
-class Settings(BaseSettings):
-    app_name: str = "PESTO"
-    app_api_version: str = "1.0.0"
-    app_version: str = PESTO_VERSION
-    contact_mail: str = "pesto@airbus.com"
-    request_timeout: int = TIMEOUT
-    response_timeout: int = TIMEOUT
-    keep_alive_timeout: int = TIMEOUT
-    log_serialize = (os.environ['PESTO_LOG_SERIALIZE'] == 'TRUE')
-    log_format = os.environ['PESTO_LOG_FORMAT']
-
-# Declare FastAPI application
 app = FastAPI(
     title='App baked by PESTO from Airbus',
     description='This app is packaged with Airbus Processing Factory aka PESTO',
