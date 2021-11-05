@@ -84,7 +84,7 @@ PESTO provides mechanisms to test the embedded processing function. A set of inp
 
 PESTO is developed with Python3. Indeed, many Deep Leaning tools and frameworks are provided in this language. Moreover, Python can easily use native code if necessary.
 
-[SANIC](https://sanic.readthedocs.io) is used to implement the webserver. It offers async operations which allow to write non-blocking code.
+[FastAPI](https://fastapi.tiangolo.com) is used to implement the webserver. It offers async operations which allow to write non-blocking code.
 
 In order to make the link between requests on the web server and the processing implemented by the data scientist, a template to implement a python package and to provide a description of the API as well as build requirements is provided. 
 

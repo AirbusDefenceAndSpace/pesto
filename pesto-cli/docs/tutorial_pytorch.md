@@ -37,7 +37,7 @@ In the following tutorial we will generate a `pesto-project` and build a Docker 
 
 Flask is a Web Application framework requiring you to write the entire codebase and defining your API from scratch.
 
-PESTO is a framework allowing you to just describe the input / output of your model, write your custom code and bring dependencies. It will build the webservice for you (before, PESTO used flask but now it uses [sanic](https://sanic.readthedocs.io/en/latest/)). 
+PESTO is a framework allowing you to just describe the input / output of your model, write your custom code and bring dependencies. It will build the webservice for you (before, PESTO used flask but now it uses [FastAPI](https://fastapi.tiangolo.com/)). 
 
 ## Step by Step Walktrough
 

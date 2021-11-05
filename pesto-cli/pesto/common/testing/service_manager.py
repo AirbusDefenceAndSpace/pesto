@@ -91,31 +91,17 @@ class ServiceManager:
             self.pull()
             logger.info("Starting container with {} on port {}".format(self.docker_image, self.host_port))
 
-            if self.network is "host":
-                self._container = self.CLIENT.containers.run(
-                    self.docker_image,
-                    network=self.network,
-                    detach=True,
-                    remove=True,
-                    runtime="nvidia" if self.nvidia else None,
-                    volumes={self.image_volume_path: {
-                        "bind": self.host_volume_path,
-                        "mode": "rw",
-                    }},
-                )
-            else:
-                self._container = self.CLIENT.containers.run(
-                    self.docker_image,
-                    network=self.network,
-                    ports={self.service_port: self.host_port},
-                    detach=True,
-                    remove=True,
-                    runtime="nvidia" if self.nvidia else None,
-                    volumes={self.image_volume_path: {
-                        "bind": self.host_volume_path,
-                        "mode": "rw",
-                    }},
-                )
+            self._container = self.CLIENT.containers.run(
+                self.docker_image,
+                ports={self.service_port: self.host_port},
+                detach=True,
+                remove=True,
+                runtime="nvidia" if self.nvidia else None,
+                volumes={self.image_volume_path: {
+                    "bind": self.host_volume_path,
+                    "mode": "rw",
+                }},
+            )
             time.sleep(2)
             logger.info("Container {} started, available at {}".format(self._container.id, self.server_url))
 

@@ -3,5 +3,5 @@
   },
   "requirements": {
   },
-  "dockerBaseImage": "python:3.6-stretch"
+  "dockerBaseImage": "python:3.8-buster"
 }

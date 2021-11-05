@@ -29,7 +29,7 @@ build-whl:
 	cp -f pesto-cli/dist/processing_factory*.whl ~/.pesto/dist/
 	rm -rf pesto-cli/build
 
-install: build-whl
+install: uninstall build-whl
 	$(PIP) install ~/.pesto/dist/processing_factory*.whl
 
 install-dev: uninstall
@@ -47,7 +47,7 @@ uninstall:
 
 test:
 	rm -rf /tmp/pesto/service-template-test
-	mkdir /tmp/pesto/service-template-test
+	mkdir -p /tmp/pesto/service-template-test
 	pesto init /tmp/pesto/service-template-test
 	pesto build /tmp/pesto/service-template-test/algo-service
 	pesto build /tmp/pesto/service-template-test/algo-service -p stateful
