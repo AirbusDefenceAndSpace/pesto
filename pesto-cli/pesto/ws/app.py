@@ -87,7 +87,9 @@ def setup_logging():
         logging.getLogger(name).handlers = []
         logging.getLogger(name).propagate = True
     if settings.log_serialize:
-        log_extra = json.loads(settings.log_extra)
+        log_extra = None
+        if settings.log_extra is not None:
+            log_extra = json.loads(settings.log_extra)
         logger.configure(handlers=[{"sink": sink, "serialize": True}], extra=log_extra)
     else:
         logger.configure(handlers=[{"sink": sys.stdout}])
