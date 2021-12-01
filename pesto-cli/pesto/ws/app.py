@@ -53,7 +53,7 @@ def sink(message):
 
         # Add extra key which don't correspond to record first level of information
         for k in serialized['record']['extra']:
-            simplified[k] = serialized['record']['extra']['k']
+            simplified[k] = serialized['record']['extra'][k]
         print(simplified, flush=True)
     else:
         print(message,flush=True)
