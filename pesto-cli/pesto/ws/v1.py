@@ -129,7 +129,7 @@ async def process_post(request: Request) -> JSONResponse:
 
 
 def _get_url_root(request: Request) -> str:
-    return '{}://{}'.format(request.url.scheme,request.url.port)
+    return '{}://{}:{}'.format(request.url.scheme,request.url.hostname,request.url.port)
 
 
 async def _prepare_response(output: Any, data_type: ResultType):

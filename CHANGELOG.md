@@ -1,6 +1,9 @@
 
 # Change Log
 
+## 1.3.2
+- Fix missing hostname in URL in describe (API change between Sanic & FastAPI)
+
 ## 1.3.1
 - Fix wrong access in log dict
 - Add extra field for log
