@@ -1,6 +1,9 @@
 
 # Change Log
 
+## 1.3.3
+- Fix response when output is an image
+
 ## 1.3.2
 - Fix missing hostname in URL in describe (API change between Sanic & FastAPI)
 
