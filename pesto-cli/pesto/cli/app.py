@@ -1,17 +1,25 @@
 import argparse
+import typer
 import os
 from typing import Any
+from pathlib import Path
 
 import pkg_resources
 from pkg_resources import resource_string
 
 from pesto.common.pesto import PESTO_WORKSPACE
-from pesto.cli import build, init, list as list_builds, test
+from pesto.cli import build as builder
 from pesto.cli.core.utils import PESTO_LOG
 from pesto.version import PESTO_VERSION
+from pesto.cli.core.build_config import BuildConfig
+from pesto.common.testing.test_runner import TestRunner
+
+from cookiecutter.main import cookiecutter
+
 
 ALGO_TEMPLATE_PATH = pkg_resources.get_provider('pesto.cli').__dict__['module_path'] + '/resources/template'
 
+app = typer.Typer()
 
 def display_banner() -> None:
     processing_factory_banner = resource_string('pesto.cli.resources', 'banner.txt') \
@@ -20,59 +28,60 @@ def display_banner() -> None:
 
     PESTO_LOG.info(processing_factory_banner)
 
+@app.command()
+def init(target: str,
+         template: str=typer.Option(ALGO_TEMPLATE_PATH,"--template","-t",help="path to the algorithm template")):
+    """
+    Initialize a new algorithm in the given target directory
+    """
+    cmd = "cookiecutter {} --output-dir {}".format(template, target)
+    PESTO_LOG.info(cmd)
+    PESTO_LOG.info("\nPlease fill necessary information to initialize your template\n")
+    res = cookiecutter(template, output_dir=target)
+    PESTO_LOG.info("Service generated at {}".format(res))
+    
+@app.command()
+def build(build_config: str,
+          profile: list[str]=typer.Option(list(),"--profile","-p",help="Select specific files to update"),
+          proxy: str=typer.Option(None,help="Define a proxy to use during docker construction"),
+          network: str=typer.Option("host",help="Define a specific network for docker construction")):
+    """
+    Build docker image with Pesto from given build.json
+    """
+    builder.build(search_build_config(build_config),profile,proxy,network)
+    
+@app.command()
+def test(build_config: str,
+         profile: list[str]=typer.Option(list(),"--profile","-p",help="Select specific files to update"),
+         nvidia: bool=typer.Option(False,help="Run docker with nvidia runtime"),
+         network: str=typer.Option(None,"--network","-n",help="Define a specific network t run docker")):
+    """
+    Test algorithm from given build.json
+    """
+    build_config = BuildConfig.from_path(path=search_build_config(build_config), profiles=profile, network=network)
+    PESTO_LOG.info('build configuration : {}'.format(build_config))
+    pesto_path = Path(build_config.algorithm_path) / 'pesto' / 'tests' / 'resources'
+    TestRunner(docker_image_name=build_config.docker_image_name, network=network, nvidia=nvidia).run_all(pesto_path)
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
+@app.command()
+def list():
+    """
+    List projects in PESTO workspace
+    """
+    PESTO_LOG.info('Processing Factory repository path :'.format(PESTO_WORKSPACE))
+    PESTO_LOG.info('list of available builds :')
 
-    subparsers = parser.add_subparsers(dest='subcommand', title='subcommands', help='Valid subcommands')
-    subparsers.required = True
-
-    # init
-    parser_init = subparsers.add_parser('init')
-    parser_init.add_argument('-t', '--template', help='path to the algorithm template', default=ALGO_TEMPLATE_PATH)
-    parser_init.add_argument('target', help='path to the new algorithm folder')
-
-    # build
-    parser_build = subparsers.add_parser('build')
-    parser_build.add_argument('build_config', help='path to build.json')
-    parser_build.add_argument('-p', '--profile', nargs='+', help='Select specific files to update',
-                              default=None)
-    parser_build.add_argument('--proxy', help='Define a proxy url to use during docker construction',
-                              default=None)
-    parser_build.add_argument('-n', '--network', help='Define a specific network for docker construction',
-                              default="host")
-
-    # test
-    parser_test = subparsers.add_parser('test')
-    parser_test.add_argument('build_config', help='path to build.json')
-    parser_test.add_argument('-p', '--profile', nargs='+', help='Select specific files to update',
-                             default=None)
-    parser_test.add_argument('--nvidia',  action='store_true', default=False, help='Run docker with nvidia-runtime')
-    parser_test.add_argument('-n', '--network', help='Define a specific network to run docker',
-                              default=None)
-
-    # # list builds
-    # parser_list = subparsers.add_parser('list')
-
-    return parser.parse_args()
+    for name in os.listdir(PESTO_WORKSPACE):
+        if name.startswith('.'):
+            continue
+        for version in os.listdir(os.path.join(PESTO_WORKSPACE, name)):
+            id = '{}:{}'.format(name, version)
+            PESTO_LOG.info(''' {0} :
+            pesto build {0}
+             '''.format(id))
 
 
-def main() -> None:
-    display_banner()
-    args = parse_args()
-    if args.subcommand == 'init':
-        init.init(args.target, args.template)
-    elif args.subcommand == 'build':
-        build.build(search_build_config(args), args.profile, args.proxy, args.network)
-    elif args.subcommand == 'test':
-        test.test(search_build_config(args), args.profile, nvidia=args.nvidia, network=args.network)
-    elif args.subcommand == 'list':
-        list_builds.list_builds(PESTO_WORKSPACE)
-
-
-def search_build_config(args: Any) -> str:
-    build_config_path = str(args.build_config)
-
+def search_build_config(build_config_path: str) -> str:
     PESTO_LOG.debug('search build config ...')
 
     if ':' in build_config_path:
@@ -89,6 +98,9 @@ def search_build_config(args: Any) -> str:
 
     return build_config_path
 
+def main():
+    display_banner()
+    app()
 
 if __name__ == "__main__":
     main()

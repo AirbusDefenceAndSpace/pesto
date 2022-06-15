@@ -1,6 +1,10 @@
 
 # Change Log
 
+## 1.4.0
+- PESTO CLI now uses Typer to reduce code base
+- Add run commands to CLI to run processing (locally or in docker image) with pesto run
+
 ## 1.3.3
 - Fix response when output is an image
 

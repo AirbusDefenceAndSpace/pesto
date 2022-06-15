@@ -12,3 +12,4 @@ jinja2
 Pillow
 uvicorn
 loguru
+typer
