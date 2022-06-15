@@ -1,7 +1,7 @@
 import argparse
 import typer
 import os
-from typing import Any
+from typing import List
 from pathlib import Path
 
 import pkg_resources
@@ -9,6 +9,7 @@ from pkg_resources import resource_string
 
 from pesto.common.pesto import PESTO_WORKSPACE
 from pesto.cli import build as builder
+from pesto.cli.run import app as run_app
 from pesto.cli.core.utils import PESTO_LOG
 from pesto.version import PESTO_VERSION
 from pesto.cli.core.build_config import BuildConfig
@@ -20,6 +21,7 @@ from cookiecutter.main import cookiecutter
 ALGO_TEMPLATE_PATH = pkg_resources.get_provider('pesto.cli').__dict__['module_path'] + '/resources/template'
 
 app = typer.Typer()
+app.add_typer(run_app, name="run", help="Run pesto processes")
 
 def display_banner() -> None:
     processing_factory_banner = resource_string('pesto.cli.resources', 'banner.txt') \
@@ -42,7 +44,7 @@ def init(target: str,
     
 @app.command()
 def build(build_config: str,
-          profile: list[str]=typer.Option(list(),"--profile","-p",help="Select specific files to update"),
+          profile: List[str]=typer.Option(list(),"--profile","-p",help="Select specific files to update"),
           proxy: str=typer.Option(None,help="Define a proxy to use during docker construction"),
           network: str=typer.Option("host",help="Define a specific network for docker construction")):
     """
@@ -52,7 +54,7 @@ def build(build_config: str,
     
 @app.command()
 def test(build_config: str,
-         profile: list[str]=typer.Option(list(),"--profile","-p",help="Select specific files to update"),
+         profile: List[str]=typer.Option(list(),"--profile","-p",help="Select specific files to update"),
          nvidia: bool=typer.Option(False,help="Run docker with nvidia runtime"),
          network: str=typer.Option(None,"--network","-n",help="Define a specific network t run docker")):
     """

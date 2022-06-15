@@ -55,6 +55,8 @@ class TestRunner:
                 docker_image=self.docker_image_name,
                 nvidia=self.nvidia,
                 attach_when_running=True,
+                image_volume_path="/tmp/",
+                host_volume_path="/tmp"
         ) as service:
 
             # force restarting service
@@ -84,6 +86,9 @@ class TestRunner:
 
             for test_dir in tests:
                 payload = PayloadGenerator(images_as_base64=False).generate(str(test_dir / "input"))
+                with open('/tmp/test.json','w') as f:
+                    json.dump(payload, f)
+                
                 expected = PayloadGenerator(images_as_base64=False).generate(str(test_dir / "output"))
 
                 response, validation_results = service_tester.validate_process(payload, expected)
