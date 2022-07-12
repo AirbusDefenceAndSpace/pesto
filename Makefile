@@ -24,6 +24,7 @@ doc:
 
 build-whl:
 	rm -rf ~/.pesto/dist/
+	rm -rf pesto-cli/dist/
 	cd pesto-cli && python3 setup.py bdist_wheel
 	mkdir -p ~/.pesto/dist/
 	cp -f pesto-cli/dist/processing_factory*.whl ~/.pesto/dist/
