@@ -1,5 +1,6 @@
 import typer
 import time
+import requests
 import json
 from pesto.common.testing.service_manager import ServiceManager
 from pesto.common.testing.endpoint_manager import EndpointManager
@@ -12,13 +13,23 @@ app = typer.Typer()
 @app.command()
 def local(payload: str, output_path: str):
     """
-    (Experimental) Run a pesto algorithm locally (not in docker).
+    (Experimental) Run a pesto algorithm locally (not in docker). Payload can be a path to a posix file or a json string, or an url
     """
-    with open(payload) as f:
-        content = json.load(f)
-        ProcessService.init()
-        output, data_type = ProcessService('local').process(content)
-        _export_output(output, data_type, output_path)
+    try:
+        content = json.loads(payload)
+    except:
+        try:
+            content = requests.get(payload).json()
+        except:
+            try:
+                with open(payload) as f:
+                    content = json.load(f)
+            except:
+                raise ValueError('payload is neither a serialized json payload nor a file, nor a http url') 
+        
+    ProcessService.init()
+    output, data_type = ProcessService('local').process(content)
+    _export_output(output, data_type, output_path)
 
 @app.command()
 def docker(payload: str,
@@ -30,7 +41,7 @@ def docker(payload: str,
            network: str=typer.Option("host",help="Network driver to be used"),
            web_service: bool=typer.Option(True, help="Run the docker in WS mode, true by default. Otherwise processing is exec in container after start")):
     """
-    (Experimental) Run a pesto algorithm in a docker. Work only for stateless services
+    (Experimental) Run a pesto algorithm in a docker. Work only for stateless services. Payload can be a path to a posix file or a json string
     """
     with ServiceManager(
         docker_image=docker_image,
@@ -49,10 +60,17 @@ def docker(payload: str,
             
         endpoint_manager = EndpointManager(server_url=service.server_url)
         if not endpoint_manager.describe['asynchronous']:
-            if(web_service):            
-                with open(payload) as f:
-                    with open(ouptut_path,"w") as fout:
-                        json.dump(endpoint_manager.process(json.load(f)),fout)
+            if(web_service):
+                try:
+                    with open(output_path,"w") as fout:
+                        json.dump(endpoint_manager.process(json.loads(payload)), fout)
+                except:
+                    try:         
+                        with open(payload) as f:
+                            with open(ouptut_path,"w") as fout:
+                                json.dump(endpoint_manager.process(json.load(f)),fout)
+                    except:
+                        raise ValueError('payload is neither a serialized json payload nor a file')
             else:
                 PESTO_LOG.info(service._docker_container.exec_run("pesto run local {} {}".format(payload,ouptut_path)).output)
         else:
