@@ -76,15 +76,21 @@ def docker(payload: str,
         else:
             raise ValueError('pesto run does not work with stateful services')
         
-def _export_output(output: any, data_type: ResultType, output_path: str):        
-    if data_type == ResultType.json:
-        with open(output_path,'w') as fout:
-            json.dump(output,fout)
-    elif data_type == ResultType.file:
-        with open(output_path,'w') as fout:
-            fout.write(output)
-    elif data_type == ResultType.image:
-        with open(output, "rb") as f:
-            image = f.read()
-            with open(output_path,'wb') as fout:
-                fout.write(image)
+def _export_output(output: any, data_type: ResultType, output_path: str):
+    if output_path.find('https://') == 0 or output_path.find('http://') == 0:
+        if data_type == ResultType.json:
+            requests.post(output_path,json=output)
+        else:
+            requests.post(output_path,data=output)
+    else: #Assumed POSIX
+        if data_type == ResultType.json:
+            with open(output_path,'w') as fout:
+                json.dump(output,fout)
+        elif data_type == ResultType.file:
+            with open(output_path,'w') as fout:
+                fout.write(output)
+        elif data_type == ResultType.image:
+            with open(output, "rb") as f:
+                image = f.read()
+                with open(output_path,'wb') as fout:
+                    fout.write(image)
