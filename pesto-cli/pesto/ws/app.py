@@ -83,6 +83,7 @@ class InterceptHandler(logging.Handler):
 def setup_logging():
     logging.root.handlers = [InterceptHandler()]
     logging.root.setLevel(level=settings.log_level)
+    logging.root.handlers[0].setLevel(level=settings.log_level)
     for name in logging.root.manager.loggerDict.keys():
         logging.getLogger(name).handlers = []
         logging.getLogger(name).propagate = True
