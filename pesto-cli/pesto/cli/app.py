@@ -45,12 +45,13 @@ def init(target: str,
 @app.command()
 def build(build_config: str,
           profile: List[str]=typer.Option(list(),"--profile","-p",help="Select specific files to update"),
+          cache: str=typer.Option(None,"--cache","-c",help="Select a cache policy (CACHE_UP_TO_PESTO or CACHE_UP_TO_PIP_REQ or CACHE_UP_TO_ALGO"),
           proxy: str=typer.Option(None,help="Define a proxy to use during docker construction"),
           network: str=typer.Option("host",help="Define a specific network for docker construction")):
     """
     Build docker image with Pesto from given build.json
     """
-    builder.build(search_build_config(build_config),profile,proxy,network)
+    builder.build(search_build_config(build_config),profile,proxy,network,cache)
     
 @app.command()
 def test(build_config: str,

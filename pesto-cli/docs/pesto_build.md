@@ -105,3 +105,20 @@ The following files are supported by the cascading profiles rule :
     - config.json
     - requirements.json
     - version.json
+
+
+## Note on cache
+By default, the generated `Dockerfile` uses no cache.  
+The main steps are:
+1. PIP configuration and update
+2. Install PESTO
+3. Install PIP requirements listed in requirements.json
+4. Copy algorithm files
+5. Set ENV variables and copy algorithm configuration and resources from requirements.json
+
+One can force caching a number of the defined steps, by setting a parameter `--cache|-c <VALUE>` to the `pesto build` command.  
+The `VALUE` can be:
+* *CACHE_UP_TO_PESTO*: cache up to step 2
+* *CACHE_UP_TO_PIP_REQ*: cache up to step 3
+* *CACHE_UP_TO_ALGO*: cache up to step 4
+
