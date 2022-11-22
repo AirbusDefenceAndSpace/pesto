@@ -116,8 +116,10 @@ class Builder:
         return self.build_config.workspace
 
 
-def build(build_config_path: str, profiles: List[str], proxy: str = None, network: str = "host") -> None:
-    config = BuildConfig.from_path(path=build_config_path, profiles=profiles, proxy=proxy, network=network)
+def build(build_config_path: str, profiles: List[str],
+          proxy: str = None, network: str = "host", cache: str = None) -> None:
+    config = BuildConfig.from_path(path=build_config_path, profiles=profiles,
+                                   proxy=proxy, network=network, cache=cache)
 
     builder = Builder(config)
     builder.conf_validation()
