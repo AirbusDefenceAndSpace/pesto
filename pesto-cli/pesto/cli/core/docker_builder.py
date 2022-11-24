@@ -3,6 +3,7 @@ import shlex
 import subprocess
 from typing import List
 import shutil
+import time
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -40,7 +41,11 @@ class DockerBuilder(object):
             file.write(dockerfile)
 
         docker_image_name = self.build_config.docker_image_name
-        cmd = "docker build --no-cache"
+        cmd = "docker build"
+        if self.build_config.cache:
+            cmd = "{} --build-arg {}={}".format(cmd, self.build_config.cache, time.time())
+        else:
+            cmd = "{} --no-cache".format(cmd)
         if self.build_config.network:
             cmd = "{} --network='{}'".format(cmd, self.build_config.network)
         # add secret mount options if use_buildkit=True
@@ -66,6 +71,7 @@ class DockerBuilder(object):
                 os.remove(extra_index_url_full_path)
         # add tag name and context path
         cmd = "{} -t {} {}".format(cmd, docker_image_name, self.build_config.workspace)
+        PESTO_LOG.info('docker cmd : {}'.format(cmd))
 
         subprocess.call(shlex.split(cmd))
 

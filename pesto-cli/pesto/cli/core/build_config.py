@@ -17,7 +17,8 @@ class BuildConfig:
                   pip_config_file: str = None,
                   pip_extra_index: str = None,
                   use_buildkit: bool = False,
-                  network: str = None
+                  network: str = None,
+                  cache: str = None
                   ):
         assert path is not None
 
@@ -34,7 +35,8 @@ class BuildConfig:
             pip_config_file=pip_config_file,
             pip_extra_index=pip_extra_index,
             use_buildkit=use_buildkit,
-            network=network)
+            network=network,
+            cache=cache)
 
     def __init__(self,
                  name: str = None,
@@ -46,7 +48,8 @@ class BuildConfig:
                  pip_config_file: str = None,
                  pip_extra_index: str = None,
                  use_buildkit: bool = False,
-                 network: str = None):
+                 network: str = None,
+                 cache: str = None):
         self.name = name
         self.version = version
         self.algorithm_path = algorithm_path
@@ -58,6 +61,7 @@ class BuildConfig:
         self.pip_extra_index = pip_extra_index or os.environ.get('PIP_EXTRA_INDEX_URL')
         self.use_buildkit = use_buildkit or (os.environ.get('DOCKER_BUILDKIT') == '1')
         self.workspace = workspace or os.path.join(PESTO_WORKSPACE, self.name, self.full_version)
+        self.cache = cache
 
     @property
     def full_version(self):
