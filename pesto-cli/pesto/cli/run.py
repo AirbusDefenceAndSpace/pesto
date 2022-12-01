@@ -34,7 +34,7 @@ def local(payload: str, output_path: str):
 @app.command()
 def docker(payload: str,
            docker_image: str,
-           ouptut_path: str,
+           output_path: str,
            host_volume_path: str=typer.Option(None,help="Volume to be mounted from host"),
            image_volume_path: str=typer.Option(None, help="Where the volume is mounted in image"),
            nvidia: bool=typer.Option(False,help="use nvidia runtime"),
@@ -67,12 +67,12 @@ def docker(payload: str,
                 except:
                     try:         
                         with open(payload) as f:
-                            with open(ouptut_path,"w") as fout:
+                            with open(output_path,"w") as fout:
                                 json.dump(endpoint_manager.process(json.load(f)),fout)
                     except:
                         raise ValueError('payload is neither a serialized json payload nor a file')
             else:
-                PESTO_LOG.info(service._docker_container.exec_run("pesto run local {} {}".format(payload,ouptut_path)).output)
+                PESTO_LOG.info(service._docker_container.exec_run("pesto run local {} {}".format(payload,output_path)).output)
         else:
             raise ValueError('pesto run does not work with stateful services')
         

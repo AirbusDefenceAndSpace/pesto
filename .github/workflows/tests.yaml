@@ -1,0 +1,20 @@
+name: Test PESTO commands
+
+on: push
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    - name: Install requirements
+      run: |
+        pip install -r pesto-cli/requirements.txt
+        pip install wheel
+    - name: Install Pesto
+      run: make install
+    - name: Run integration tests
+      run: pesto-cli/integrationtests/tests-all.py
