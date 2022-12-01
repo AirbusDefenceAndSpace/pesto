@@ -32,14 +32,15 @@ def display_banner() -> None:
 
 @app.command()
 def init(target: str,
-         template: str=typer.Option(ALGO_TEMPLATE_PATH,"--template","-t",help="path to the algorithm template")):
+         template: str=typer.Option(ALGO_TEMPLATE_PATH,"--template","-t",help="path to the algorithm template"),
+         default: bool=typer.Option(False, help="Whether to prompt for values or use default")):
     """
     Initialize a new algorithm in the given target directory
     """
     cmd = "cookiecutter {} --output-dir {}".format(template, target)
     PESTO_LOG.info(cmd)
     PESTO_LOG.info("\nPlease fill necessary information to initialize your template\n")
-    res = cookiecutter(template, output_dir=target)
+    res = cookiecutter(template, output_dir=target, no_input=default)
     PESTO_LOG.info("Service generated at {}".format(res))
     
 @app.command()
