@@ -1,4 +1,3 @@
-import collections as collections_abc
 import os
 from typing import List, Any, Dict, Union
 
@@ -32,12 +31,13 @@ def profile_path(profile: str, path: str) -> Union[str, None]:
 
 
 def _update(d: Dict, u: Dict) -> Dict:
+    """Recursively update the dict d (destination) with values of the dict u (source)"""
     for k, v in six.iteritems(u):
         dv = d.get(k, {})
-        if not isinstance(dv, collections_abc.Mapping):
+        if not isinstance(dv, Dict):  # Destination value is not a dict : overwrite it
             d[k] = v
-        elif isinstance(v, collections_abc.Mapping):
+        elif isinstance(v, Dict):  # Both values are sub-dicts : update recursively
             d[k] = _update(dv, v)
         else:
-            d[k] = v
+            d[k] = v  # Destination is a dict but source value is not : overwrite the destination
     return d
