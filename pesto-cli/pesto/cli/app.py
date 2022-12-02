@@ -14,6 +14,7 @@ from pesto.cli.core.utils import PESTO_LOG
 from pesto.version import PESTO_VERSION
 from pesto.cli.core.build_config import BuildConfig
 from pesto.common.testing.test_runner import TestRunner
+from pesto.cli.schemagen import generate
 
 from cookiecutter.main import cookiecutter
 
@@ -43,6 +44,14 @@ def init(target: str,
     res = cookiecutter(template, output_dir=target, no_input=default)
     PESTO_LOG.info("Service generated at {}".format(res))
     
+@app.command()
+def schemagen(target: str,
+    force: bool=typer.Option(False,"--force","-f",help="Force writing the input & output schemas, even if they already exist")):
+    """
+    Generate the input & output schemas from input_output.py
+    """
+    generate(target, force)
+
 @app.command()
 def build(build_config: str,
           profile: List[str]=typer.Option(list(),"--profile","-p",help="Select specific files to update"),
