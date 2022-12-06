@@ -16,7 +16,7 @@ def __generate(class_file:str, schema_file:str, class_name:str, force:bool):
     except FileNotFoundError:
         PESTO_LOG.error("File {} not found. Can not generate the schemas".format(class_file))
         return
-    schema = __instance2schema("inout."+class_name, inout, force)
+    schema = __class2schema("inout."+class_name, inout, force)
     if schema:
         if os.path.exists(schema_file) and not force:
             PESTO_LOG.warn("Schema file {} already exists. The schema is displayed for information, use --force for overwriting the file.".format(schema_file))
@@ -26,10 +26,10 @@ def __generate(class_file:str, schema_file:str, class_name:str, force:bool):
                 dump(schema, f, indent=3)
             PESTO_LOG.info("The {} schema is now in {}".format(class_name, schema_file))
 
-def __instance2schema(class_name, inout, force:bool):
+def __class2schema(class_name, inout, force:bool):
     try:
-        instance=eval(class_name)()
-        if not is_dataclass(instance):
+        target_class=eval(class_name)
+        if not is_dataclass(target_class):
             PESTO_LOG.error("Class {} is not a dataclass (decorated with @dataclass annotation). Can not generate the schemas for this class".format(class_name))
             return
     except AttributeError as err:
@@ -38,11 +38,11 @@ def __instance2schema(class_name, inout, force:bool):
         return
     schema={}
     required=[]
-    for f in fields(instance):
+    for f in fields(target_class):
         field_type = f.type
         if Param.type in f.metadata:
             field_type =f.metadata[Param.type]
-        if Param.required in f.metadata:
+        if Param.required in f.metadata and f.metadata[Param.required]:
             required.append(f.name)
         if field_type in NATIVES.keys():
             schema[f.name]={"type":NATIVES[field_type]}

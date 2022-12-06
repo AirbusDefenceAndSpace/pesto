@@ -5,22 +5,21 @@ from typing import List
 
 @dataclass
 class Input:
-    image:np.array = definition(type=Definition.Image, required=True, description="The input image")
-    dict_parameter:dict = definition(type=Definition.Metadata, description="Some metadata parameters")
-    integer_parameter: int = field("Some integer value")
-    number_parameter: float = field(required=True, description="One float")
-    string_parameter: str = field(description="One string")
-    undocumented_parameter: str = "" 
+    image:np.array = definition(type=Definition.Image, required=True, description="Input image")
+    dict_parameter:dict = definition(type=Definition.Metadata, description="A dict parameter")
+    object_parameter:object = definition(type=Definition.Metadata, description="A dict parameter with more spec, of the form {'key':'value'}")
+    integer_parameter: int = field("A (integer) number parameter")
+    number_parameter: float = field(description="A (floating point) number parameter")
+    string_parameter: str = field(description="A string parameter")
     
 @dataclass
 class Output:
     image:np.array = definition(Definition.Image, description="The output image")
-    number_output: float = field(required=False, description="One float")
-    integer_output: int = field(required=True, description="One integer")
-    string_output: str = field(required=False, description="One string")
-    dict_output: dict = definition(Definition.Metadata, required=True, description="One metadata")
-    areas: object = definition(Definition.Polygons, required=True, description="One Polygon")
+    areas: object = definition(Definition.Polygons, description="One Polygon")
+    number_output: float = field()
+    integer_output: int = field()
+    dict_parameter:dict = definition(type=Definition.Metadata, description="A dict parameter")
+    dict_output: dict = definition(Definition.Metadata)
+    string_output:str = field()
     image_list: List[np.array] = definition(Definition.Images, description="The output images")
-    
-    # Add your own definition in 
-#    geojson: object = definition("#/definitions/GeoJSON", description="The output geojson")
+    geojson:object = definition(Definition.Metadata)

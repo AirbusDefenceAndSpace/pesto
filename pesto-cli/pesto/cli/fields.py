@@ -11,7 +11,7 @@ class Definition(Enum):
     Metadata=auto()
     Metadatas=auto()
 
-NATIVES={str:"string", int:"interger", float:"number"}
+NATIVES={str:"string", int:"integer", float:"number"}
 
 class Param:
     type="pesto.type"
@@ -19,7 +19,7 @@ class Param:
     required="pesto.required"
 
 def field(description:str="", required:bool=False, **kwargs):
-    return dataclasses.field(metadata={Param.description:description, Param.required:required},init=False, **kwargs)
+    return dataclasses.field(metadata={Param.description:description, Param.required:required}, **kwargs)
 
 def definition(type:Definition, description:str="", required:bool=False, **kwargs):
-    return dataclasses.field(metadata={Param.type:type, Param.description:description, Param.required:required},init=False, **kwargs)
+    return dataclasses.field(metadata={Param.type:type, Param.description:description, Param.required:required}, **kwargs)

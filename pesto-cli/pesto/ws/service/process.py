@@ -23,8 +23,10 @@ log = logging.getLogger(__name__)
 
 class ProcessService:
     PROCESS_CLASS_NAME = 'algorithm.process.Process'
+    PROCESS_INPUT_CLASS_NAME = 'algorithm.input_output.Input'
 
     _algorithm: Optional[Callable] = None
+    _input_class = None
     _describe = None
 
     @staticmethod
@@ -35,6 +37,7 @@ class ProcessService:
         try:
             log.info('ProcessService.init() ...')
             ProcessService._algorithm = load_class(ProcessService.PROCESS_CLASS_NAME)()
+            ProcessService._input_class = load_class(ProcessService.PROCESS_INPUT_CLASS_NAME)
             if hasattr(ProcessService._algorithm, 'on_start'):
                 log.info('ProcessService.on_start() ...')
                 ProcessService._algorithm.on_start()
@@ -56,7 +59,9 @@ class ProcessService:
         return ProcessService._describe
 
     def process(self, payload: dict) -> dict:
+        log.info("PAYLOAD:"+str(payload))
         config = PayloadParser.parse(payload)
+        log.info("CONFIG:"+str(config))
 
         image_roi: Optional[ImageROI] = config.get(PestoConfig.roi)  # if no ROI: None
         active_roi: ImageROI = image_roi or DummyImageROI()  # bypass compute crop info and remove margins in pipeline
@@ -72,7 +77,7 @@ class ProcessService:
             active_roi.compute_crop_infos(),
             PayloadConverter(image_roi=image_roi, schema=input_schema),
             PayloadDebug(schema=input_schema),
-            AlgorithmWrapper(ProcessService._algorithm),
+            AlgorithmWrapper(ProcessService._algorithm, ProcessService._input_class),
             active_roi.remove_margin(),
             ResponseSerializer(schema=output_schema, job_id=job_id),
         ])
