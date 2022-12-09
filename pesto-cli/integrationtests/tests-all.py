@@ -4,6 +4,7 @@ import docker
 import json
 import os
 import shutil
+import tarfile
 import tempfile
 import time
 
@@ -26,11 +27,17 @@ payload = '{"image":"file:///opt/algo-service/pesto/tests/resources/test_1/input
 temp = os.path.join(tempfile.gettempdir(), 'pesto-it')
 
 
-def check_init():
+def check_init(use_legacy=False):
     print("--------------------------------")
     print("---- Testing `init` command ----")
     print("--------------------------------")
-    init(temp, ALGO_TEMPLATE_PATH, True)
+    if use_legacy:
+        # open file
+        file = tarfile.open(pkg_resources.resource_filename(__name__, "legacy-init.tgz"))
+        file.extractall(temp)
+        file.close()
+    else:
+        init(temp, ALGO_TEMPLATE_PATH, True)
 
     print("Algorithm stub created. Checking that all files are present.")
     with open(pkg_resources.resource_filename(__name__, "init-files.txt")) as f:
@@ -177,6 +184,16 @@ if __name__ == "__main__":
     rm_temp_dir()
 
     try:
+        print("=================================")
+        print("==== Testing legacy template ====")
+        print("=================================")
+        check_init(True) and check_build() and check_run_docker() and check_run_local() and check_test()
+
+        rm_temp_dir()
+
+        print("====================================")
+        print("==== Testing generated template ====")
+        print("====================================")
         check_init() and check_build() and check_run_docker() and check_run_local() and check_test()
 
     finally:
