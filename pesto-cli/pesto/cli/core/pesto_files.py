@@ -5,6 +5,7 @@ class PestoFiles(Enum):
     description = 'api/description.json'
     input_schema = 'api/input_schema.json'
     output_schema = 'api/output_schema.json'
+    user_definitions_schema = 'api/user_definitions.json'
     config_schema = 'api/config_schema.json'
     config = 'api/config.json'
     version = 'api/version.json'

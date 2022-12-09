@@ -45,7 +45,17 @@ class ConfigLoader(object):
     def _describe(configs: Dict) -> dict:
         PESTO_LOG.info('********** generate service.json **********')
         definitions = load_json(SCHEMA_PATH, 'definitions.json')
-
+        # user defined definition complements the pesto definitions
+        if PestoFiles.user_definitions_schema in configs:
+            user_definitions = configs[PestoFiles.user_definitions_schema]
+            for key in user_definitions.keys():
+                if not key in definitions.keys():
+                    definitions[key]=user_definitions[key]
+                    PESTO_LOG.info("Adding {} definition from {}".format(key, PestoFiles.user_definitions_schema.value))
+                else:
+                    PESTO_LOG.error("You can not defined the native pesto definition of {} in {}".format(key, PestoFiles.user_definitions_schema.value))
+        else:
+                PESTO_LOG.info("No {} provided.".format(PestoFiles.user_definitions_schema.value))
         description = {
             **configs[PestoFiles.description],
             'config': configs[PestoFiles.config_schema],

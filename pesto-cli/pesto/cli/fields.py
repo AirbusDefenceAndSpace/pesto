@@ -21,5 +21,8 @@ class Param:
 def field(description:str="", required:bool=False, **kwargs):
     return dataclasses.field(metadata={Param.description:description, Param.required:required}, **kwargs)
 
-def definition(type:Definition, description:str="", required:bool=False, **kwargs):
-    return dataclasses.field(metadata={Param.type:type, Param.description:description, Param.required:required}, **kwargs)
+def definition(definition:Definition, description:str="", required:bool=False, **kwargs):
+    return dataclasses.field(metadata={Param.type:definition, Param.description:description, Param.required:required}, **kwargs)
+
+def user_definition(definition:str, description:str="", required:bool=False, **kwargs):
+    return dataclasses.field(metadata={Param.type:definition, Param.description:description, Param.required:required}, **kwargs)

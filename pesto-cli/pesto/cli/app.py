@@ -50,10 +50,7 @@ def schemagen(target: str,
     """
     Generate the input & output schemas from input_output.py
     """
-    in_out_file=os.path.join(target, "algorithm", "input_output.py")
-    schema_in=os.path.join(target, "pesto", "api", "input_schema.json")
-    schema_out=os.path.join(target, "pesto", "api", "output_schema.json")
-    generate(in_out_file, schema_in, schema_out, force)
+    generate(target, force)
 
 @app.command()
 def build(build_config: str,

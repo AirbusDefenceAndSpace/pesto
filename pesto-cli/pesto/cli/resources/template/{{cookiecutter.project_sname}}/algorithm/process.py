@@ -61,7 +61,7 @@ class Process:
 
         image = input.image
         # Simulates longer algorithm
-        time.sleep(5)
+#        time.sleep(5)
 
         h, w = image.shape[1], image.shape[2]
 
@@ -80,35 +80,34 @@ class Process:
             self.MODEL(image=image, gamma=1.5),
         ]
 
-        result = {
-            "image": output,
-            "number_output": number_parameter,
-            "integer_output": integer_parameter,
-            "string_output": string_parameter,
-            "dict_output": dict_parameter,
-            "areas": areas,
-            "image_list": image_list,
-            "geojson": {
-                "features": [
-                    {
-                        "geometry": create_box(0, 0, width=w, height=h),
-                        "properties": {
-                            "category": "cat",
-                            "confidence": 0.99,
-                            "name": "chelsea"
+        process_output=Output(
+            image= output,
+            number_output= number_parameter,
+            integer_output= integer_parameter,
+            string_output= string_parameter,
+            dict_output= dict_parameter,
+            areas= areas,
+            image_list= image_list,
+            geojson= {
+                    "features": [
+                        {
+                            "geometry": create_box(0, 0, width=w, height=h),
+                            "properties": {
+                                "category": "cat",
+                                "confidence": 0.99,
+                                "name": "chelsea"
+                            },
+                            "type": "Feature"
                         },
-                        "type": "Feature",
-                    },
-                    {
-                        "geometry": create_box(int(w // 4), int(h // 4), width=int(w // 2), height=int(h // 2)),
-                        "properties": {
-                            "category": "egyptian_cat",
-                            "confidence": 0.42,
-                        },
-                        "type": "Feature",
-                    },
-                ]
-            },
-        }
-
-        return result
+                        {
+                            "geometry": create_box(int(w // 4), int(h // 4), width=int(w // 2), height=int(h // 2)),
+                            "properties": {
+                                "category": "egyptian_cat",
+                                "confidence": 0.42,
+                            },
+                            "type": "Feature"
+                        }
+                    ]
+            }
+        )
+        return process_output
