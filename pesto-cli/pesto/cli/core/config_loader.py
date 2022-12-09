@@ -24,6 +24,12 @@ class ConfigLoader(object):
             _: loader.load(_.value)
             for _ in PestoFiles.required()
         }
+        try:
+            configs = {
+                PestoFiles.user_definitions_schema: loader.load(PestoFiles.user_definitions_schema.value)
+            }
+        except:
+            PESTO_LOG.warn("No {} definition file found.".format(PestoFiles.user_definitions_schema.value))
 
         configs.update({
             PestoFiles.service: ConfigLoader._describe(configs),

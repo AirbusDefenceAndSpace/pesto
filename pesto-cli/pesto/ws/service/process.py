@@ -51,6 +51,8 @@ class ProcessService:
             ProcessService._output_class = load_class(ProcessService.PROCESS_OUTPUT_CLASS_NAME)
         except:
             traceback.print_exc()
+            ProcessService._input_class = None
+            ProcessService._output_class = None
             log.warning('Algorithm {}.on_start() failed to load Input / Output classes.'.format(ProcessService.PROCESS_CLASS_NAME))
 
     def __init__(self, url_root: str):

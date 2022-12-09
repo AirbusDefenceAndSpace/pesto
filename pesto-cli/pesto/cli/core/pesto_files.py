@@ -18,5 +18,6 @@ class PestoFiles(Enum):
     def required():
         return set(PestoFiles).difference({
             PestoFiles.service,
-            PestoFiles.build
+            PestoFiles.build,
+            PestoFiles.user_definitions_schema
         })
