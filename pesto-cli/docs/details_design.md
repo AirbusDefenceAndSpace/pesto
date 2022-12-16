@@ -8,9 +8,9 @@ Next sections are organized as follows:
 
 * Need identification: this section presents the expectations, what we would like to do.
 * Base architecture identification: this section details the architecture of Pesto. It describes how we answer to our objectives.
+* Implementation details: 
 * Processing API management: this section provides guidelines on how to design a processing API for PESTO.
 * Performances: this section tells how PESTO should perform, how we demonstrated it was scalable.
-* Who uses PESTO: this section provides a list of projects / products that are using PESTO. 
 
 
 ## Need identification
@@ -52,9 +52,10 @@ The architecture of the runtime is presented in Figure [PESTO instance for cloud
 *<a name="fig-pestocloud">Figure: Architecture of a PESTO runtime for cloud detection</a>*
 
 PESTO web server offers three web services that are :
-- /api/v1/health: it provides information on the availability of the service,
-- /api/v1/describe: it provides information on the processing service that is deployed. Information on inputs, outputs, deployment requirements and so on are given here. PESTO does not constrain the definition of input and output parameters to offer a versatile solution. In return, a standardization effort has to be conducted in parallel.
-- /api/v1/process: call the processing function. Request parameters must respect the definition provided by /api/v1/describe.
+
+- **/api/v1/health**: provides information on the availability of the service
+- **/api/v1/describe**: provides information on the processing service that is deployed. Information on inputs, outputs, deployment requirements and so on are given here. PESTO does not constrain the definition of input and output parameters to offer a versatile solution. In return, a standardization effort has to be conducted in parallel.
+- **/api/v1/process**: call the processing function. Request parameters must respect the definition provided by /api/v1/describe.
 
 PESTO is also in charge to convert, when required, the data from the REST API to the processing API. For most of parameters, they won’t be any major conversion. In the current implementation, only the image type is converted such that the processing has access to the image data as a buffer. The philosophy is to remove any I/O operations from the algorithm implementation to limit the any adherence with the data source or destination.
 
@@ -77,7 +78,9 @@ The packaging workflow is described in Figure [PESTO packaging workflow](#fig-pe
 
 ### PESTO testing framework
 
-PESTO provides mechanisms to test the embedded processing function. A set of input and expected output parameters are provided by the data scientist. Then, the test function deploys the PESTO runtime and run tests.
+PESTO provides mechanisms to test the embedded processing function.
+A set of input and expected output parameters are provided by the data scientist. 
+Then, the [test function](pesto_test.md) deploys the PESTO runtime and run tests.
 
 
 ## Implementation details
@@ -93,14 +96,6 @@ The python package is named algorithm.process.Process. The data scientist needs 
 Then a set of configuration files have to be updated. A first set of configuration files (located in pesto/api) defines the API of the algorithm. Their content is described in the next section.
 
 A second set of configuration files (located in pesto/build) defines how to build the runtime. We can define which root docker image to use, how to include DL models and parameters in the runtime, the name and version of the runtime,... One additional feature is the possibility to define several independent runtime profiles. For example, it is useful to define a runtime using only CPUs and a runtime using the GPU. 
-
-The process is depicted in Figure [PESTO packaging workflow](#fig-pestoworkflow2 )
-
-![image](img/DevBuildDeploy.png)
-
-*<a name="fig-pestoworkflow2">Figure: PESTO packaging workflow</a>*
-
-One last implementation detail that is worth to mention, is the management of the image type. The REST API allows to pass an image either as a string designating an image file (either on a web server, on the disk, or in a GCP storage) or an image raw buffer encoded in base64. PESTO is then in charge to fetch the data and to provide it to the algorithm.
 
 
 ## Processing API management
@@ -162,34 +157,4 @@ PESTO has also been deployed at larger scale with [Conductor](https://netflix.gi
 ![image](img/PestoWithConductor.png)
 
 *<a name="fig-pestowithconductor">Figure: PESTO at scale with Conductor</a>*
-
-
-
-## Who uses PESTO
-
-PESTO is currently used by Airbus Defense and Space / Connected Intelligence.
-
-PESTO is under integration by the Airbus Defense and Space / Space Systems Oasis project. It is used to integrate and manage algorithms for TM/TC analysis.
-
-PESTO is under integration by Airbus Defense and Space / Space Systems in its ground segment image chain.
-
-Workshops have been taking place with end-users in order define a solution that first could be integrated in our ground segment product lines. They have contributed to the definition of the product and have validated its integration in their own software stack.
-
-## PESTO roadmap
-
-PESTO was thought to accelerate the integration in our products of Deep Learning algorithms, being developed by Airbus or by partners. That is why, one of the first priorities is to make it open source.
-
-PESTO was initially designed for image processing in mind. Some specificities were then included in the runtime. Our second priority is to set up mechanisms to include user data converters as plugins and to support various Linux families.
-
-PESTO needs to be orchestrated. Simple tutorials and examples to deploy PESTO at scale and manage distributed processing have to be written in order to foster its acceptance by the community.
-
-PESTO testing and deployment framework still need additional effort to offer a complete workflow towards continuous deployment and validation.
-
-
-
-
-
-
-
-
 

@@ -12,46 +12,33 @@
 	- Package a model using PESTO
 	- Define the input and output API of you web service
 	- Generate the web service Docker image
-  - Deploy your webservice
-	- Send requests & get responses from the service
+    - Deploy your webservice
+    - Send requests & get responses from the service
 
-## What is ProcESsing facTOry ?
 
-PESTO is a packaging tool inspired from pip, maven and similar dependencies managers.
-It contains shell tools to generate all the boiler plate to build an [OpenAPI](https://playground-docs.readthedocs.io) processing web service compliant with the 
-[Geoprocessing-API](https://airbusgeo.github.io/geoapi-viewer/?url=https://raw.githubusercontent.com/AirbusDefenceAndSpace/geoprocessing-api/master/1.0/api_geo_process.yaml). 
 
-PESTO is designed to ease the process of packaging a Python algorithm as a processing web service into a docker image. The deployment of a web service becomes now as easy as filling few configuration files.
+## Install PESTO
 
-PESTO is composed of the following components:
+First, ensure you have PESTO installed in a python 3.6+ environment. Typically, you can use Miniconda as a virtual env.
 
-- `pesto-cli` : the command line interface used to create a PESTO project and package processing algorithms.
-- `pesto-ws`: the processing web services, as docker images, created by PESTO to expose your algorithm.
-- `pesto-project` : the project workspace created by `pesto init` to configure the packaging process of your algorithm.
+!!! note
+    You should have docker community edition installed and configured in your machine. Refer to [the docker documentation](https://docs.docker.com/engine/install/) for more details.
 
-In the following tutorial we will generate a `pesto-project` and build a Docker Image containing a webservice that allows us to send requests to the model that we want to deploy into production. 
+To install PESTO with pip (see [Get Started](get_started.md)): 
 
-![](img/pesto.svg)
+```bash
+$ pip install processing-factory
+``` 
 
-## What are the differences between PESTO and Flask ?
+## Create PESTO project
 
-Flask is a Web Application framework requiring you to write the entire codebase and defining your API from scratch.
+Next, initialize your PESTO project in the desired repository.
 
-PESTO is a framework allowing you to just describe the input / output of your model, write your custom code and bring dependencies. It will build the webservice for you (before, PESTO used flask but now it uses [FastAPI](https://fastapi.tiangolo.com/)). 
+```bash
+$ pesto init {PESTO_root_projects_repository_path}
+``` 
 
-## Step by Step Walktrough
-
-First, ensure you have PESTO installed in a python 3.6+ environment. Typically you can use Miniconda as a virtual env.
-
-Then you should have docker community edition installed and configured in your machine. Refer to [the docker documentation](https://docs.docker.com/engine/install/) for more details.
-
-To install PESTO: `git clone {} && cd processing-factory` then `make install` (or `cd pesto-cli && pip install .` )
-
-Next, we will initialize our PESTO template for our deployment,
-
-`pesto init {location of the root folder where you will create the tutorial`
-
-You will be prompted for several information to fill the default template. Here's an example of the display
+You are prompted for some information to fill the default template. Here's an example of the display
 
 ```text
 ---------------------------------------------------------------------------------------------------------------------------
@@ -61,22 +48,21 @@ You will be prompted for several information to fill the default template. Here'
  |  __/| |___ ___) || || |_| |  _  |  __/| | | (_) | (_|  __/\__ \__ \ | | | | (_| |  |  _| (_| | (__| || (_) | |  | |_| |
  |_|   |_____|____/ |_| \___/  (_) |_|   |_|  \___/ \___\___||___/___/_|_| |_|\__, |  |_|  \__,_|\___|\__\___/|_|   \__, |
                                                                               |___/                                 |___/
------  ProcESsing facTOry : 1.0.0-rc1 -------------------------------------------------------------------------------------
-
-cookiecutter /home/fchouteau/repositories/processing-factory/pesto-cli/pesto/cli/resources/template --output-dir .
+-----  ProcESsing facTOry : 1.4.3     -------------------------------------------------------------------------------------
 
 Please fill necessary information to initialize your template
 
-maintainer_fullname [TESUI]: Computer Vision
-maintainer_email [computervision@airbus.com]: 
+maintainer_fullname [pesto]: Computer Vision
+maintainer_email [pesto@airbus.com]: computervision@airbus.com
 project_name [algo-service]: pytorch-deployment-tutorial
-project_sname [pytorch-deployment-tutorial]: 
-project_short_description [PESTO Template contains all the boilerplate you need to create a processing-factory project]: My first deployment with PESTO
+project_sname [pytorch-deployment-tutorial]:                            
+project_short_description [Pesto Template contains all the boilerplate you need to create a processing-factory project]: My first deployment with PESTO
 project_version [1.0.0.dev0]: 1.0.0
-
+[2022-12-13 17:44:24,345] 28731-INFO app::init():l44:
+Service generated at /tmp/pesto/pytorch-deployment-tutorial
 ```
 
-You will generate the default template in a folder `pytorch-deployment-tutorial` with the following file structure:
+It generates the default template in a folder `pytorch-deployment-tutorial` with the following file structure:
 
 ```text
 pytorch-deployment-tutorial/
@@ -95,7 +81,8 @@ pytorch-deployment-tutorial/
 └── setup.py
 ```
 
-You can recognize a python package with a package named `algorithm`, a module `algorithm.process`. The main processing will be defined here (in Python and using your custom librairies if you want to do so)
+You can recognize a python package with a package named `algorithm`, a module `algorithm.process`.
+The main processing is defined here (in Python and using your custom libraries if you want to do so)
 
 The folder `pesto` includes the necessary resources to build the docker image containing the service:
 
@@ -103,20 +90,6 @@ The folder `pesto` includes the necessary resources to build the docker image co
 - `pesto/build` will specify resources, docker images, etc ... so that PESTO can build the service with the correct dependencies
 - `pesto/test` will contains resources to test & debug your service once built as well as helper scripts to use 
 
-## RestFul API Presentation
-
-PESTO takes care of the API definition & endpoints through the [Geoprocessing API specification](https://github.com/AirbusDefenceAndSpace/geoprocessing-api/tree/master/1.0).
-
-From a user point of view, several endpoints are defined:
-
-- `/api/v1/health` where a GET request will sendback information 
-
-- `/api/v1/describe` for a GET request to get information about the processing encapsulated
-- `/api/v1/process` where we will send the payload that we want to process via a POST request
-
-The next steps of this tutorial will focus on how we configure these endpoints so that the input/output API of our deployed service will allow our service to fulfill its expected role.
-
-To learn more about RESTful API, check [this tutorial](https://www.restapitutorial.com/)
 
 ## Your Custom Processing code
 
@@ -615,7 +588,7 @@ pytorch-deployment-tutorial/
 
 If docker build fails you can debug your service directly in this folder.
 
-If the build succeeds you should be able to see your image `docker image`:
+If the build succeeds you should be able to see your image `docker image ls`:
 
 ```
 REPOSITORY                                           TAG                   IMAGE ID            CREATED             SIZE
@@ -708,11 +681,11 @@ You can see that both input and output have files with extension corresponding t
 
 Now, we are going to write two tests with those two images as input:
 
-![](./img/favicon.jpg)
+![](./img/chelsea.png)
 
 We know that the input key is `image` and the output key is `category` the model should predict  `{"category": "Egyptian_cat"}`
 
-![](./img/chelsea.png)
+![](./img/favicon.jpg)
 
 We know that the input key is `image` and the output key is `category` the model should predict  `{"category": "mortar"}`
 
@@ -770,13 +743,13 @@ Should everything goes well, the `results.json` file should look like this
 
 ### Bonus: Using Pytest & unit testing
 
-Once you're sure and have debugged properly you can write or edit unit tests in `project-root/tests/` (check the autogenerated file `tests/test_service.py` ) and run it with `pytest tests` on your root project
+Once you're sure and have debugged properly you can write or edit unit tests in `PESTO_PROJECT_ROOT/tests/` (check the autogenerated file `tests/test_service.py` ) and run it with `pytest tests` on your root project
 
 This can be used to ensure non regression on further edits or if you want to do test driver development
 
 ### Bonus: Using PESTO Python API to run tests & send requests to model
 
-Should you want to use in a non-scalable way or further test your services, you can have a look at the `{project-root}/scripts/example_api_usage.py` file that exposes the low level python API that is used in `pesto test`
+Should you want to use in a non-scalable way or further test your services, you can have a look at the `{PESTO_PROJECT_ROOT}/scripts/example_api_usage.py` file that exposes the low level python API that is used in `pesto test`
 
 - The `ServiceManager` class is the class used as a proxy for the python Docker API, and is used to pull / run /attach / stop the containers
 - The `PayloadGenerator` class is used to translate files to actual json payload for the REST API
@@ -812,7 +785,7 @@ in order to accomodate for different hardware targets or slight variations of th
 
 Basically, PESTO profiles is a  list of **ordered** strings (`gpu stateless`) whose .json files in `build/api` folders sequentially **update** the base file.
 
-To use them, simply add the list of profiles to your PESTO commands: `pesto build {project-root} -p p1 p2` or `pesto test {project-root} -p p1 p2`
+To use them, simply add the list of profiles to your PESTO commands: `pesto build {PESTO_PROJECT_ROOT} -p p1 p2` or `pesto test {PESTO_PROJECT_ROOT} -p p1 p2`
 
 The profiles json files are named `{original_file}.{profile}.json`.
 
@@ -868,8 +841,9 @@ A GET request on the aforementioned URL should return `Egyptian_cat` or `mortar`
 
 ## Next Steps
 
-- You should version your PESTO project using git so that it is reproducible 
-- The rest of the documentation should be more accessible now that you have completed this tutorial
-- Feel free to send us feedback and ask any question on github
-- There are some advanced usage & tips in the [pesto cookbook](cookbook.md). If you find an use case that is not documented, feel free to submit a PR on github to update the documentation
+The rest of the documentation should be more accessible now that you have completed this tutorial
 
+!!! tip 
+    You should version your PESTO project using **git** so that it is reproducible 
+
+Feel free to send us feedback and ask any question on [github](https://github.com/AirbusDefenceAndSpace/pesto)

@@ -6,4 +6,4 @@ For the default template, test_1 & test_2 are showcasing usages of a full reques
 
 This is not the place to write unit tests, but to store resources for said test
 
-Refer to `project-root/tests` for unit tests that can be run with `pytest`
+Refer to `PESTO_PROJECT_ROOT/tests` for unit tests that can be run with `pytest`
