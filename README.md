@@ -28,7 +28,7 @@ Note: For PESTO to work properly, you could need to set the following ENV variab
 
 # Installation
 
-```
+```bash
 git clone <repository-name>
 cd <repository-name>
 make install
@@ -38,9 +38,16 @@ make install
 
 The documentation is available online, [Read full documentation online](https://airbusdefenceandspace.github.io/pesto). You can also generate the documentation by yourself as follows, `make doc`. The documentation is build in pesto-cli/site/index.html.
 
+To deploy the documentation locally and make it available on [localhost:8000/pesto](http://localhost:8000/pesto/about.html) (by default):
+
+```bash
+cd pesto-cli
+mkdocs serve
+```
+
 The online documentation is generated from master as follows :
 
-```
+```bash
 make deploy
 ```
 
