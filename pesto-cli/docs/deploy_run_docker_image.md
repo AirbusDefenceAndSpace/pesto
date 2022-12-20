@@ -23,7 +23,17 @@ pesto run docker '{"image":"file:///opt/algo-service/pesto/tests/resources/test_
 
 - ## pesto run local
 
-[//]: # (TODO: Add pesto run docker local command)
+With this option, you can run the algorithm from a python environment where all dependencies are installed. 
+
+Either from your local environment:  
+```bash
+pesto run local '{"image":"file:///opt/algo-service/pesto/tests/resources/test_1/input/image.png"}' /tmp/result.txt
+```
+
+Or from inside the container that has been generated:  
+```bash
+docker run -it --rm -v /tmp:/tmp algo-service:1.0.0.dev0 bash -c "pesto run local '{\"image\":\"file:///opt/algo-service/pesto/tests/resources/test_1/input/image.png\"}' /tmp/result.txt"```
+```
 
 - ## docker run
 
