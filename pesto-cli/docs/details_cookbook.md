@@ -72,7 +72,7 @@ class Process:
 
 Pesto will copy or pip install all your requirements in the output docker image.
 
-You just need to define all your [service requirements](configuration.md) in the 'pesto/build/requirements.json' file.
+You just need to define all your [service requirements](package_configuration.md) in the 'pesto/build/requirements.json' file.
 
 ## How to test the service built with PESTO ?
 
