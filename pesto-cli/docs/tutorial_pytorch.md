@@ -290,7 +290,7 @@ class Output:
 
 ## Generating the input & output schemas
 
-PESTO need the input and output json schemas for specifying the algorithm API to the end users. It can be done by editing the files. However, since we used the `Input` and `Output` classes for the `process()`'s signature, we can benefit from `pesto schemagen` for generating the schema files:
+PESTO needs the input and output json schemas for specifying the algorithm API to the end users. It can be done by editing the files. However, since we used the `Input` and `Output` classes for the `process()`'s signature, we can benefit from `pesto schemagen` to generate the schema files:
 
 ```shell
 pesto schemagen --force {PESTO_root_projects_repository_path}
