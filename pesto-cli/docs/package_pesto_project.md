@@ -10,8 +10,8 @@ We encourage the following naming convention :
 
 In a terminal, use the [pesto init command](pesto_init.md) to create a PESTO project in the desired repository. :
 
-```bash
-$ pesto init /path/to/your/workspace
+```shell
+pesto init /path/to/your/workspace
 ```
 
 You will be prompted for some information to fill the default template:
@@ -44,19 +44,27 @@ This will create a new project named "/path/to/your/workspace/xxx-service" with 
 
 ```text
 pytorch-deployment-tutorial/
-├── algorithm
-│   ├── __init__.py
-│   └── process.py
-├── __init__.py
+├── ...
 ├── Makefile
-├── MANIFEST.in
+├── algorithm
+│   ├── ...
+│   ├── input_output.py
+│   └── process.py
 ├── pesto
 │   ├── api
+│   │   ├── ...
+│   │   ├── description.json
+│   │   ├── description.stateful.json
+│   │   ├── input_schema.json
+│   │   ├── output_schema.json
+│   │   └── user_definitions.json
 │   ├── build
+│   │   ├── build.json
+│   │   ├── requirements.gpu.json
+│   │   └── requirements.json
 │   └── tests
-├── README.md
 ├── requirements.txt
-└── setup.py
+└── ...
 ```
 
 !!! Note

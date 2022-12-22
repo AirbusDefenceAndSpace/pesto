@@ -1,4 +1,4 @@
-# pesto init : Create a new project
+# `pesto init` : Create a new packaging project
 
 The first step to package your processing library is to create a new project.
 We encourage the following naming convention :
@@ -56,6 +56,7 @@ This will create a new project named `/path/to/your/workspace/xxx-service` with 
 xxx-service/
 ├── algorithm
 │   ├── __init__.py
+│   ├── input_output.py
 │   └── process.py
 ├── __init__.py
 ├── Makefile

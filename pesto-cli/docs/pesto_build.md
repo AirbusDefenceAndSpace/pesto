@@ -1,4 +1,4 @@
-# pesto build : Package as a docker image
+# `pesto build` : Package an algorithm
 
 When your project is properly configured (cf. [pesto init](pesto_init.md)), PESTO can build a docker image containing a running web service.
 

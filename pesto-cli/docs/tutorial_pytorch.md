@@ -68,6 +68,7 @@ It generates the default template in a folder `pytorch-deployment-tutorial` with
 pytorch-deployment-tutorial/
 ├── algorithm
 │   ├── __init__.py
+│   ├── input_output.py
 │   └── process.py
 ├── __init__.py
 ├── Makefile
@@ -81,7 +82,7 @@ pytorch-deployment-tutorial/
 └── setup.py
 ```
 
-You can recognize a python package with a package named `algorithm`, a module `algorithm.process`.
+You can recognize a python package with a package named `algorithm` and a module `algorithm.process`.
 The main processing is defined here (in Python and using your custom libraries if you want to do so)
 
 The folder `pesto` includes the necessary resources to build the docker image containing the service:
@@ -103,7 +104,7 @@ The model was trained on ImageNet so it should return one amongst 1000 classes w
 
 We will load our model, using the included checkpoints loading function of torchvision, as well as a json file containing the conversion between class indexes and class names (which is stored in `/etc/pesto/config.json`, more on that later).
 
-```python
+```python linenums="1" 
 import json
 import torchvision.models
 
@@ -121,7 +122,7 @@ Resnet model requires the image to be of 3 channel RGB image of size 224 x 224. 
 !!! info
 	Should you require more information , please refer to the [original tutorial](https://pytorch.org/tutorials/intermediate/flask_rest_api_tutorial.html#inference) as well as the [pytorch documentation](https://pytorch.org)
 
-```python
+```python linenums="1" 
     from PIL import Image
     import torchvision.transforms
     # Preprocessing function
@@ -137,7 +138,7 @@ Resnet model requires the image to be of 3 channel RGB image of size 224 x 224. 
 
 Now, getting predictions from this model is simple:
 
-```python
+```python linenums="1" 
 import time 
 
 def predict(image: np.ndarray):
@@ -159,7 +160,7 @@ def predict(image: np.ndarray):
 
 Now we will need to put these functions so that PESTO can properly call them.
 
-Look at `algorithm/process.py` This is the module that will be loaded by PESTO inside our server and which will be called during preprocessing. 
+Look at `algorithm/process.py`. This is the module that will be loaded by PESTO inside our server and which will be called during preprocessing. 
 
 There is a `Process` class with `on_start()` and `process()` methods.
 
@@ -172,7 +173,7 @@ We want to integrate our previous code into this structure, so your `algorithm/p
 !!! note
 	We did not load the Model in the `Process` class so each method inside the `Process` class is static. 
 
-```python
+```python linenums="1" hl_lines="37-39 67 73 93" title="process.py"
 import json
 import os
 
@@ -181,6 +182,8 @@ import torch.cuda
 import torchvision.models
 import torchvision.transforms
 from PIL import Image
+
+from algorithm.input_output import Input, Output
 
 # Device Agnostic Code
 if torch.cuda.is_available():
@@ -237,13 +240,13 @@ class Process:
 
     # Main processing function
     @staticmethod
-    def process(image: np.ndarray):
+    def process(input: Input) -> Output:
         """
         The core algorithm is implemented here.
         """
 
         # PESTO gives images as C,H,W so we will convert them back to H,W,C to convert them as PIL.Image
-        image = image.transpose((1, 2, 0))
+        image = input.image.transpose((1, 2, 0))
         pil_image = Image.fromarray(image)
 
         # A tensor with a batch size of 1 (1, C, H, W)
@@ -263,16 +266,65 @@ class Process:
         predicted_idx = str(y_hat.item())
         class_id, class_name = IMAGENET_CLASS_INDEX[predicted_idx]
 
-        # Always return a dictionary, as in RestFUL API, return type is a POST request
-        result = {"category": class_name}
+        return Output(category=class_name)
+```
 
-        return result
+```python linenums="1" hl_lines="7 11" title="input_output.py"
+from dataclasses import dataclass
+from pesto.cli.fields import Definition, field, definition, user_definition
+import numpy as np
+
+@dataclass
+class Input:
+    image:np.array = definition(Definition.Image, required=True, description="Image related to any ImageNet class")
+    
+@dataclass
+class Output:
+    category:str = field("Predicted class")
 ```
 
 !!! danger "About Images Format"
     PESTO decodes input request in a specific way, which means that for images they are provided to the algorithm in Channel,Height,Width format, contrarily to the usual Height,Width,Channel format. This means that a transposition is required to wrap them up in PIL format for example. 
     
 	The easiest way to do so is to call `image = image.transpose((1, 2, 0))`
+
+## Generating the input & output schemas
+
+PESTO need the input and output json schemas for specifying the algorithm API to the end users. It can be done by editing the files. However, since we used the `Input` and `Output` classes for the `process()`'s signature, we can benefit from `pesto schemagen` for generating the schema files:
+
+```shell
+pesto schemagen --force {PESTO_root_projects_repository_path}
+```
+
+The generated schemas are in `api/input_schema.json` and in `api/output_schema.json` :
+
+!!! Example "Input and output json schemas"
+    === "Input"
+        ```python linenums="1" title="api/input_schema.json"
+
+        {
+            "image": {
+              "$ref": "#/definitions/Image",
+              "description": "Image related to any ImageNet class"
+          },
+          "required": [
+              "image"
+          ]
+        }
+        ```
+
+    === "Output"
+        ```python linenums="1" title="api/output_schema.json"
+        {
+          "category": {
+              "type": "string",
+              "description": "Predicted class"
+          },
+          "required": []
+        }
+        ```
+
+Visit the schemagen's [checklist](pesto_schemagen.md#schemagen-checklist) to understand how to benefit from the `schemagen` mechanism.
 
 ## Configuring the Processing API for our service
 
@@ -288,6 +340,7 @@ pesto/api/
 ├── description.stateful.json
 ├── input_schema.json
 ├── output_schema.json
+├── user_definitions.json
 └── version.json
 ```
 
@@ -296,6 +349,7 @@ pesto/api/
 - `description.json` is a json file that contains information about our processing
 - `input_schema.json` is the specification of the input payload that is necessary to run `Process.process()`. It will be used to specify what should be sent to the webserver
 - `output_schema.json` is the specification of the output response of the processing
+- `user_definitions.json` the user definitions (reusable JSON schema objects)
 - `description.stateful.json` is an alternative description that will be used with a different profile. The later parts of the tutorial will address this point specifically. 
 
 For more information on jsonschema please refer to [the official documentation](https://json-schema.org/)
@@ -310,15 +364,15 @@ Download [this file](https://s3.amazonaws.com/deep-learning-models/image-models/
 
 Imagenet classes can then be loaded in `process.py` as follows:
 
-```python
+```python linenums="1" title="process.py"
 # Load Classes
 with open(os.path.join("/etc/pesto/", "config.json"), "r") as f:
     IMAGENET_CLASS_INDEX = json.load(f)
 ```
 
-Now we have to define the jsonschema (`config_schema.json`) that validates it. Here it is:
+Now we have to define the json schema (`config_schema.json`) that validates it. Here it is:
 
-```json
+```json title="api/config_schema.json" linenums="1" 
 {
   "$schema": "http://json-schema.org/draft-06/schema#",
   "title": "tile-object-detection-config",
@@ -339,7 +393,7 @@ Now we have to define the jsonschema (`config_schema.json`) that validates it. H
 	
 	You can use the following code snippet to check for json schema validity in python
 
-```python
+```python linenums="1"  hl_lines="10"
 import json
 import jsonschema
 
@@ -358,7 +412,7 @@ The `description.json` file contains information that describe your processing. 
 
 Here is an example of a `description.json` file that you can copy:
 
-```json
+```json title="api/description.json" linenums="1"
 {
   "title": "pytorch-deployment-tutorial",
   "name": "pytorch-deployment-tutorial",
@@ -382,56 +436,6 @@ Here is an example of a `description.json` file that you can copy:
   "licence": "Property of Computer Vision, all rights reserved"
 }
 ```
-
-### input_schema.json
-
-Now comes the part where we will specify what types of request should an user send to the process. We will define a json schema that will automatically be parsed and serves as a validation checker to process incoming requests.
-
-We know that our process takes as input an image called `image`, so our `input_schema.json` file will look like this.
-
-```json
-{
-  "image": {
-    "$ref": "#/definitions/Image",
-    "description": "Image related to any ImageNet class"
-  },
-  "required": [
-    "image"
-  ]
-}
-```
-
-The "$ref": "#/definitions/Image" is a pointer to a custom PESTO type for json schema which is actually 
-
-```json
-      "Image": {
-        "$schema": "http://json-schema.org/draft-06/schema#",
-        "description": "Image to process : it can be an url or the raw bytes encoded in base64",
-        "type": "string"
-      },
-```
-
-Default PESTO types can be found in the source code : processing-factory/pesto-cli/pesto/cli/resources/schema/definitions.json
-
-By making an explicit reference to the custom processing factory type `Image`, PESTO will decode the image into a numpy array, and will accept either an uri or a raw bytes array encoded as base64.
-
-In the default template you can find several examples of input and output types, should you need to pass additional information to the process.
-
-### output_schema.json
-
-The `output_schema` is the equivalent of the `input_schema` to parse results from the process (and specify the API response)
-
-In our case, the process will return the class name predicted by the image (a string), under the key `category`
-
-```json
-{
-  "category": {
-    "type": "string"
-  }
-}
-```
-
-In the default template you can find several examples of input and output types should you need to pass additional information to the process.
 
 ## Defining our packaging & dependencies
 
@@ -467,7 +471,7 @@ build/
 
 The `build.json` contains automatically generated information that will be used by PESTO later. You should not have to modify it except if you want to change the version
 
-```json
+```json title="build/build.json" linenums="1"
 {
   "name": "pytorch-deployment-tutorial",
   "version": "1.0.0.dev0",
@@ -484,7 +488,7 @@ There are two `requirements.json` files automatically generated. `requirements.g
 
 The `requirements.json` file default as such
 
-```json
+```json title="requirements.json" linenums="1"
 {
   "environments": {},
   "requirements": {},
@@ -496,7 +500,7 @@ The `requirements.json` file default as such
 
 `environments` is used to set environment variables. We will set the `$TORCH_HOME` environment variable to ensure we know its location. The `$TORCH_HOME` variable is used by `torchvision` to download weights in specific locations, check [the torch Hub documentation](https://pytorch.org/docs/stable/hub.html) for more details 
 
-```json
+```json linenums="1"
   "environments": {
     "TORCH_HOME": "/opt/torch/"
   }
@@ -523,7 +527,7 @@ tar -zcvf checkpoint.tar.gz resnet50-19c8e357.pth
 
 Now, note the uri of this `checkpoint.tar.gz`. We want to uncompress this file in `/opt/torch/checkpoints/` in our docker. So your requirements file will look like:
 
-```json
+```json linenums="1" title="build/requirements.json"
 {
   "environments": {
     "TORCH_HOME": "/opt/torch/"
@@ -591,8 +595,8 @@ If docker build fails you can debug your service directly in this folder.
 If the build succeeds you should be able to see your image `docker image ls`:
 
 ```
-REPOSITORY                                           TAG                   IMAGE ID            CREATED             SIZE
-pytorch-deployment-tutorial                          1.0.0.dev0            08342775a658        4 minutes ago       3.48GB
+REPOSITORY                   TAG          IMAGE ID       CREATED        SIZE
+pytorch-deployment-tutorial  1.0.0.dev0   08342775a658   4 minutes ago  3.48GB
 ```
 
 ## Testing and Usage
@@ -724,7 +728,7 @@ You will find there the results / responses of all the requests, including descr
 
 Should everything goes well, the `results.json` file should look like this
 
-```json
+```json title="results.json" linenums="1"
 {
   "describe": {
     "NoDifference": true
@@ -766,7 +770,7 @@ Should you want to use in a non-scalable way or further test your services, you 
 In order to create an image with GPU support, we can complete the proposed profile `gpu`.
 The file `requirements.gpu.json` can be updated as follows :
 
-```json
+```json title="requirements.gpu.json" linenums="1"
 {
   "environments": {},
   "requirements": {},
@@ -831,7 +835,7 @@ This script should send several requests (like pesto test), but the advantage is
 
 You should get something like
 
-```json
+```json linenums="1"
 {
   "category": "http://localhost:4000/api/v1/jobs/1080019533/results/category"
 }

@@ -31,6 +31,9 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
 
 extra_javascript:
 #  - https://unpkg.com/mermaid@8.0.0/dist/mermaid.min.js

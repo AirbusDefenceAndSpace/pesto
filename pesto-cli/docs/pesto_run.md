@@ -1,4 +1,4 @@
-# pesto run
+# `pesto run` : Run the packaged algorithm
 
 Once the processing library is built, it can be run.  
 The `pesto run` command comes with 2 variants which are described below.

@@ -1,4 +1,4 @@
-# pesto test : Test your packaged docker image
+# `pesto test` : Test the packaged algorithm
 
 PESTO integrate a minimal yet powerful testing framework.
 
