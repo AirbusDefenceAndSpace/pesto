@@ -11,6 +11,10 @@ If your project path is `PESTO_PROJECT_ROOT = /path/to/your/workspace/xxx-servic
 pesto build {PESTO_PROJECT_ROOT}
 ```
 
+It creates a packaged docker image:
+
+!!! Success "xxx-service:1.0.0.dev0"
+
 By default, the build command use configuration files in the following directories :
 
 ```text
