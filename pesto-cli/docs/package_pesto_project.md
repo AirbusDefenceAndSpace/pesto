@@ -1,11 +1,6 @@
 # Create PESTO project
 
 The first step to package your processing library is to create a new project.
-We encourage the following naming convention :
-
-- given xxx a short name for your processing :
-- then call xxx-lib : the processing library,
-- and call xxx-service : the PESTO packaging project.
 
 
 In a terminal, use the [pesto init command](pesto_init.md) to create a PESTO project in the desired repository. :
