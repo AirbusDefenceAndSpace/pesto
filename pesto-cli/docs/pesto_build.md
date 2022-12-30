@@ -39,12 +39,19 @@ The main steps of building the docker image are:
 3. Copy algorithm files
 4. Set ENV variables and copy algorithm configuration and resources from requirements.json
 
-One can force caching a number of the defined steps, by setting a parameter `--cache|-c <VALUE>` to the `pesto build` command.  
-The `VALUE` can be:
+One can force caching a number of the defined steps, by setting a parameter `--cache|-c <VALUE>` to the `pesto build` command:  
 
-* *CACHE_UP_TO_PESTO* or *C1*: cache up to step 1
-* *CACHE_UP_TO_PIP_REQ* or *C2*: cache up to step 2
-* *CACHE_UP_TO_ALGO* or *C3*: cache up to step 3
+```bash
+pesto build {PESTO_PROJECT_ROOT} -c <VALUE>
+``` 
+
+The `<VALUE>` can be:
+
+* `CACHE_UP_TO_PESTO` or `C1`: cache up to step 1
+* `CACHE_UP_TO_PIP_REQ` or `C2`: cache up to step 2
+* `CACHE_UP_TO_ALGO` or `C3`: cache up to step 3
+
+
 
 ## Profiles
 
