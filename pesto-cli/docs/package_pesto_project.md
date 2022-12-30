@@ -40,10 +40,10 @@ Service generated at /path/to/your/workspace/algo-service
 
 You can press ENTER to let the default values of the project description fields.
 
-This will create a new project named "/path/to/your/workspace/xxx-service" with the following structure:
+This will create a new project named `/path/to/your/workspace/xxx-service` with the following structure:
 
 ```text
-pytorch-deployment-tutorial/
+algo-service/
 ├── ...
 ├── Makefile
 ├── algorithm
