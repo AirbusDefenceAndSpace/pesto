@@ -1,12 +1,6 @@
 # `pesto init` : Create a new packaging project
 
 The first step to package your processing library is to create a new project.
-We encourage the following naming convention :
-
-- given xxx a short name for your processing :
-- then call xxx-lib : the processing library,
-- and call xxx-service : the PESTO packaging project.
-
 
 In a terminal :
 ```bash
@@ -39,16 +33,16 @@ project_version [1.0.0.dev0]:
 Service generated at /path/to/your/workspace/xxx-service
 ```
 
-The following description fields can be set to describe your custom algorithm:
+The following fields can be set to describe your custom algorithm:
 
-- **maintainer_fullname**:
-- **maintainer_email**:
-- **project_name**: Project name
+- **maintainer_fullname**
+- **maintainer_email**
+- **project_name**
 - **project_sname**: Project short name
-- **project_short_description**:
+- **project_short_description**
 - **project_version**
 
-[//]: # (TODO: Add the precise use of each field)
+[//]: # (TODO: Add the precise use of each field?)
 
 This will create a new project named `/path/to/your/workspace/xxx-service` with the following structure:
 

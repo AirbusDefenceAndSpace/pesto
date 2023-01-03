@@ -177,16 +177,3 @@ Should you want to use in a non-scalable way or further test your services, you 
 	This API is a simple example of how to use services packaged with pesto in python scripts. We encourage you to copy/paste and modify the classes should you feel the need for specific use cases, but both this and `pesto test` is not designed for robustness and scalability
 	
 	We consider the target of `pesto test` capabilities to be the data scientist, integration testing & scalability should be done at production level
-
-### Profiles
-
-[//]: # (TODO: Check how it is used)
-
-It is also possible to test if a profile is activated:
-
-```python
-from pesto.common.pesto import Pesto
-Pesto.is_profile_active('p1')
-# True if 'p1' is activated
-# False else
-```

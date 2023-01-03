@@ -1,11 +1,6 @@
 # Create PESTO project
 
 The first step to package your processing library is to create a new project.
-We encourage the following naming convention :
-
-- given xxx a short name for your processing :
-- then call xxx-lib : the processing library,
-- and call xxx-service : the PESTO packaging project.
 
 
 In a terminal, use the [pesto init command](pesto_init.md) to create a PESTO project in the desired repository. :
@@ -40,10 +35,10 @@ Service generated at /path/to/your/workspace/algo-service
 
 You can press ENTER to let the default values of the project description fields.
 
-This will create a new project named "/path/to/your/workspace/xxx-service" with the following structure:
+This will create a new project named `/path/to/your/workspace/xxx-service` with the following structure:
 
 ```text
-pytorch-deployment-tutorial/
+algo-service/
 ├── ...
 ├── Makefile
 ├── algorithm
