@@ -65,9 +65,7 @@ It creates a new packaged docker image of the algorithm able to run on GPU:
     pesto build {PESTO_PROJECT_ROOT} -p gpu
     pesto test {PESTO_PROJECT_ROOT} -p gpu --nvidia
     ```
-    It which should do the same as above but with gpu support (and actually run the process on gpu).
-
-[//]: # (TODO: test if nvidia is still available)
+    It should do the same as above but with gpu support (and actually run the process on gpu).
 
 
 ### Multiple algorithm versions
