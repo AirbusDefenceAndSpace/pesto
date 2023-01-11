@@ -81,38 +81,41 @@ Then, go in your project `pesto/tests` directory and start editing files.
 
 
 The `pesto/tests` is composed of :
-- some directories (one per processing to be run),
-- a `expected_describe.json` file.
+
+- some directories (one per processing to be run)
+- a `expected_describe.json` file
 
 Each `pesto/tests/xxx` directory is composed  of :
+
 - an `input` directory matching `pesto/api/input_schema.json`,
 - an `output` directory matching `pesto/api/output_schema.json`.
 
 The `input` and `output` directories both describes a json payload (the processing input and output).
 Each filename `key.type` in those folders must match an entry in its corresponding `*_schema.json` :
+
 - `key` is the key in the `*_schema.json`,
 - `type` is the primitive type of the key :
-  - string, float, int,
-  - json : dictionaries,
-  - *.tif, *.jpg, *.png for images.
-  - arrays can be constructed using a folder `key` containing its enumerted items (`1.int`, `2.int`, ...)
+    - string, float, int,
+    - json : dictionaries
+    - *.tif, *.jpg, *.png for images.
+    - arrays can be constructed using a folder `key` containing its enumerted items (`1.int`, `2.int`, ...)
 
+!!! Example
 
-ex:
-The following describes the correspondance between the file structure and the json payload.
+    The following describes the correspondence between the file structure and the json payload.
 
-- pesto/tests/input
-  - key1.string (containing `text`)
-  - key2.int (containing `33`)
-  - key3.float (containing `3.14`)
+    - pesto/tests/input
+        - key1.string (containing `text`)
+        - key2.int (containing `33`)
+        - key3.float (containing `3.14`)
   
-```
-{
-    "key1" : "text",
-    "key2" : 33,
-    "key3" : 3.14
-}
-```
+    ```
+    {
+        "key1" : "text",
+        "key2" : 33,
+        "key3" : 3.14
+    }
+    ```
 
 More examples are provided in the default pesto template.
 
