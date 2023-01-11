@@ -38,8 +38,9 @@ to specify host and image volume path to be mounted as parameters.
 
 ## pesto run local
 This variant can be used to run the algorithm locally. It requires to have pesto, the algorithm and all its
-dependencies installed at system level. Alternatively, it can be used within the container image which already meet this
-requirement.
+dependencies installed at system level, which is not an easy setup.  
+Alternatively, it can be used within the container image which already meet this requirement. 
+The interest is then to save on the initialisation time of the container and execute several runs within the container once started.
 
 ```asciidoc
 Usage: pesto run local [OPTIONS] PAYLOAD OUTPUT_PATH
