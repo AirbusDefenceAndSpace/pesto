@@ -126,6 +126,8 @@ Finally, run the tests :
 pesto test /path/to/pesto-service -p p1 p2
 ```
 
-- zero code dans le template-service (donc on peut faire évoluer "pesto test" sans avoir à toucher les projets (comme j'ai du le faire cette fois-ci)
-- remplir directement les dossiers à la racine de pesto/tests
-- lancer avec pesto tests /path/to/pesto-service -p cpu pour tester une image docker déjà buildé avec le profil choisi.
+!!! Note
+
+    - No code to write in the template-service
+    - Directly fill the directories at the root of `pesto/tests`
+    - Run `pesto tests /path/to/pesto-service -p cpu` to test a built docker image with the selected profile.
