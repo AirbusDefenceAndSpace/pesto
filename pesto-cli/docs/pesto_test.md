@@ -2,15 +2,82 @@
 
 PESTO integrate a minimal yet powerful testing framework.
 
-You must first configure your `pesto/tests/resources` folder by creating a new `my_test_data` folder inside.
+You must first configure your `pesto/tests/resources` folder by creating a new `my_test_data` folder inside:
+
+```
+tests
+├── README.md
+└── resources/
+    ├── expected_describe.json
+    └── my_test_data/
+```
 
 The `pesto/tests/resources/my_test_data` must contains :
 
-- input : list of files to create the processing payload,
-- output : list of files to create the expected dictionary response from the processing.
+- **input** : list of files to create the processing payload
+- **output** : list of files to create the expected dictionary response from the processing
 
-!!! note
-    Available types and format for input and output are detailed in [configuration section](package_configuration.md).
+The `input` and `output` directories both describes a json payload (the processing input and output).
+Each filename `key.type` in those folders must match an entry in its corresponding `*_schema.json` :
+
+!!! Note "key.type files"
+
+    `key` is the variable name of the input/output
+
+    `type` is the primitive type of the key :
+
+    - `*.string`, `*.float`, `*.int`
+    - `*.json` : dictionaries
+    - `*.tif`, `*.jpg`, `*.png` for images.
+    - arrays can be constructed using a folder `key` containing its enumerated items (`1.int`, `2.int`, ...)
+
+
+!!! Example
+
+    ```text
+    my_test_data
+    ├── input
+    │   ├── dict_parameter.json
+    │   ├── image.png
+    │   ├── integer_parameter.int
+    │   ├── number_parameter.float
+    │   ├── object_parameter.json
+    │   └── string_parameter.string
+    └── output
+        ├── areas
+        │   ├── 0.json
+        │   └── 1.json
+        ├── dict_output.json
+        ├── geojson.json
+        ├── image_list
+        │   ├── 0.png
+        │   └── 1.png
+        ├── image.png
+        ├── integer_output.integer
+        ├── number_output.float
+        └── string_output.string
+    ```
+
+
+!!! Note "json payload"
+
+    ```
+    pesto/tests/resources/my_test_data/input
+    ├── key1.string (containing 'text')
+    ├── key2.int (containing '33')
+    └── key3.float (containing '3.14')
+    ```
+
+    Results in the following 'input' payload:
+
+    ```
+    {
+        "key1" : "text",
+        "key2" : 33,
+        "key3" : 3.14
+    }
+    ```
+
 
 Then, make sure that `pesto/tests/test_service.py` contains a test pointing to your `my_test_data` folder.
 
@@ -29,9 +96,10 @@ Finally, run the following command :
     ```
 
 !!! note
-	`pesto test` is designed not to fail if the requests pass; Instead it will simply compare dictionaries and display / 
+    `pesto test` is designed not to fail if the requests pass. Instead, it will simply compare dictionaries and display / 
      save the differences as well as the responses, so that the user can go look at what happened and check if this is correct.
-     `pesto test` should be used for debug purposed and not for unit test purposes.
+     
+    `pesto test` should be used for debug purposed and not for unit test purposes.
 
 In basic template, two test are implemented (`test_1` & `test_2`) with two images and their output. They successfully pass as:
 
@@ -61,12 +129,3 @@ INFO     | pesto.common.testing.test_runner:run_all:109 - {
 }
 INFO     | pesto.common.testing.test_runner:run_all:110 - --- Copying tests outputs to /tmp/pesto/tests/algo-service/1.0.0.dev0
 ```
-
-**Example:**
-
-Each file in the `input` and `output` folder is interpreted following the following rules :
-
-- the extension must be one of 'string', 'int', 'float', 'json' or some image extension (jpg, bmp, tif are supported).
-
-
-

@@ -35,12 +35,26 @@ One of the main points of attention is to align schemas of `input_schema.json` a
 
 ## Python algorithm
 
+Look at `algorithm/process.py`. This is the module that will be loaded by PESTO inside our server and which will be called during preprocessing. 
+
+There is a `Process` class with `on_start()` and `process()` methods.
+
+### Process.on_start()
+
+The `algorithm/process.py` should contains a `Process` class with the `Process.on_start()` method.
+
+The `on_start()` method will be called on the first processing request. It is used to load resources such as Machine Learning models that are then called in the `Process.process()` method.
+
+### Process.process()
+
 The `algorithm/process.py` should contains a `Process` class with the `Process.process()` method.
+
+The `process()` method is called during call to `/api/v1/process`, when we want to actually process input data
 
 !!! warning
     Depending on the `Process.process()` function signature, you will be able to automatically generate or not the input/output schemas with [`pesto schemagen`](pesto_schemagen.md).
 
-If you can encapsulate the input parameters in the `algorithm.input_output.Input` [dataclass](https://docs.python.org/3/library/dataclasses.html) and the returned objects in the `algorithm.input_output.Output` dataclass, then you can benefit from the [schema generation](pesto_schemagen.md). Simply edit the `algorithm/input_output.py` file to specify the input parameters and the output structure. The signature of the algorithm must be 
+If you can encapsulate the input parameters in the `algorithm.input_output.Input` [dataclass](https://docs.python.org/3/library/dataclasses.html) and the returned objects in the `algorithm.input_output.Output` dataclass, then you can benefit from the [schema generation](pesto_schemagen.md). Simply edit the `algorithm/input_output.py` file to specify the input parameters and the output structure. The signature of the algorithm must be
 ```py 
 process(input: Input) -> Output
 ```
