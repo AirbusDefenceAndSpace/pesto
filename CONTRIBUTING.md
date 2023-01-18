@@ -36,3 +36,36 @@ To deploy the documentation locally and make it available on [localhost:8000/pes
 cd pesto-cli
 mkdocs serve
 ```
+
+## Publication on Pypi
+
+Bump version number:
+```bash
+vim pesto-cli/version.py
+```
+
+Update the changelog:
+```bash
+vim CHANGELOG.md
+```
+
+Build the package:
+```bash
+cd pesto-cli
+python setup.py bdist_wheel sdist
+```
+
+Install `twine`, a utility for publishing Python packages on PyPI:
+```bash
+sudo apt install twine
+```
+
+Push the package on TestPyPy, the PyPI test server (replace `__token__` with your TestPyPI [API token](https://test.pypi.org/help/#apitoken)):
+```bash
+twine upload -u __token__ --repository testpypi dist/*
+```
+
+Push the package on PyPI (replace `__token__` with your PyPI [API token](https://pypi.org/help/#apitoken)):
+```bash
+twine upload -u __token__ dist/*
+```
