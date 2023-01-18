@@ -271,7 +271,7 @@ The following fields are required :
   },
   "requirements": {
     "lib1": {
-      "from": "file:///tmp/my-lib1.tar.gz",
+      "from": "file:///tmp/my-lib1",
       "to": "/opt/lib1",
       "type": "python"
     },
