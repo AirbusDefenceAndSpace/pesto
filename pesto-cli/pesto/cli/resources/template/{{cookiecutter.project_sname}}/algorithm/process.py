@@ -1,6 +1,6 @@
 import time
 import numpy as np
-
+from algorithm.input_output import Input, Output
 
 def create_box(x, y, width, height):
     return {
@@ -41,31 +41,27 @@ class Process:
         Process.MODEL = staticmethod(my_model)
 
     # process function, called each time a processing request is send to the service.
-    # note: images are represented in numpy as follows [channel, hight, width].
-    def process(
-        self,
-        image,
-        dict_parameter,
-        object_parameter,
-        integer_parameter,
-        number_parameter,
-        string_parameter,
-    ):
+    # Note: images are represented in numpy as follows [channel, hight, width].
+    # Note: Any change to the Input and Output classes (input_output.py) must be followed 
+    # by the "pesto schemagen" command in order to generate the input & output json 
+    # schemas.
+    def process(self, input:Input):
         """
         The core algorithm is implemented here.
         """
 
         # Defaults
-        dict_parameter = dict_parameter or dict()
-        object_parameter = object_parameter or dict()
-        integer_parameter = integer_parameter or 0
-        number_parameter = number_parameter or 0.7
-        string_parameter = string_parameter or "defaultString"
+        dict_parameter = input.dict_parameter or dict()
+        object_parameter = input.object_parameter or dict()
+        integer_parameter = input.integer_parameter or 0
+        number_parameter = input.number_parameter or 0.7
+        string_parameter = input.string_parameter or "defaultString"
 
         dict_parameter["object"] = object_parameter
 
+        image = input.image
         # Simulates longer algorithm
-        time.sleep(5)
+#        time.sleep(5)
 
         h, w = image.shape[1], image.shape[2]
 
@@ -84,35 +80,34 @@ class Process:
             self.MODEL(image=image, gamma=1.5),
         ]
 
-        result = {
-            "image": output,
-            "number_output": number_parameter,
-            "integer_output": integer_parameter,
-            "string_output": string_parameter,
-            "dict_output": dict_parameter,
-            "areas": areas,
-            "image_list": image_list,
-            "geojson": {
-                "features": [
-                    {
-                        "geometry": create_box(0, 0, width=w, height=h),
-                        "properties": {
-                            "category": "cat",
-                            "confidence": 0.99,
-                            "name": "chelsea"
+        process_output=Output(
+            image= output,
+            number_output= number_parameter,
+            integer_output= integer_parameter,
+            string_output= string_parameter,
+            dict_output= dict_parameter,
+            areas= areas,
+            image_list= image_list,
+            geojson= {
+                    "features": [
+                        {
+                            "geometry": create_box(0, 0, width=w, height=h),
+                            "properties": {
+                                "category": "cat",
+                                "confidence": 0.99,
+                                "name": "chelsea"
+                            },
+                            "type": "Feature"
                         },
-                        "type": "Feature",
-                    },
-                    {
-                        "geometry": create_box(int(w // 4), int(h // 4), width=int(w // 2), height=int(h // 2)),
-                        "properties": {
-                            "category": "egyptian_cat",
-                            "confidence": 0.42,
-                        },
-                        "type": "Feature",
-                    },
-                ]
-            },
-        }
-
-        return result
+                        {
+                            "geometry": create_box(int(w // 4), int(h // 4), width=int(w // 2), height=int(h // 2)),
+                            "properties": {
+                                "category": "egyptian_cat",
+                                "confidence": 0.42,
+                            },
+                            "type": "Feature"
+                        }
+                    ]
+            }
+        )
+        return process_output

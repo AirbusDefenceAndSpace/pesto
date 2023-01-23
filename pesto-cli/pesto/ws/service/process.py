@@ -23,8 +23,11 @@ log = logging.getLogger(__name__)
 
 class ProcessService:
     PROCESS_CLASS_NAME = 'algorithm.process.Process'
+    PROCESS_INPUT_CLASS_NAME = 'algorithm.input_output.Input'
+    PROCESS_OUTPUT_CLASS_NAME = 'algorithm.input_output.Output'
 
     _algorithm: Optional[Callable] = None
+    _input_class = None
     _describe = None
 
     @staticmethod
@@ -39,12 +42,20 @@ class ProcessService:
                 log.info('ProcessService.on_start() ...')
                 ProcessService._algorithm.on_start()
                 log.info('ProcessService.on_start() ... Done !')
-
             log.info('ProcessService.init() ... Done !')
-
-        except:
+        except Exception as e:
             traceback.print_exc()
             log.warning('Algorithm {}.on_start() failure !'.format(ProcessService.PROCESS_CLASS_NAME))
+            log.error(e)
+        try:
+            ProcessService._input_class = load_class(ProcessService.PROCESS_INPUT_CLASS_NAME)
+            ProcessService._output_class = load_class(ProcessService.PROCESS_OUTPUT_CLASS_NAME)
+        except Exception as e:
+            traceback.print_exc()
+            ProcessService._input_class = None
+            ProcessService._output_class = None
+            log.warning('Algorithm {}.on_start() failed to load Input / Output classes.'.format(ProcessService.PROCESS_CLASS_NAME))
+            log.error(e)
 
     def __init__(self, url_root: str):
         self.url_root = url_root
@@ -72,7 +83,7 @@ class ProcessService:
             active_roi.compute_crop_infos(),
             PayloadConverter(image_roi=image_roi, schema=input_schema),
             PayloadDebug(schema=input_schema),
-            AlgorithmWrapper(ProcessService._algorithm),
+            AlgorithmWrapper(ProcessService._algorithm, input_class=ProcessService._input_class, output_class=ProcessService._output_class),
             active_roi.remove_margin(),
             ResponseSerializer(schema=output_schema, job_id=job_id),
         ])

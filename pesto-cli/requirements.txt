@@ -1,5 +1,5 @@
 docker>=3.1.0
-fastapi
+fastapi==0.88.0
 wget
 cookiecutter
 jsonschema
