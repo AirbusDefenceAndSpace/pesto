@@ -13,21 +13,27 @@ edit_uri: ""
 use_directory_urls: false
 
 # Copyright
-copyright: Copyright &copy; 2020 Airbus Defence and Space
+copyright: Copyright &copy; 2023 Airbus Defence and Space
 
 # Configuration
 theme:
-    name: readthedocs
+    name: material
     highlightjs: true
 
 # Plugins
 plugins:
   - search
-  - markdownmermaid
+  - mermaid2
 
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
 
 extra_javascript:
 #  - https://unpkg.com/mermaid@8.0.0/dist/mermaid.min.js
@@ -35,19 +41,27 @@ extra_javascript:
 
 # Page tree
 nav:
-  - About: index.md
-  - Installation & configuration:
-      - Get started: installation.md
-      - Configuration: configuration.md
-      - Conventions: conventions.md
-  - Tutorials:
-      - Deploying a pytorch model: tutorial_pytorch.md
-      - PESTO large scale deployment: tutorial_deployment.md
+  - About: about.md
+  - Get started: get_started.md
+  - Package an Algorithm:
+      - Create a PESTO project: package_pesto_project.md
+      - Project configuration: package_configuration.md
+      - Build the Docker image: package_docker_image.md
+      - Test the Docker image: package_test.md
+  - Run the Algorithm:
+      - Run the packaged algorithm: deploy_run_docker_image.md
+      - Web-service: deploy_web_service.md
   - PESTO commands:
       - init:  pesto_init.md
+      - schemagen: pesto_schemagen.md
       - build: pesto_build.md
       - test:  pesto_test.md
+      - run: pesto_run.md
+      - list: pesto_list.md
+  - Tutorial:
+      - Deploying a pytorch model: tutorial_pytorch.md
   - PESTO in details:
-      - Web-service: endpoints.md
-      - Cookbook: cookbook.md
-      - Design : design.md
+      - Conventions: details_conventions.md
+      - Design : details_design.md
+      - Cookbook: details_cookbook.md
+      - Troubleshooting: details_troubleshooting.md

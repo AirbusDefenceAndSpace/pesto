@@ -1,15 +1,15 @@
-# `pesto init` : Create a new packaging project
+# Create PESTO project
 
 The first step to package your processing library is to create a new project.
 
-In a terminal :
-```bash
-$ pesto init /path/to/your/workspace
+
+In a terminal, use the [pesto init command](pesto_init.md) to create a PESTO project in the desired repository. :
+
+```shell
+pesto init /path/to/your/workspace
 ```
 
-## Project descriptions fields
-
-You will be prompted for some information to fill the default template.
+You will be prompted for some information to fill the default template:
 
 ```
 ---------------------------------------------------------------------------------------------------------------------------
@@ -25,65 +25,43 @@ Please fill necessary information to initialize your template
 
 maintainer_fullname [pesto]: 
 maintainer_email [pesto@airbus.com]: 
-project_name [algo-service]: xxx-service
-project_sname [algo-service]: xxx-service
+project_name [algo-service]: 
+project_sname [algo-service]: 
 project_short_description [Pesto Template contains all the boilerplate you need to create a processing-factory project]: 
 project_version [1.0.0.dev0]: 
 
-Service generated at /path/to/your/workspace/xxx-service
+Service generated at /path/to/your/workspace/algo-service
 ```
 
-The following fields can be set to describe your custom algorithm:
-
-- **maintainer_fullname**
-- **maintainer_email**
-- **project_name**
-- **project_sname**: Project short name
-- **project_short_description**
-- **project_version**
-
-[//]: # (TODO: Add the precise use of each field?)
+You can press ENTER to let the default values of the project description fields.
 
 This will create a new project named `/path/to/your/workspace/xxx-service` with the following structure:
 
 ```text
-xxx-service/
-├── algorithm
-│   ├── __init__.py
-│   ├── input_output.py
-│   └── process.py
-├── __init__.py
+algo-service/
+├── ...
 ├── Makefile
-├── MANIFEST.in
+├── algorithm
+│   ├── ...
+│   ├── input_output.py
+│   └── process.py
 ├── pesto
 │   ├── api
+│   │   ├── ...
+│   │   ├── description.json
+│   │   ├── description.stateful.json
+│   │   ├── input_schema.json
+│   │   ├── output_schema.json
+│   │   └── user_definitions.json
 │   ├── build
+│   │   ├── build.json
+│   │   ├── requirements.gpu.json
+│   │   └── requirements.json
 │   └── tests
-├── README.md
 ├── requirements.txt
-└── setup.py
+└── ...
 ```
 
 !!! Note
-    The project is ready and setup for a simple processing, but you should [edit the configuration files](package_configuration.md) to tune PESTO to your needs.
-
-
-## Custom template
-
-If you have many project sharing some information (your company, email, requirements ...) you can create a specific template.
-
-- Copy the default template to a new place for your own template :
-
-```bash
-$ pip show processing-factory | grep Location | awk '{print $NF}' > /tmp/pesto_site_packages.txt
-$ cp -r `cat /tmp/pesto_site_packages.txt`/pesto_cli/resources/pesto-template /path/to/my_pesto_template
-```
-
-- Edit your template to fix the default values.
-
-- Create a new PESTO project using your own template :
-
-```bash
-$ pesto init -t /path/to/my_pesto_template /path/to/your/workspace/xxx-service
-```
+    The project is ready and setup for a simple processing, but you should at least [edit some configuration files](package_configuration.md) to tune PESTO to your needs.
 
