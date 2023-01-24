@@ -1,0 +1,54 @@
+{
+    "object_parameter": {
+        "description": "A dict parameter with more spec, of the form {'key':'value'}",
+        "type": "object",
+        "properties": {
+            "key": {
+                "type": "string"
+            }
+        }
+    },
+    "geojson": {
+        "description": "A Geojson.FeatureCollection containing only Polygons as geometries",
+        "type": "object",
+        "properties": {
+            "features": {
+                "type": "array",
+                "items": {
+                    "$schema": "http://json-schema.org/draft-06/schema#",
+                    "title": "GeoJSON Feature",
+                    "type": "object",
+                    "required": [
+                        "type",
+                        "properties",
+                        "geometry"
+                    ],
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "Feature"
+                            ]
+                        },
+                        "properties": {
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "object"
+                                }
+                            ]
+                        },
+                        "geometry": {
+                            "$ref": "#/definitions/Polygon"
+                        }
+                    }
+                }
+            },
+            "type": {
+                "type": "string"
+            }
+        }
+    }
+}
