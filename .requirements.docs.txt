@@ -1,4 +1,4 @@
 mkdocs
 mkdocs-material
 pymdown-extensions
-git+https://github.com/pugong/mkdocs-mermaid-plugin
+mkdocs-mermaid2-plugin

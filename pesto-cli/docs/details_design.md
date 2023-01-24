@@ -2,15 +2,15 @@
 
 ## Introduction
 
-PESTO stands for ProcESsing facTOry and was initially designed to answer the need for fast and efficient integration of image processing algorithms using deep learning (DL) in our ground segment products.
+PESTO stands for **ProcESsing facTOry** and was initially designed to answer the need for fast and efficient integration of image processing algorithms using deep learning (DL) in our ground segment products.
 
 Next sections are organized as follows: 
 
-* Need identification: this section presents the expectations, what we would like to do.
-* Base architecture identification: this section details the architecture of Pesto. It describes how we answer to our objectives.
-* Processing API management: this section provides guidelines on how to design a processing API for PESTO.
-* Performances: this section tells how PESTO should perform, how we demonstrated it was scalable.
-* Who uses PESTO: this section provides a list of projects / products that are using PESTO. 
+* [Need identification](#need-identification): this section presents the expectations, what we would like to do.
+* [Base architecture identification](#base-architecture-definition): this section details the architecture of Pesto. It describes how we answer to our objectives.
+* [Implementation details](#implementation-details): this section details some technologies used by pesto
+* [Processing API management](#processing-api-management): this section provides guidelines on how to design a processing API for PESTO.
+* [Performances](#performances): this section tells how PESTO should perform, how we demonstrated it was scalable.
 
 
 ## Need identification
@@ -24,7 +24,8 @@ From these remarks and an analysis of what should be PESTO, a base architecture 
 
 ## Base architecture definition
 
-Let’s take the widespread use case of cloud detection on satellite imagery in order to introduce the main integration steps and possibilities. A classical workflow applied when images are received is presented in Figure [Cloud Detection Pipeline](#fig-ipcloud )
+Let’s take the widespread use case of cloud detection on satellite imagery in order to introduce the main integration steps and possibilities. 
+A classical workflow applied when images are received can be represented as follows:
 
 ![image](img/CloudDetectionProcess.png)
 
@@ -45,27 +46,29 @@ The base architecture of PESTO is then derived from these needs. PESTO is compos
 
 The runtime is a webserver which conforms to an OpenAPI specification. The OpenAPI Specification (OAS) defines a standard, language-agnostic interface to RESTful APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection. When properly defined, a consumer can understand and interact with the remote service with a minimal amount of implementation logic, see [SWAGGER](https://swagger.io/specification/).
 
-The architecture of the runtime is presented in Figure [PESTO instance for cloud detection](#fig-pestocloud )
+The architecture of the runtime is represented as follows:
 
 ![image](img/PestoArchi.png)
 
 *<a name="fig-pestocloud">Figure: Architecture of a PESTO runtime for cloud detection</a>*
 
 PESTO web server offers three web services that are :
-- /api/v1/health: it provides information on the availability of the service,
-- /api/v1/describe: it provides information on the processing service that is deployed. Information on inputs, outputs, deployment requirements and so on are given here. PESTO does not constrain the definition of input and output parameters to offer a versatile solution. In return, a standardization effort has to be conducted in parallel.
-- /api/v1/process: call the processing function. Request parameters must respect the definition provided by /api/v1/describe.
+
+- **/api/v1/health**: provides information on the availability of the service
+- **/api/v1/describe**: provides information on the processing service that is deployed. Information on inputs, outputs, deployment requirements and so on are given here. PESTO does not constrain the definition of input and output parameters to offer a versatile solution. In return, a standardization effort has to be conducted in parallel.
+- **/api/v1/process**: call the processing function. Request parameters must respect the definition provided by `/api/v1/describe`.
 
 PESTO is also in charge to convert, when required, the data from the REST API to the processing API. For most of parameters, they won’t be any major conversion. In the current implementation, only the image type is converted such that the processing has access to the image data as a buffer. The philosophy is to remove any I/O operations from the algorithm implementation to limit the any adherence with the data source or destination.
 
-The runtime is provided as a standalone docker image that can be deployed everywhere and how many times as necessary.
+The runtime is provided as a **standalone docker image** that can be deployed everywhere and how many times as necessary.
 
 
 ### PESTO packaging manager
 
-The packaging manager is a set of tools and templates to help the data scientist to deliver its algorithm. Indeed, one goal of PESTO is really to ease the delivery of an algorithm designed by a data scientist.
+The packaging manager is a set of tools and templates to help the data scientist to deliver its algorithm. 
+Indeed, one goal of PESTO is really to ease the delivery of an algorithm designed by a data scientist.
 
-The packaging workflow is described in Figure [PESTO packaging workflow](#fig-pestoworkflow )
+The packaging workflow is described as follows:
 
 ![image](img/PestoWorkflow.png)
 
@@ -77,7 +80,9 @@ The packaging workflow is described in Figure [PESTO packaging workflow](#fig-pe
 
 ### PESTO testing framework
 
-PESTO provides mechanisms to test the embedded processing function. A set of input and expected output parameters are provided by the data scientist. Then, the test function deploys the PESTO runtime and run tests.
+PESTO provides mechanisms to test the embedded processing function.
+A set of input and expected output parameters are provided by the data scientist. 
+Then, the [test function](pesto_test.md) deploys the PESTO runtime and run tests.
 
 
 ## Implementation details
@@ -88,19 +93,14 @@ PESTO is developed with Python3. Indeed, many Deep Leaning tools and frameworks 
 
 In order to make the link between requests on the web server and the processing implemented by the data scientist, a template to implement a python package and to provide a description of the API as well as build requirements is provided. 
 
-The python package is named algorithm.process.Process. The data scientist needs to fill the signature and the content of the process function and in particular include the call to the implementation of the processing function.
+The python package is named `algorithm.process.Process`. The data scientist needs to fill the signature and the content of the process function and in particular include the call to the implementation of the processing function.
 
-Then a set of configuration files have to be updated. A first set of configuration files (located in pesto/api) defines the API of the algorithm. Their content is described in the next section.
+Then a set of configuration files have to be updated. A first set of configuration files (located in `pesto/api`) defines the API of the algorithm. Their content is described in the next section.
 
-A second set of configuration files (located in pesto/build) defines how to build the runtime. We can define which root docker image to use, how to include DL models and parameters in the runtime, the name and version of the runtime,... One additional feature is the possibility to define several independent runtime profiles. For example, it is useful to define a runtime using only CPUs and a runtime using the GPU. 
+A second set of configuration files (located in `pesto/build`) defines how to build the runtime. 
+We can define which root docker image to use, how to include DL models and parameters in the runtime, the name and version of the runtime... 
 
-The process is depicted in Figure [PESTO packaging workflow](#fig-pestoworkflow2 )
-
-![image](img/DevBuildDeploy.png)
-
-*<a name="fig-pestoworkflow2">Figure: PESTO packaging workflow</a>*
-
-One last implementation detail that is worth to mention, is the management of the image type. The REST API allows to pass an image either as a string designating an image file (either on a web server, on the disk, or in a GCP storage) or an image raw buffer encoded in base64. PESTO is then in charge to fetch the data and to provide it to the algorithm.
+One additional feature is the possibility to define several independent runtime profiles. For example, it is useful to define a runtime using only CPUs and a runtime using the GPU. 
 
 
 ## Processing API management
@@ -121,25 +121,25 @@ We provide here some guidelines to define and manage JSON Schema used to define 
 * Define API that will allow to chain processing function.
 
 
-The definition of processing API should then be organized as depicted in Figure [Processing API management](#fig-apimanagement)
+The definition of processing API should then be organized as depicted as follows:
 
 ![image](img/geoapi.png)
 
 *<a name="fig-apimanagement">Figure: Processing API management</a>*
 
-* MyDescribe.yml: 
+* MyDescribe.yml:
+  
+    * Declares features of the process. It is used by orchestrators to select a service, deploy its docker image, feed it with the right data and exploit its result,
 
-	** Declares features of the process. It is used by orchestrators to select a service, deploy its docker image, feed it with the right data and exploit its result,
-
-	** The Format is extremely open to support any type of micro-service, however it is already batch processing compliant.
+    * The Format is extremely open to support any type of micro-service, however it is already batch processing compliant.
 
 * Default data types for GeoApplications:
 
-	** image.json: Declares the format of an image and its attributes: compression type, spectral bands, sensor, ephemeris.
+    * *image.json*: Declares the format of an image and its attributes: compression type, spectral bands, sensor, ephemeris.
 
-	** imageCapabilities: Declares how to specify filters describing supported images.
+    * *imageCapabilities*: Declares how to specify filters describing supported images.
 
-	** inputCapabilities: gather together all possible input capabilities of the project, somehow it references ImageCapabilities.json
+    * *inputCapabilities*: gather together all possible input capabilities of the project, somehow it references ImageCapabilities.json
 
 
 
@@ -149,47 +149,25 @@ PESTO runtime is a wrapper around the algorithm to make it available as a web se
 
 The memory overhead, that also characterizes the extrinsic performances, has not been evaluated yet. But in our use cases involving image processing, it should remain negligible.
 
-PESTO has been deployed at scale in Google Cloud Platform to process large satellite imagery. The architecture of the deployed system is presented in Figure [PESTO at scale for EO processing with GPU](#fig-pestoatscale). PESTO runtimes are identified with the icon ![logo](img/PestoArchiLogo.png). The platform was created with 3 GPU workers and 13 workers (with 8 CPU each) for PESTO runtimes.
+!!! Example "Example: GCP deployment"
 
-![image](img/EoPaasArchitecture.png)
+    PESTO has been deployed at scale in Google Cloud Platform to process large satellite imagery. 
+    The architecture of the deployed system is represented as follows: 
+    
+    ![image](img/EoPaasArchitecture.png)
+    
+    *<a name="fig-pestoatscale">Figure: PESTO at scale for EO processing with GPU</a>*
+    
+    PESTO runtimes are identified with the icon ![logo](img/PestoArchiLogo.png). 
+    
+    The platform was created with 3 GPU workers and 13 workers (with 8 CPU each) for PESTO runtimes.
 
-*<a name="fig-pestoatscale">Figure: PESTO at scale for EO processing with GPU</a>*
+!!! Example "Example: Conductor deployment"
 
+    * PESTO has also been deployed at larger scale with [Conductor](https://netflix.github.io/conductor/) (Orchestrator from Netflix) to run a pipeline of two tasks provided as PESTO micro services:
 
+    ![image](img/PestoWithConductor.png)
 
-PESTO has also been deployed at larger scale with [Conductor](https://netflix.github.io/conductor/) (Orchestrator from Netflix) to run a pipeline of two tasks provided as PESTO micro services, see Figure [PESTO at scale with Conductor](#fig-pestowithconductor). 100 workers for PESTO were created.
+    *<a name="fig-pestowithconductor">Figure: PESTO at scale with Conductor</a>*
 
-![image](img/PestoWithConductor.png)
-
-*<a name="fig-pestowithconductor">Figure: PESTO at scale with Conductor</a>*
-
-
-
-## Who uses PESTO
-
-PESTO is currently used by Airbus Defense and Space / Connected Intelligence.
-
-PESTO is under integration by the Airbus Defense and Space / Space Systems Oasis project. It is used to integrate and manage algorithms for TM/TC analysis.
-
-PESTO is under integration by Airbus Defense and Space / Space Systems in its ground segment image chain.
-
-Workshops have been taking place with end-users in order define a solution that first could be integrated in our ground segment product lines. They have contributed to the definition of the product and have validated its integration in their own software stack.
-
-## PESTO roadmap
-
-PESTO was thought to accelerate the integration in our products of Deep Learning algorithms, being developed by Airbus or by partners. That is why, one of the first priorities is to make it open source.
-
-PESTO was initially designed for image processing in mind. Some specificities were then included in the runtime. Our second priority is to set up mechanisms to include user data converters as plugins and to support various Linux families.
-
-PESTO needs to be orchestrated. Simple tutorials and examples to deploy PESTO at scale and manage distributed processing have to be written in order to foster its acceptance by the community.
-
-PESTO testing and deployment framework still need additional effort to offer a complete workflow towards continuous deployment and validation.
-
-
-
-
-
-
-
-
-
+    100 workers for PESTO were created.
