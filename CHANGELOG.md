@@ -4,6 +4,10 @@
 ## 1.6.0
 - Significant documentation update : updates (tutorial, pesto commands), new sections (contributing, running pesto, ), new documentation organisation and a new skin.
 
+## 1.5.0
+- PESTO provides an automatic schema generation: generation of the input & output json schemas based on the signature of the process function
+- Cache for pesto build: a faster docker image build with different cache levels
+
 ## 1.4.0
 - PESTO CLI now uses Typer to reduce code base
 - Add run commands to CLI to run processing (locally or in docker image) with pesto run
