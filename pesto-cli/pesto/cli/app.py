@@ -67,6 +67,7 @@ def build(build_config: str,
 def test(build_config: str,
          profile: List[str]=typer.Option(list(),"--profile","-p",help="Select specific files to update"),
          nvidia: bool=typer.Option(False,help="Run docker with nvidia runtime"),
+         ssl: bool=typer.Option(False,help="run with SSL"),
          network: str=typer.Option(None,"--network","-n",help="Define a specific network t run docker")):
     """
     Test algorithm from given build.json
@@ -74,7 +75,7 @@ def test(build_config: str,
     build_config = BuildConfig.from_path(path=search_build_config(build_config), profiles=profile, network=network)
     PESTO_LOG.info('build configuration : {}'.format(build_config))
     pesto_path = Path(build_config.algorithm_path) / 'pesto' / 'tests' / 'resources'
-    TestRunner(docker_image_name=build_config.docker_image_name, network=network, nvidia=nvidia).run_all(pesto_path)
+    TestRunner(docker_image_name=build_config.docker_image_name, network=network, nvidia=nvidia, ssl=ssl).run_all(pesto_path)
 
 @app.command()
 def list():

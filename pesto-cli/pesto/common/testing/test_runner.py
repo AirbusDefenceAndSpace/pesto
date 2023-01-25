@@ -12,10 +12,11 @@ TMP_PATH = Path("/tmp/pesto/")
 
 
 class TestRunner:
-    def __init__(self, docker_image_name: str, network: str = None, nvidia=False):
+    def __init__(self, docker_image_name: str, network: str = None, nvidia=False, ssl=False):
         self.docker_image_name = docker_image_name
         self.nvidia = nvidia
         self.network = network
+        self.ssl = ssl
 
         image, tag = self.docker_image_name.split(":")
 
@@ -29,7 +30,7 @@ class TestRunner:
 
         shutil.rmtree(self._tmp_test_resources, ignore_errors=True)
         self._tmp_test_resources.mkdir(exist_ok=True, parents=True)
-
+        describe_file = "*describe.ssl.json" if self.ssl else "*describe.json"
         for path in sorted(test_resources_path.iterdir()):
 
             if path.is_dir() and "test_" in path.stem:
@@ -39,7 +40,7 @@ class TestRunner:
 
                 tests.append(self._tmp_test_resources / test_dir)
 
-            elif path.is_file() and path.match("*describe*.json"):
+            elif path.is_file() and path.match(describe_file):
                 with open(path, 'r') as f:
                     describe = json.load(f)
 
@@ -56,7 +57,8 @@ class TestRunner:
                 nvidia=self.nvidia,
                 attach_when_running=True,
                 image_volume_path="/tmp/",
-                host_volume_path="/tmp"
+                host_volume_path="/tmp",
+                use_ssl=self.ssl
         ) as service:
 
             # force restarting service
@@ -72,7 +74,8 @@ class TestRunner:
             all_results = dict()
 
             # Save describes for debug
-            with open(self._tmp_test_resources / "expected_describe.json", "w") as f:
+            expected_describe_file = "expected_describe.ssl.json" if self.ssl else "expected_describe.json"
+            with open(self._tmp_test_resources / expected_describe_file, "w") as f:
                 json.dump(expected_describe, f, indent=2)
 
             with open(self._tmp_test_resources / "actual_describe.json", "w") as f:
