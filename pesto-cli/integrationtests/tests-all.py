@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 
 import docker
 import json
@@ -91,12 +92,14 @@ def check_variable(data, variable, expected, file):
     return True
 
 
-def check_build():
+def check_build(use_ssl=False):
     print("---------------------------------")
     print("---- Testing `build` command ----")
     print("---------------------------------")
+
     # Note: the default template generates a 1.2G image
-    build(os.path.join(temp, sname), list(), None, None, "host")
+    build(os.path.join(temp, sname, "pesto", "build", "build.json"),
+          list(), None, None, "host")
 
     docker_client = docker.from_env()
     image = docker_client.images.get(image_name)
@@ -104,7 +107,7 @@ def check_build():
         print("!!!! `build` command test failed: Docker image '{}' NOT found.".format(image_name))
         return False
 
-    with ServiceManager(docker_image=image_name, network="host") as service:
+    with ServiceManager(docker_image=image_name, network="host", use_ssl=use_ssl) as service:
         service.run()
         time.sleep(5)
         describe = EndpointManager(server_url=service.server_url).describe
@@ -116,51 +119,62 @@ def check_build():
             return False
 
 
-def check_run_docker():
+def check_run_docker(use_ssl=False):
     print("--------------------------------------")
     print("---- Testing `run docker` command ----")
     print("--------------------------------------")
 
     result_file = os.path.join(temp, "run_docker_output.txt")
-    pesto_docker(payload, image_name, result_file, None, None, False, "host", True)
+    pesto_docker(payload, image_name, result_file, None, None, False, use_ssl, "host", True)
     if os.path.exists(result_file):
         with open(result_file) as json_file:
             data = json.load(json_file)
             if data.get('image') is not None:
                 print(">>>> `run docker` command test successful: image found in output file.")
                 return True
+            else:
+                print("!!!! `run docker` command test failed: no image found in output file found.")
+                print(data)
+                return False
     else:
         print("!!!! `run docker` command test failed: no output file found.")
+        return False
 
-    return False
 
-
-def check_run_local():
+def check_run_local(use_ssl=False):
     print("-------------------------------------")
     print("---- Testing `run local` command ----")
     print("-------------------------------------")
 
     result_file = os.path.join(temp, "run_local_output.txt")
     docker_client = docker.from_env()
-    docker_client.containers.run("algo-service:1.0.0.dev0",
+    docker_client.containers.run(image_name,
                                  ["bash", "-c", "pesto run local '{}' {}".format(payload, result_file)],
                                  auto_remove=True,
-                                 volumes=["{}:{}".format(temp, temp)])
+                                 volumes=["{}:{}".format(temp, temp)],
+                                 environment={"PESTO_USE_SSL": '1' if use_ssl else '0'})
+    print("---- docker started ----")
 
     if os.path.exists(result_file):
         with open(result_file) as json_file:
             data = json.load(json_file)
             if data.get('image') is not None:
                 print(">>>> `run local` command test successful: image found in output file.")
+                return True
+            else:
+                print("!!!! `run docker` command test failed: no image found in output file found.")
+                print(data)
+                return False
     else:
         print("!!!! `run local` command test failed: no output file found.")
+        return False
 
 
-def check_test():
+def check_test(use_ssl=False):
     print("--------------------------------")
     print("---- Testing `test` command ----")
     print("--------------------------------")
-    test(os.path.join(temp, sname, "pesto", "build", "build.json"), list(), False, None)
+    test(os.path.join(temp, sname, "pesto", "build", "build.json"), list(), False, use_ssl, None)
 
     result_file = os.path.join(tempfile.gettempdir(), "pesto", "tests", "algo-service", "1.0.0.dev0", "results.json")
     if os.path.exists(result_file):
@@ -169,10 +183,13 @@ def check_test():
             expected_data = json.loads('{"describe":{"NoDifference": true},"test_1":{"NoDifference": true},"test_2":{"NoDifference": true}}')
             if result_data == expected_data:
                 print(">>>> `test` command test successful: no differences detected.")
+                return True
             else:
                 print("!!!! `test` command test failed: differences found. Check results in {}.".format(result_file))
+                return False
     else:
         print("!!!! `test` command test failed: no result file found.")
+        return False
 
 
 def rm_temp_dir():
@@ -182,20 +199,41 @@ def rm_temp_dir():
 
 if __name__ == "__main__":
     rm_temp_dir()
+    success = True
 
     try:
-        print("=================================")
-        print("==== Testing legacy template ====")
-        print("=================================")
-        check_init(True) and check_build() and check_run_docker() and check_run_local() and check_test()
+        print("==========================================")
+        print("==== Testing legacy template with SSL ====")
+        print("==========================================")
+        success = success and check_init(True) and check_build(True) and check_run_docker(True) and check_run_local(True) and check_test()
 
         rm_temp_dir()
 
-        print("====================================")
-        print("==== Testing generated template ====")
-        print("====================================")
-        check_init() and check_build() and check_run_docker() and check_run_local() and check_test()
+        print("=============================================")
+        print("==== Testing legacy template without SSL ====")
+        print("=============================================")
+        success = success and check_init(True) and check_build() and check_run_docker() and check_run_local() and check_test()
+
+        rm_temp_dir()
+
+        print("=============================================")
+        print("==== Testing generated template with SSL ====")
+        print("=============================================")
+        success = success and check_init() and check_build(True) and check_run_docker(True) and check_run_local(True) and check_test()
+
+        rm_temp_dir()
+
+        print("================================================")
+        print("==== Testing generated template without SSL ====")
+        print("================================================")
+        success = success and check_init() and check_build() and check_run_docker() and check_run_local() and check_test()
 
     finally:
         rm_temp_dir()
+        if success:
+            print("****** ALL TESTS OK *******")
+            sys.exit(0)
+        else:
+            print("!!!!!! A TEST FAILED, CHECK THE LOGS ABOVE !!!!!!")
+            sys.exit(1)
 

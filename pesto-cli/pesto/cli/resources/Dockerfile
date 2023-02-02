@@ -65,6 +65,9 @@ RUN echo '***** configuration files ******************************'
     COPY ${algo_name}/pesto/api/version.json /etc/pesto/
     COPY ${algo_name}/pesto/api/config.json /etc/pesto/
 
+RUN echo '***** install ssl requirements ******************************'
+    COPY requirements/ssl /etc/pesto/ssl
+
 RUN echo '***** copy algo resources requirements ******************************'
     {% for name, path  in resources_requirements -%}
         COPY ${name} ${path}

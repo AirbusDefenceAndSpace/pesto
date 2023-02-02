@@ -103,10 +103,17 @@ app = FastAPI(
 
 app.include_router(v1)
 
+
 def main():
-    server = Server(Config(app,host="0.0.0.0",port=8080))
+    if os.environ.get('PESTO_USE_SSL') == '1':
+        key_file = os.path.join('etc', 'pesto', 'ssl', 'key.pem')
+        cert_file = os.path.join('etc', 'pesto', 'ssl', 'cert.pem')
+        server = Server(Config(app, host="0.0.0.0", port=8080, ssl_keyfile=key_file, ssl_certfile=cert_file))
+    else:
+        server = Server(Config(app, host="0.0.0.0", port=8080))
     setup_logging()
-    server.run()   
+    server.run()
+
 
 if __name__ == '__main__':
     main()

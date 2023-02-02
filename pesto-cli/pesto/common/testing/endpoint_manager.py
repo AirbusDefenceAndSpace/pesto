@@ -16,7 +16,7 @@ class EndpointManager:
     @property
     def is_alive(self) -> bool:
         try:
-            response = requests.get("{}/api/v1/health".format(self.server_url))
+            response = requests.get("{}/api/v1/health".format(self.server_url), verify=False)
 
             return response.status_code == 200
         except:
@@ -25,7 +25,7 @@ class EndpointManager:
     @property
     def describe(self) -> dict:
         if not self._describe:
-            self._describe = requests.get(url="{}/api/v1/describe".format(self.server_url)).json()
+            self._describe = requests.get(url="{}/api/v1/describe".format(self.server_url), verify=False).json()
         return self._describe
 
     @property
@@ -42,7 +42,7 @@ class EndpointManager:
 
     def process(self, payload: dict) -> dict:
         logger.debug(json.dumps(truncate_dict_for_debug(payload), indent=2))
-        response = requests.post(url="{}/api/v1/process".format(self.server_url), json=payload)
+        response = requests.post(url="{}/api/v1/process".format(self.server_url), json=payload, verify=False)
 
         if self.stateful:
             status_url = response.json()["link"]
@@ -97,7 +97,7 @@ class _StatefulJob:
 
     @property
     def is_done(self):
-        status = requests.get(self.status_url).json().get("status")
+        status = requests.get(self.status_url, verify=False).json().get("status")
         return status == "DONE"
 
     def wait_done(self, max_tries=20):
@@ -116,7 +116,7 @@ class _StatefulJob:
 
     @property
     def result(self):
-        result = requests.get(self.results_url).json()
+        result = requests.get(self.results_url, verify=False).json()
         result = self._parse_result(result)
         return result
 
@@ -137,7 +137,7 @@ class _StatefulJob:
 
     @staticmethod
     def _get_result(uri, key_type):
-        response = requests.get(uri)
+        response = requests.get(uri, verify=False)
         content_type = response.headers["Content-Type"]
 
         if key_type == "#/definitions/Images":

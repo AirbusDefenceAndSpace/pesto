@@ -22,6 +22,7 @@ Options:
 --host-volume-path TEXT             Volume to be mounted from host
 --image-volume-path TEXT            Where the volume is mounted in image
 --nvidia / --no-nvidia              use nvidia runtime  [default: no-nvidia]
+--ssl / --no-ssl                    run with SSL  [default: no-ssl]
 --network TEXT                      Network driver to be used  [default: host]
 --web-service / --no-web-service    Run the docker in WS mode, true by default. 
                                     Otherwise processing is exec in container after start  [default: web-service]
@@ -65,4 +66,75 @@ pesto run local '{"image":"file:///opt/algo-service/pesto/tests/resources/test_1
 Or from inside the container that has been generated:
 ```bash
 docker run -it --rm -v /tmp:/tmp algo-service:1.0.0.dev0 bash -c "pesto run local '{\"image\":\"file:///opt/algo-service/pesto/tests/resources/test_1/input/image.png\"}' /tmp/result.txt"```
+```
+
+## Note on SSL
+The service can be started in `https` mode. For instance:
+```bash
+pesto run docker --ssl '{"image":"file:///opt/algo-service/pesto/tests/resources/test_1/input/image.png"}' algo-service:1.0.0.dev0 /tmp/output_pesto.json
+```
+or 
+
+```bash
+docker run --rm -p 4000:8080 -e PESTO_USE_SSL='1' algo-service:1.0.0.dev0
+```
+This should start the container so that it can be accessed from `https://localhost:4000/api/v1`
+
+There are various ways to handle the certificates.
+They should be available in the docker image as `/etc/pesto/ssl/cert.pem` and `/etc/pesto/ssl/key.pem`.
+
+
+### Method 1: PESTO generated certificate
+By default, some self-signed certificates are generated and deployed in the docker image under `/etc/pesto/ssl/`.
+The certificate validity must be ignored in this case as it is not issued from a valid Certificate Authority.
+
+
+### Method 2: self generated certificate TODO: change doc to "generic" way to generate cert (openssl, mkcert...)
+You can also use your own certificate (generated with [mkcert](https://github.com/FiloSottile/mkcert) or openssl for instance).
+
+Once generated you must make an archive of the certificate and key and declare it as a requirement.
+```shell
+# generate the cert and key
+...
+# put them in an archive for PESTO requirements
+tar czf ssl.tar.gz cert.pem key.pem
+```
+
+Declare the resulting archive as a requirement in `requirements.json` (update the `from` path):
+```json
+{
+  "environments": {
+  },
+  "requirements": {
+    "ssl": {
+      "from": "file:///path/to/your/ssl.tar.gz",
+      "to": "/etc/pesto/ssl/"
+    }
+  },
+  "dockerBaseImage": "python:3.8-buster"
+}
+```
+
+### Method 3: Let's Encrypt certificate
+You need to get a DNS domain registered and follow the instructions from
+[Let's Encrypt](https://letsencrypt.org/getting-started/) documentation.
+
+You can then add your key and certificate:
+```shell
+tar czf ssl.tar.gz cert.pem key.pem
+```
+
+Declare the resulting archive as a requirement in `requirements.json` (update the `from` path):
+```json
+{
+  "environments": {
+  },
+  "requirements": {
+    "ssl": {
+      "from": "file:///path/to/your/ssl.tar.gz",
+      "to": "/etc/pesto/ssl/"
+    }
+  },
+  "dockerBaseImage": "python:3.8-buster"
+}
 ```

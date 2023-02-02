@@ -7,6 +7,7 @@ import tarfile
 import glob
 from pathlib import Path
 from typing import List
+from OpenSSL import crypto
 
 import wget
 
@@ -98,6 +99,35 @@ class Builder:
                 with tarfile.open(temporary_path, 'r:gz') as file:
                     file.extractall(path=target_path)
 
+    def generate_ssl_cert(self) -> None:
+        PESTO_LOG.info('********** copy SSL certificate **********')
+        # create a key pair
+        k = crypto.PKey()
+        k.generate_key(crypto.TYPE_RSA, 4096)
+        # create a self-signed cert
+        cert = crypto.X509()
+        cert.get_subject().C = "FR"
+        cert.get_subject().ST = "stateOrProvinceName"
+        cert.get_subject().L = "localityName"
+        cert.get_subject().O = "organizationName"
+        cert.get_subject().OU = "organizationUnitName"
+        cert.get_subject().CN = "commonName"
+        cert.get_subject().emailAddress = "pesto@localhost"
+        cert.set_serial_number(0)
+        cert.gmtime_adj_notBefore(0)
+        cert.gmtime_adj_notAfter(10*365*24*60*60)
+        cert.set_issuer(cert.get_subject())
+        cert.set_pubkey(k)
+        cert.sign(k, 'sha512')
+        temporary_path = os.path.join(self.workspace, 'requirements', 'ssl')
+        PESTO_LOG.info("********** copy SSL certificate in {} **********".format(temporary_path))
+        mkdir(os.path.join(temporary_path, "cert.pem"))
+        with open(os.path.join(temporary_path, "cert.pem"), "wt") as f:
+            f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert).decode("utf-8"))
+        mkdir(os.path.join(temporary_path, "key.pem"))
+        with open(os.path.join(temporary_path, "key.pem"), "wt") as f:
+            f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, k).decode("utf-8"))
+
     def copy_pesto_whl(self) -> None:
         PESTO_LOG.info('********** copy local pesto wheel if any **********')
         source_dir = os.path.join(Path.home(), ".pesto/dist")
@@ -125,5 +155,6 @@ def build(build_config_path: str, profiles: List[str],
     builder.conf_validation()
     builder.copy_factory_files()
     builder.copy_requirements()
+    builder.generate_ssl_cert()
     builder.copy_pesto_whl()
     builder.build_docker_image()
