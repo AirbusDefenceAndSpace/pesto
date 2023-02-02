@@ -89,7 +89,7 @@ By default, some self-signed certificates are generated and deployed in the dock
 The certificate validity must be ignored in this case as it is not issued from a valid Certificate Authority.
 
 
-### Method 2: self generated certificate TODO: change doc to "generic" way to generate cert (openssl, mkcert...)
+### Method 2: self generated certificate
 You can also use your own certificate (generated with [mkcert](https://github.com/FiloSottile/mkcert) or openssl for instance).
 
 Once generated you must make an archive of the certificate and key and declare it as a requirement.
