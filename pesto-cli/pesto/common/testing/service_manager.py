@@ -1,3 +1,4 @@
+import os
 import subprocess
 import time
 from typing import Any
@@ -20,13 +21,16 @@ class ServiceManager:
         nvidia=False,
         attach_when_running=False,
         network: str = None,
+        use_ssl=False
     ):
         self.docker_image = docker_image
         self.host_port = host_port
         self.service_port = service_port
+        self.scheme = "https" if use_ssl else "http"
         self.host_volume_path = host_volume_path
         self.image_volume_path = image_volume_path
         self.nvidia = nvidia
+        self.use_ssl = use_ssl
         self.attach_when_running = attach_when_running
         if network is None:
             self.network = "bridge"
@@ -51,12 +55,12 @@ class ServiceManager:
 
     @property
     def server_url(self):
-        return "http://localhost:{}".format(self.host_port)
+        return "{}://localhost:{}".format(self.scheme, self.host_port)
 
     @property
     def is_alive(self):
         try:
-            response = requests.get("{}/api/v1/health".format(self.server_url))
+            response = requests.get("{}/api/v1/health".format(self.server_url), verify=False)
             return response.status_code == 200
         except:
             return False
@@ -100,7 +104,8 @@ class ServiceManager:
                 volumes={self.host_volume_path: {
                     "bind": self.image_volume_path,
                     "mode": "rw",
-                }} if self.image_volume_path is not None and self.host_volume_path is not None else None
+                }} if self.image_volume_path is not None and self.host_volume_path is not None else None,
+                environment={"PESTO_USE_SSL": '1' if self.use_ssl else '0'}
             )
             time.sleep(2)
             logger.info("Container {} started, available at {}".format(self._docker_container.id, self.server_url))

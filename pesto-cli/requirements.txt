@@ -1,5 +1,5 @@
 docker>=3.1.0
-fastapi==0.88.0
+fastapi==0.83.0
 wget
 cookiecutter
 jsonschema
@@ -12,3 +12,4 @@ jinja2
 uvicorn
 loguru
 typer
+pyopenssl

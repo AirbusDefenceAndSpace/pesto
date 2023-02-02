@@ -1,3 +1,5 @@
+import os
+
 import typer
 import time
 import requests
@@ -19,7 +21,7 @@ def local(payload: str, output_path: str):
         content = json.loads(payload)
     except:
         try:
-            content = requests.get(payload).json()
+            content = requests.get(payload, verify=False).json()
         except:
             try:
                 with open(payload) as f:
@@ -38,6 +40,7 @@ def docker(payload: str,
            host_volume_path: str=typer.Option(None,help="Volume to be mounted from host"),
            image_volume_path: str=typer.Option(None, help="Where the volume is mounted in image"),
            nvidia: bool=typer.Option(False,help="use nvidia runtime"),
+           ssl: bool=typer.Option(False,help="run with SSL"),
            network: str=typer.Option("host",help="Network driver to be used"),
            web_service: bool=typer.Option(True, help="Run the docker in WS mode, true by default. Otherwise processing is exec in container after start")):
     """
@@ -48,7 +51,8 @@ def docker(payload: str,
         host_volume_path=host_volume_path,
         image_volume_path=image_volume_path,
         nvidia=nvidia,
-        network=network) as service:
+        network=network,
+        use_ssl=ssl) as service:
     
         # force restarting service
         if service._existing_container:
@@ -79,9 +83,9 @@ def docker(payload: str,
 def _export_output(output: any, data_type: ResultType, output_path: str):
     if output_path.find('https://') == 0 or output_path.find('http://') == 0:
         if data_type == ResultType.json:
-            requests.post(output_path,json=output)
+            requests.post(output_path, json=output, verify=False)
         else:
-            requests.post(output_path,data=output)
+            requests.post(output_path, data=output, verify=False)
     else: #Assumed POSIX
         if data_type == ResultType.json:
             with open(output_path,'w') as fout:

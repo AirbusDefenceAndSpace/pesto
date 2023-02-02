@@ -95,6 +95,21 @@ Finally, run the following command :
     $ pytest /path/to/service-xxx/pesto/tests
     ```
 
+```asciidoc
+Usage: pesto test [OPTIONS] BUILD_CONFIG
+
+  Test algorithm from given build.json
+
+Arguments:
+  BUILD_CONFIG  [required]
+
+Options:
+  -p, --profile TEXT      Select specific files to update
+  --nvidia / --no-nvidia  Run docker with nvidia runtime  [default: no-nvidia]
+  --ssl / --no-ssl        run with SSL  [default: no-ssl]
+  -n, --network TEXT      Define a specific network t run docker
+  --help                  Show this message and exit.
+```
 !!! note
     `pesto test` is designed not to fail if the requests pass. Instead, it will simply compare dictionaries and display / 
      save the differences as well as the responses, so that the user can go look at what happened and check if this is correct.

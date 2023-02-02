@@ -16,6 +16,7 @@ pesto/api/description.stateful.json
 pesto/api/config_schema.json
 pesto/tests/README.md
 pesto/tests/resources/expected_describe.json
+pesto/tests/resources/expected_describe.ssl.json
 pesto/tests/resources/test_1/input/integer_parameter.int
 pesto/tests/resources/test_1/input/number_parameter.float
 pesto/tests/resources/test_1/input/dict_parameter.json

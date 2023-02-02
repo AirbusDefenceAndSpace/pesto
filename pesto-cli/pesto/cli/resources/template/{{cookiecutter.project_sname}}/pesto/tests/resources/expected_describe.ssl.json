@@ -404,31 +404,31 @@
   "_links": {
     "self": {
       "relation": "Access to describe resource",
-      "href": "http://localhost:4000/api/v1/describe",
+      "href": "https://localhost:4000/api/v1/describe",
       "type": "application/json",
       "method": "GET"
     },
     "execution": {
       "relation": "Processing resource",
-      "href": "http://localhost:4000/api/v1/process",
+      "href": "https://localhost:4000/api/v1/process",
       "type": "Complex type, see output in describe content for more information",
       "method": "POST"
     },
     "config": {
       "relation": "Processing configuration",
-      "href": "http://localhost:4000/api/v1/config",
+      "href": "https://localhost:4000/api/v1/config",
       "type": "application/json",
       "method": "GET"
     },
     "version": {
       "relation": "Processing version",
-      "href": "http://localhost:4000/api/v1/version",
+      "href": "https://localhost:4000/api/v1/version",
       "type": "application/json",
       "method": "GET"
     },
     "health": {
       "relation": "Processing health",
-      "href": "http://localhost:4000/api/v1/health",
+      "href": "https://localhost:4000/api/v1/health",
       "type": "text/plain",
       "method": "GET"
     }

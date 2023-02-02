@@ -1,21 +1,20 @@
-import sys
 import json
+import logging
 import os
+import sys
+from datetime import datetime
+from pathlib import Path
 
-from uvicorn import Config, Server
-from fastapi import FastAPI, APIRouter
-from pesto.ws.v1 import v1
+from fastapi import FastAPI
+from loguru import logger
 from pesto.version import PESTO_VERSION
 from pesto.ws.config import settings
+from pesto.ws.v1 import v1
+from uvicorn import Config, Server
 
-import logging
-from loguru import logger
-from datetime import datetime
-
-
-## Some words on logging
+# Some words on logging
 # Logging in PESTO is highly customizable and based on Loguru
-# There is 2 way of logging : 
+# There is 2 way of logging :
 #     * Log in text format on standard output
 #     * Log serialized in JSON with custom fields
 # Env var PESTO_LOG_SERIALIZE=TRUE activate the JSON serialization
@@ -23,10 +22,10 @@ from datetime import datetime
 # For example : 'date:application_date,message:application_message,level:application_severity' map date from log record in a field name application_date etc...
 # When the application is started, all log handlers are removed and replaced by the InterceptHandler below to ensure all logs are handle by loguru
 
-def log_mapping(conf:str):
+def log_mapping(conf: str):
     """
     Split str of log format into a dict
-    Example : date:application_date,message:application_message is split in : 
+    Example : date:application_date,message:application_message is split in :
     {'date':'application_date','message':'application_message'}
     """
     mapping = dict()
@@ -44,7 +43,7 @@ def sink(message):
         serialized = json.loads(message)
         simplified = dict()
         for k in mapping.keys():
-            if k != 'level' and k !='time':
+            if k != 'level' and k != 'time':
                 simplified[mapping[k]] = serialized['record'][k]
             elif k != 'time':
                 simplified[mapping[k]] = serialized['record']['level']['name']
@@ -56,7 +55,7 @@ def sink(message):
             simplified[k] = serialized['record']['extra'][k]
         print(simplified, flush=True)
     else:
-        print(message,flush=True)
+        print(message, flush=True)
 
 class InterceptHandler(logging.Handler):
     """
@@ -103,10 +102,17 @@ app = FastAPI(
 
 app.include_router(v1)
 
+
 def main():
-    server = Server(Config(app,host="0.0.0.0",port=8080))
+    if os.environ.get('PESTO_USE_SSL') == '1':
+        key_file = Path("/etc/pesto/ssl/key.pem")
+        cert_file = Path("/etc/pesto/ssl/cert.pem")
+        server = Server(Config(app, host="0.0.0.0", port=8080, ssl_keyfile=key_file, ssl_certfile=cert_file))
+    else:
+        server = Server(Config(app, host="0.0.0.0", port=8080))
     setup_logging()
-    server.run()   
+    server.run()
+
 
 if __name__ == '__main__':
     main()

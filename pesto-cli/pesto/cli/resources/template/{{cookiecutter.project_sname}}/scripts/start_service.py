@@ -14,6 +14,7 @@ Example: """ + __file__ + """ [-p gpu]
 """, formatter_class=argparse.RawTextHelpFormatter)
     
 parser.add_argument('-p', '--profile', nargs='+', default="", help='List of profiles to apply. Use stateless to enable the asynchronous service')
+parser.add_argument('--ssl', action='store_true', help='Start service with SSL enabled')
 args = parser.parse_args()
 
 if len(args.profile):
@@ -22,6 +23,6 @@ if len(args.profile):
 nvidia = "gpu" in service
 print("Launching service " + service)
 
-with ServiceManager(docker_image=service, host_port=port, nvidia=nvidia) as service:
+with ServiceManager(docker_image=service, host_port=port, nvidia=nvidia, use_ssl=args.ssl) as service:
     input("Press Enter to quit ...")
 

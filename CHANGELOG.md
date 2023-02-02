@@ -1,6 +1,9 @@
 
 # Change Log
 
+## 1.7.0
+- HTTPS support
+
 ## 1.6.0
 - Significant documentation update : updates (tutorial, pesto commands), new sections (contributing, running pesto, ), new documentation organisation and a new skin.
 
