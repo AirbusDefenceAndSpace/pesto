@@ -152,7 +152,7 @@ def check_run_local(use_ssl=False):
                                  ["bash", "-c", "pesto run local '{}' {}".format(payload, result_file)],
                                  auto_remove=True,
                                  volumes=["{}:{}".format(temp, temp)],
-                                 environment={"PESTO_USE_SSL": '1' if use_ssl else '0'})
+                                 environment={"PESTO_USE_SSL": 'true' if use_ssl else 'false'})
     print("---- docker started ----")
 
     if os.path.exists(result_file):

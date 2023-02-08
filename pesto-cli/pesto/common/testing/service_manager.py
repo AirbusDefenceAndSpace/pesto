@@ -105,7 +105,7 @@ class ServiceManager:
                     "bind": self.image_volume_path,
                     "mode": "rw",
                 }} if self.image_volume_path is not None and self.host_volume_path is not None else None,
-                environment={"PESTO_USE_SSL": '1' if self.use_ssl else '0'}
+                environment={"PESTO_USE_SSL": 'true' if self.use_ssl else 'false'}
             )
             time.sleep(2)
             logger.info("Container {} started, available at {}".format(self._docker_container.id, self.server_url))

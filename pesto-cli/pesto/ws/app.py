@@ -104,7 +104,7 @@ app.include_router(v1)
 
 
 def main():
-    if os.environ.get('PESTO_USE_SSL') == '1':
+    if os.getenv('PESTO_USE_SSL', 'False').lower() == 'true':
         key_file = Path("/etc/pesto/ssl/key.pem")
         cert_file = Path("/etc/pesto/ssl/cert.pem")
         server = Server(Config(app, host="0.0.0.0", port=8080, ssl_keyfile=key_file, ssl_certfile=cert_file))
