@@ -76,7 +76,7 @@ pesto run docker --ssl '{"image":"file:///opt/algo-service/pesto/tests/resources
 or 
 
 ```bash
-docker run --rm -p 4000:8080 -e PESTO_USE_SSL='1' algo-service:1.0.0.dev0
+docker run --rm -p 4000:8080 -e PESTO_USE_SSL='true' algo-service:1.0.0.dev0
 ```
 This should start the container so that it can be accessed from `https://localhost:4000/api/v1`
 

@@ -13,7 +13,7 @@ PESTO web server implements the [Geoprocessing API](https://github.com/AirbusDef
 
 ## Documentation
 
-The [full documentation](https://airbusdefenceandspace.github.io/pesto) is available online.
+The [full documentation](https://airbusdefenceandspace.github.io/pesto/about.html) is available online.
 
 ## Contact
 

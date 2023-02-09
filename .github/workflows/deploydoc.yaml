@@ -1,0 +1,21 @@
+name: Deploy doc
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy-doc:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    - name: Install requirements
+      run: |
+        pip install -r pesto-cli/requirements.txt
+        pip install wheel
+    - name: Install Pesto
+      run: make doc deploy

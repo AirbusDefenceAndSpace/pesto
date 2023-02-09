@@ -1,6 +1,10 @@
 
 # Change Log
 
+## 1.7.1
+- HTTPS Activation with PESTO_USE_SSL use true or false values
+- automatic documentation publishing
+
 ## 1.7.0
 - HTTPS support
 
