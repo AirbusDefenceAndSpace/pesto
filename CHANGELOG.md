@@ -1,6 +1,10 @@
 
 # Change Log
 
+## 1.7.2
+- Removed misleading error message at run time, when process does not use Input/Output classes
+- Added message to clarify that not importing Input/Output remains nominal (legacy behaviour).
+- Updated makefile to enable github action for deploying online documentation.
 ## 1.7.1
 - HTTPS Activation with PESTO_USE_SSL use true or false values
 - automatic documentation publishing

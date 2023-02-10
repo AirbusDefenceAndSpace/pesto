@@ -38,7 +38,7 @@ install-dev: uninstall
 
 deploy:
 	$(PIP) install -r .requirements.docs.txt
-	mkdocs gh-deploy --config-file ./pesto-cli/mkdocs.yml
+	mkdocs gh-deploy --force --config-file ./pesto-cli/mkdocs.yml
 
 clean:
 	cd pesto-cli && rm -rf build dist *egg-info .eggs .pytest_cache
