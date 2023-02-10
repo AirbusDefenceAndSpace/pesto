@@ -35,21 +35,13 @@ class ProcessService:
         if ProcessService._algorithm is not None:
             raise ValueError("Process Service already loaded !")
 
-        try:
-            log.info("ProcessService.init() ...")
-            ProcessService._algorithm = load_class(ProcessService.PROCESS_CLASS_NAME)()
-            if hasattr(ProcessService._algorithm, "on_start"):
-                log.info("ProcessService.on_start() ...")
-                ProcessService._algorithm.on_start()
-                log.info("ProcessService.on_start() ... Done !")
-            log.info("ProcessService.init() ... Done !")
-        except:
-            traceback.print_exc()
-            log.warning(
-                "Algorithm {}.on_start() failure !".format(
-                    ProcessService.PROCESS_CLASS_NAME
-                )
-            )
+        log.info("ProcessService.init() ...")
+        ProcessService._algorithm = load_class(ProcessService.PROCESS_CLASS_NAME)()
+        if hasattr(ProcessService._algorithm, "on_start"):
+            log.info("ProcessService.on_start() ...")
+            ProcessService._algorithm.on_start()
+            log.info("ProcessService.on_start() ... Done !")
+        log.info("ProcessService.init() ... Done !")
         try:
             ProcessService._input_class = load_class(
                 ProcessService.PROCESS_INPUT_CLASS_NAME
@@ -58,11 +50,11 @@ class ProcessService:
                 ProcessService.PROCESS_OUTPUT_CLASS_NAME
             )
         except:
-            traceback.print_exc()
             ProcessService._input_class = None
             ProcessService._output_class = None
-            log.warning(
-                "Algorithm {}.on_start() failed to load Input / Output classes.".format(
+            log.info(
+                "[{}] : could not import Input / Output classes. Payload will be passed\
+                     directly to the algorithm (legacy behaviour).".format(
                     ProcessService.PROCESS_CLASS_NAME
                 )
             )
