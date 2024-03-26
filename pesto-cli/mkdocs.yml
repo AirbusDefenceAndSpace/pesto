@@ -41,7 +41,7 @@ extra_javascript:
 
 # Page tree
 nav:
-  - About: about.md
+  - Home: index.md
   - Get started: get_started.md
   - Package an Algorithm:
       - Create a PESTO project: package_pesto_project.md
