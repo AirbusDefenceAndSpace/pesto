@@ -2,6 +2,7 @@ ARG ENV
 FROM ${base_image}
 CMD  [ "processing" ]
 ENTRYPOINT []
+EXPOSE 8080
 
 {% if pip_config_file != None %}
 {% if use_buildkit != True %}
