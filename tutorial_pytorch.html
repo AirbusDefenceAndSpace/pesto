@@ -1,0 +1,1683 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Documentation for the PESTO toolbox" name="description"/>
+<meta content="Airbus Defence and Space - Processing Factory Team" name="author"/>
+<link href="https://airbusdefenceandspace.github.io/pesto/tutorial_pytorch.html" rel="canonical"/>
+<link href="pesto_list.html" rel="prev"/>
+<link href="details_conventions.html" rel="next"/>
+<link href="assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.6.11" name="generator"/>
+<title>Deploying a pytorch model - PESTO : ProcESsing facTOry</title>
+<link href="assets/stylesheets/main.4af4bdda.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#deploying-pytorch-in-python-via-a-rest-api-with-pesto">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="PESTO : ProcESsing facTOry" class="md-header__button md-logo" data-md-component="logo" href="index.html" title="PESTO : ProcESsing facTOry">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            PESTO : ProcESsing facTOry
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Deploying a pytorch model
+            
+          </span>
+</div>
+</div>
+</div>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="" tabindex="0">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/AirbusDefenceAndSpace/pesto" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"></path></svg>
+</div>
+<div class="md-source__repository">
+    AirbusDefenceAndSpace/pesto
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="PESTO : ProcESsing facTOry" class="md-nav__button md-logo" data-md-component="logo" href="index.html" title="PESTO : ProcESsing facTOry">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+    PESTO : ProcESsing facTOry
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/AirbusDefenceAndSpace/pesto" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"></path></svg>
+</div>
+<div class="md-source__repository">
+    AirbusDefenceAndSpace/pesto
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="index.html">
+<span class="md-ellipsis">
+    Home
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="get_started.html">
+<span class="md-ellipsis">
+    Get started
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+<span class="md-ellipsis">
+    Package an Algorithm
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            Package an Algorithm
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="package_pesto_project.html">
+<span class="md-ellipsis">
+    Create a PESTO project
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="package_configuration.html">
+<span class="md-ellipsis">
+    Project configuration
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="package_docker_image.html">
+<span class="md-ellipsis">
+    Build the Docker image
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="package_test.html">
+<span class="md-ellipsis">
+    Test the Docker image
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+<span class="md-ellipsis">
+    Run the Algorithm
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+            Run the Algorithm
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="deploy_run_docker_image.html">
+<span class="md-ellipsis">
+    Run the packaged algorithm
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="deploy_web_service.html">
+<span class="md-ellipsis">
+    Web-service
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+<span class="md-ellipsis">
+    PESTO commands
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+            PESTO commands
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="pesto_init.html">
+<span class="md-ellipsis">
+    init
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="pesto_schemagen.html">
+<span class="md-ellipsis">
+    schemagen
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="pesto_build.html">
+<span class="md-ellipsis">
+    build
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="pesto_test.html">
+<span class="md-ellipsis">
+    test
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="pesto_run.html">
+<span class="md-ellipsis">
+    run
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="pesto_list.html">
+<span class="md-ellipsis">
+    list
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_6" type="checkbox"/>
+<label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+<span class="md-ellipsis">
+    Tutorial
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_6_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_6">
+<span class="md-nav__icon md-icon"></span>
+            Tutorial
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    Deploying a pytorch model
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="tutorial_pytorch.html">
+<span class="md-ellipsis">
+    Deploying a pytorch model
+    
+  </span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#install-pesto">
+<span class="md-ellipsis">
+      Install PESTO
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#create-pesto-project">
+<span class="md-ellipsis">
+      Create PESTO project
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#your-custom-processing-code">
+<span class="md-ellipsis">
+      Your Custom Processing code
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#generating-the-input-output-schemas">
+<span class="md-ellipsis">
+      Generating the input &amp; output schemas
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#configuring-the-processing-api-for-our-service">
+<span class="md-ellipsis">
+      Configuring the Processing API for our service
+    </span>
+</a>
+<nav aria-label="Configuring the Processing API for our service" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#configjson">
+<span class="md-ellipsis">
+      config.json
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#descriptionjson">
+<span class="md-ellipsis">
+      description.json
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#defining-our-packaging-dependencies">
+<span class="md-ellipsis">
+      Defining our packaging &amp; dependencies
+    </span>
+</a>
+<nav aria-label="Defining our packaging &amp; dependencies" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#python-dependencies-for-the-project-requirementstxt">
+<span class="md-ellipsis">
+      Python dependencies for the project &amp; requirements.txt
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#service-name-buildjson">
+<span class="md-ellipsis">
+      Service Name &amp; build.json
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#file-dependencies-requirementsjson">
+<span class="md-ellipsis">
+      File Dependencies &amp; requirements.json
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#building-the-service">
+<span class="md-ellipsis">
+      Building the Service
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#testing-and-usage">
+<span class="md-ellipsis">
+      Testing and Usage
+    </span>
+</a>
+<nav aria-label="Testing and Usage" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#booting-up-the-container-first-http-requests">
+<span class="md-ellipsis">
+      Booting up the container &amp; first http requests
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#defining-test-resources">
+<span class="md-ellipsis">
+      Defining Test Resources
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#using-pesto-test-command">
+<span class="md-ellipsis">
+      Using pesto test command
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#bonus-using-pytest-unit-testing">
+<span class="md-ellipsis">
+      Bonus: Using Pytest &amp; unit testing
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#bonus-using-pesto-python-api-to-run-tests-send-requests-to-model">
+<span class="md-ellipsis">
+      Bonus: Using PESTO Python API to run tests &amp; send requests to model
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#adding-a-gpu-profile">
+<span class="md-ellipsis">
+      Adding a GPU profile
+    </span>
+</a>
+<nav aria-label="Adding a GPU profile" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#pesto-profiles">
+<span class="md-ellipsis">
+      PESTO Profiles
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#stateful-stateless-services">
+<span class="md-ellipsis">
+      Stateful &amp; Stateless services
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#next-steps">
+<span class="md-ellipsis">
+      Next Steps
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_7" type="checkbox"/>
+<label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+<span class="md-ellipsis">
+    PESTO in details
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_7_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_7">
+<span class="md-nav__icon md-icon"></span>
+            PESTO in details
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="details_conventions.html">
+<span class="md-ellipsis">
+    Conventions
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="details_design.html">
+<span class="md-ellipsis">
+    Design
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="details_cookbook.html">
+<span class="md-ellipsis">
+    Cookbook
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="details_troubleshooting.html">
+<span class="md-ellipsis">
+    Troubleshooting
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#install-pesto">
+<span class="md-ellipsis">
+      Install PESTO
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#create-pesto-project">
+<span class="md-ellipsis">
+      Create PESTO project
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#your-custom-processing-code">
+<span class="md-ellipsis">
+      Your Custom Processing code
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#generating-the-input-output-schemas">
+<span class="md-ellipsis">
+      Generating the input &amp; output schemas
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#configuring-the-processing-api-for-our-service">
+<span class="md-ellipsis">
+      Configuring the Processing API for our service
+    </span>
+</a>
+<nav aria-label="Configuring the Processing API for our service" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#configjson">
+<span class="md-ellipsis">
+      config.json
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#descriptionjson">
+<span class="md-ellipsis">
+      description.json
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#defining-our-packaging-dependencies">
+<span class="md-ellipsis">
+      Defining our packaging &amp; dependencies
+    </span>
+</a>
+<nav aria-label="Defining our packaging &amp; dependencies" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#python-dependencies-for-the-project-requirementstxt">
+<span class="md-ellipsis">
+      Python dependencies for the project &amp; requirements.txt
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#service-name-buildjson">
+<span class="md-ellipsis">
+      Service Name &amp; build.json
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#file-dependencies-requirementsjson">
+<span class="md-ellipsis">
+      File Dependencies &amp; requirements.json
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#building-the-service">
+<span class="md-ellipsis">
+      Building the Service
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#testing-and-usage">
+<span class="md-ellipsis">
+      Testing and Usage
+    </span>
+</a>
+<nav aria-label="Testing and Usage" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#booting-up-the-container-first-http-requests">
+<span class="md-ellipsis">
+      Booting up the container &amp; first http requests
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#defining-test-resources">
+<span class="md-ellipsis">
+      Defining Test Resources
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#using-pesto-test-command">
+<span class="md-ellipsis">
+      Using pesto test command
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#bonus-using-pytest-unit-testing">
+<span class="md-ellipsis">
+      Bonus: Using Pytest &amp; unit testing
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#bonus-using-pesto-python-api-to-run-tests-send-requests-to-model">
+<span class="md-ellipsis">
+      Bonus: Using PESTO Python API to run tests &amp; send requests to model
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#adding-a-gpu-profile">
+<span class="md-ellipsis">
+      Adding a GPU profile
+    </span>
+</a>
+<nav aria-label="Adding a GPU profile" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#pesto-profiles">
+<span class="md-ellipsis">
+      PESTO Profiles
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#stateful-stateless-services">
+<span class="md-ellipsis">
+      Stateful &amp; Stateless services
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#next-steps">
+<span class="md-ellipsis">
+      Next Steps
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="deploying-pytorch-in-python-via-a-rest-api-with-pesto">Deploying PyTorch in Python via a REST API with PESTO</h1>
+<div class="admonition abstract">
+<p class="admonition-title">Abstract</p>
+<p>This tutorial is inspired from the official <a href="https://pytorch.org/tutorials/intermediate/flask_rest_api_tutorial.html">Deploying PyTorch in Python via a REST API with Flask</a> tutorial. </p>
+<p>In this walkthrough, you will be guided in using PESTO for packaging your Deep Learning Model such that it is ready for deployment in production. You will be able to send processing requests to your newly created web service embedding your own inference model.</p>
+<p>This model is a Resnet 50 CNN trained on ImageNet, and takes as input an image and returns one of the 1000 imagenet classes.</p>
+<p>During this tutorial you will learn to</p>
+<ul>
+<li>Package a model using PESTO</li>
+<li>Define the input and output API of you web service</li>
+<li>Generate the web service Docker image</li>
+<li>Deploy your webservice</li>
+<li>Send requests &amp; get responses from the service</li>
+</ul>
+</div>
+<h2 id="install-pesto">Install PESTO</h2>
+<p>First, ensure you have PESTO installed in a python 3.6+ environment. Typically, you can use Miniconda as a virtual env.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You should have docker community edition installed and configured in your machine. Refer to <a href="https://docs.docker.com/engine/install/">the docker documentation</a> for more details.</p>
+</div>
+<p>To install PESTO with pip (see <a href="get_started.html">Get Started</a>): </p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>processing-factory
+</code></pre></div>
+<h2 id="create-pesto-project">Create PESTO project</h2>
+<p>Next, initialize your PESTO project in the desired repository.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>pesto<span class="w"> </span>init<span class="w"> </span><span class="o">{</span>PESTO_root_projects_repository_path<span class="o">}</span>
+</code></pre></div>
+<p>You are prompted for some information to fill the default template. Here's an example of the display</p>
+<div class="highlight"><pre><span></span><code>---------------------------------------------------------------------------------------------------------------------------
+  ____  _____ ____ _____ ___        ____                              _                 __            _
+ |  _ \| ____/ ___|_   _/ _ \   _  |  _ \ _ __ ___   ___ ___  ___ ___(_)_ __   __ _    / _| __ _  ___| |_ ___  _ __ _   _
+ | |_) |  _| \___ \ | || | | | (_) | |_) | '__/ _ \ / __/ _ \/ __/ __| | '_ \ / _` |  | |_ / _` |/ __| __/ _ \| '__| | | |
+ |  __/| |___ ___) || || |_| |  _  |  __/| | | (_) | (_|  __/\__ \__ \ | | | | (_| |  |  _| (_| | (__| || (_) | |  | |_| |
+ |_|   |_____|____/ |_| \___/  (_) |_|   |_|  \___/ \___\___||___/___/_|_| |_|\__, |  |_|  \__,_|\___|\__\___/|_|   \__, |
+                                                                              |___/                                 |___/
+-----  ProcESsing facTOry : 1.4.3     -------------------------------------------------------------------------------------
+
+Please fill necessary information to initialize your template
+
+maintainer_fullname [pesto]: Computer Vision
+maintainer_email [pesto@airbus.com]: computervision@airbus.com
+project_name [algo-service]: pytorch-deployment-tutorial
+project_sname [pytorch-deployment-tutorial]:                            
+project_short_description [Pesto Template contains all the boilerplate you need to create a processing-factory project]: My first deployment with PESTO
+project_version [1.0.0.dev0]: 1.0.0
+[2022-12-13 17:44:24,345] 28731-INFO app::init():l44:
+Service generated at /tmp/pesto/pytorch-deployment-tutorial
+</code></pre></div>
+<p>It generates the default template in a folder <code>pytorch-deployment-tutorial</code> with the following file structure:</p>
+<div class="highlight"><pre><span></span><code>pytorch-deployment-tutorial/
+├── algorithm
+│   ├── __init__.py
+│   ├── input_output.py
+│   └── process.py
+├── __init__.py
+├── Makefile
+├── MANIFEST.in
+├── pesto
+│   ├── api
+│   ├── build
+│   └── tests
+├── README.md
+├── requirements.txt
+└── setup.py
+</code></pre></div>
+<p>You can recognize a python package with a package named <code>algorithm</code> and a module <code>algorithm.process</code>.
+The main processing is defined here (in Python and using your custom libraries if you want to do so)</p>
+<p>The folder <code>pesto</code> includes the necessary resources to build the docker image containing the service:</p>
+<ul>
+<li><code>pesto/api</code> will specify the input/output of our process in terms of RESTful API</li>
+<li><code>pesto/build</code> will specify resources, docker images, etc ... so that PESTO can build the service with the correct dependencies</li>
+<li><code>pesto/test</code> will contains resources to test &amp; debug your service once built as well as helper scripts to use </li>
+</ul>
+<h2 id="your-custom-processing-code">Your Custom Processing code</h2>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Due to the way we will load pesto-defined files in our process.py, (as well as custom dependencies unpacked at specific locations), it is hard to locally test the custom processing code without rewriting part of it to work locally. This is a known difficulty in development, we recommend to wrap your codebase under a custom library or package and to write as little code as possible (loading models, calling the prediction library then formatting the result properly) under process.py</p>
+</div>
+<p>First, we will specify our inference pipeline. Our objective is to use a pretrained Convolutional Neural Network (A Resnet50) from <code>torchvision</code> to predict classes for image that will be fed to it.</p>
+<p>The model was trained on ImageNet so it should return one amongst 1000 classes when presented with an image.</p>
+<p>We will load our model, using the included checkpoints loading function of torchvision, as well as a json file containing the conversion between class indexes and class names (which is stored in <code>/etc/pesto/config.json</code>, more on that later).</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torchvision.models</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">"/etc/pesto/"</span><span class="p">,</span> <span class="s2">"config.json"</span><span class="p">),</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">IMAGENET_CLASS_INDEX</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># Make sure to pass `pretrained` as `True` to use the pretrained weights:</span>
+<span class="n">MODEL</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">alexnet</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Since we are using our model only for inference, switch to `eval` mode:</span>
+<span class="n">MODEL</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+<p>Resnet model requires the image to be of 3 channel RGB image of size 224 x 224. We will preprocess the image with Imagenet values as well.  </p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Should you require more information , please refer to the <a href="https://pytorch.org/tutorials/intermediate/flask_rest_api_tutorial.html#inference">original tutorial</a> as well as the <a href="https://pytorch.org">pytorch documentation</a></p>
+</div>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torchvision.transforms</span>
+    <span class="c1"># Preprocessing function</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform_image</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">Image</span><span class="p">):</span>
+        <span class="n">my_transforms</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
+            <span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+            <span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">CenterCrop</span><span class="p">(</span><span class="mi">224</span><span class="p">),</span>
+            <span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+            <span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">([</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">])</span>
+        <span class="p">])</span>
+        <span class="k">return</span> <span class="n">my_transforms</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>Now, getting predictions from this model is simple:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">time</span> 
+
+<span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    The core algorithm is implemented here.</span>
+<span class="sd">    """</span>
+
+    <span class="n">pil_image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">tensor</span> <span class="o">=</span> <span class="n">transform_image</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">pil_image</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">MODEL</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">y_hat</span> <span class="o">=</span> <span class="n">outputs</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">predicted_idx</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">y_hat</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+    <span class="n">class_id</span><span class="p">,</span> <span class="n">class_name</span> <span class="o">=</span> <span class="n">IMAGENET_CLASS_INDEX</span><span class="p">[</span><span class="n">predicted_idx</span><span class="p">]</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'category'</span><span class="p">:</span> <span class="n">class_name</span><span class="p">,</span> <span class="s1">'time'</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div></td></tr></table></div>
+<p>Now we will need to put these functions so that PESTO can properly call them.</p>
+<p>Look at <code>algorithm/process.py</code>. This is the module that will be loaded by PESTO inside our server and which will be called during preprocessing. </p>
+<p>There is a <code>Process</code> class with <code>on_start()</code> and <code>process()</code> methods.</p>
+<p>The <code>on_start()</code> method will be called on the first processing request, it is usually useful to load resources etc.</p>
+<p>The <code>process()</code> function is called during call to <code>/api/v1/process</code>, when we want to actually process input data</p>
+<p>We want to integrate our previous code into this structure, so your <code>algorithm/process.py</code> file should look like this (replace the existing <code>process.py</code> file by this code, or write your own)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We did not load the Model in the <code>Process</code> class so each method inside the <code>Process</code> class is static. </p>
+</div>
+<div class="highlight"><table class="highlighttable"><tr><th class="filename" colspan="2"><span class="filename">process.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.cuda</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torchvision.models</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torchvision.transforms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">algorithm.input_output</span><span class="w"> </span><span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Output</span>
+
+<span class="c1"># Device Agnostic Code</span>
+<span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">'cuda'</span><span class="p">)</span>
+    <span class="n">cpu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">'cpu'</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">'cpu'</span><span class="p">)</span>
+    <span class="n">cpu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">'cpu'</span><span class="p">)</span>
+
+
+<span class="c1"># Load Classes</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">"/etc/pesto/"</span><span class="p">,</span> <span class="s2">"config.json"</span><span class="p">),</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">IMAGENET_CLASS_INDEX</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># Load Model</span>
+
+<span class="c1"># Make sure to pass `pretrained` as `True` to use the pretrained weights:</span>
+<span class="n">MODEL</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">resnet50</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="n">MODEL</span> <span class="o">=</span> <span class="n">MODEL</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="c1"># Since we are using our model only for inference, switch to `eval` mode:</span>
+<span class="n">MODEL</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+
+<span class="hll"><span class="k">class</span><span class="w"> </span><span class="nc">Process</span><span class="p">:</span>
+</span><span class="hll">    <span class="nd">@staticmethod</span>
+</span><span class="hll">    <span class="k">def</span><span class="w"> </span><span class="nf">on_start</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Process.on_start will be called at server start time.</span>
+<span class="sd">        If you need to load heavy resources before processing data, this should be done here.</span>
+<span class="sd">        """</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span> <span class="o">*</span> <span class="mf">255.0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="n">Process</span><span class="o">.</span><span class="n">transform_image</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">MODEL</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"DUMMY RUN OK"</span><span class="p">)</span>
+
+    <span class="c1"># Preprocessing function</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform_image</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">Image</span><span class="p">):</span>
+        <span class="n">my_transforms</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+                <span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">CenterCrop</span><span class="p">(</span><span class="mi">224</span><span class="p">),</span>
+                <span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+                <span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span>
+                    <span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">]</span>
+                <span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">my_transforms</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Main processing function</span>
+    <span class="nd">@staticmethod</span>
+<span class="hll">    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="n">Input</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Output</span><span class="p">:</span>
+</span><span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        The core algorithm is implemented here.</span>
+<span class="sd">        """</span>
+
+        <span class="c1"># PESTO gives images as C,H,W so we will convert them back to H,W,C to convert them as PIL.Image</span>
+<span class="hll">        <span class="n">image</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</span>        <span class="n">pil_image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+        <span class="c1"># A tensor with a batch size of 1 (1, C, H, W)</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="n">Process</span><span class="o">.</span><span class="n">transform_image</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">pil_image</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="n">tensor</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Forward</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">MODEL</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">cpu</span><span class="p">)</span>
+
+        <span class="c1"># Postprocess</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">y_hat</span> <span class="o">=</span> <span class="n">outputs</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">predicted_idx</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">y_hat</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="n">class_id</span><span class="p">,</span> <span class="n">class_name</span> <span class="o">=</span> <span class="n">IMAGENET_CLASS_INDEX</span><span class="p">[</span><span class="n">predicted_idx</span><span class="p">]</span>
+
+<span class="hll">        <span class="k">return</span> <span class="n">Output</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">class_name</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+<div class="highlight"><table class="highlighttable"><tr><th class="filename" colspan="2"><span class="filename">input_output.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pesto.cli.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">Definition</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">definition</span><span class="p">,</span> <span class="n">user_definition</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">:</span>
+<span class="hll">    <span class="n">image</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">definition</span><span class="p">(</span><span class="n">Definition</span><span class="o">.</span><span class="n">Image</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Image related to any ImageNet class"</span><span class="p">)</span>
+</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Output</span><span class="p">:</span>
+<span class="hll">    <span class="n">category</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="s2">"Predicted class"</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+<div class="admonition danger">
+<p class="admonition-title">About Images Format</p>
+<p>PESTO decodes input request in a specific way, which means that for images they are provided to the algorithm in Channel,Height,Width format, contrarily to the usual Height,Width,Channel format. This means that a transposition is required to wrap them up in PIL format for example. </p>
+<p>The easiest way to do so is to call <code>image = image.transpose((1, 2, 0))</code></p>
+</div>
+<h2 id="generating-the-input-output-schemas">Generating the input &amp; output schemas</h2>
+<p>PESTO needs the input and output json schemas for specifying the algorithm API to the end users. It can be done by editing the files. However, since we used the <code>Input</code> and <code>Output</code> classes for the <code>process()</code>'s signature, we can benefit from <code>pesto schemagen</code> to generate the schema files:</p>
+<div class="highlight"><pre><span></span><code>pesto<span class="w"> </span>schemagen<span class="w"> </span>--force<span class="w"> </span><span class="o">{</span>PESTO_root_projects_repository_path<span class="o">}</span>
+</code></pre></div>
+<p>The generated schemas are in <code>api/input_schema.json</code> and in <code>api/output_schema.json</code> :</p>
+<div class="admonition example">
+<p class="admonition-title">Input and output json schemas</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">Input</label><label for="__tabbed_1_2">Output</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><th class="filename" colspan="2"><span class="filename">api/input_schema.json</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+    <span class="s2">"image"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"$ref"</span><span class="p">:</span> <span class="s2">"#/definitions/Image"</span><span class="p">,</span>
+      <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Image related to any ImageNet class"</span>
+  <span class="p">},</span>
+  <span class="s2">"required"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">"image"</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><th class="filename" colspan="2"><span class="filename">api/output_schema.json</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+  <span class="s2">"category"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"string"</span><span class="p">,</span>
+      <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Predicted class"</span>
+  <span class="p">},</span>
+  <span class="s2">"required"</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</input></input></div>
+</div>
+<p>Visit the schemagen's <a href="pesto_schemagen.html#schemagen-checklist">checklist</a> to understand how to benefit from the <code>schemagen</code> mechanism.</p>
+<h2 id="configuring-the-processing-api-for-our-service">Configuring the Processing API for our service</h2>
+<p>Now that we have implemented our processing, we will configure the web service API to map the RestAPI with the processing API.</p>
+<p>Let's have a look at the <code>pesto/api</code> folder :</p>
+<div class="highlight"><pre><span></span><code>pesto/api/
+├── config.json
+├── config_schema.json
+├── description.json
+├── description.stateful.json
+├── input_schema.json
+├── output_schema.json
+├── user_definitions.json
+└── version.json
+</code></pre></div>
+<ul>
+<li><code>config.json</code> is a static file which will be available </li>
+<li><code>config_schema.json</code> is a json schema file that specifies what <code>config.json</code> should look like</li>
+<li><code>description.json</code> is a json file that contains information about our processing</li>
+<li><code>input_schema.json</code> is the specification of the input payload that is necessary to run <code>Process.process()</code>. It will be used to specify what should be sent to the webserver</li>
+<li><code>output_schema.json</code> is the specification of the output response of the processing</li>
+<li><code>user_definitions.json</code> the user definitions (reusable JSON schema objects)</li>
+<li><code>description.stateful.json</code> is an alternative description that will be used with a different profile. The later parts of the tutorial will address this point specifically. </li>
+</ul>
+<p>For more information on jsonschema please refer to <a href="https://json-schema.org/">the official documentation</a></p>
+<h3 id="configjson">config.json</h3>
+<p>In <code>config.json</code> you can put any information that will be used later to configure your algorithm. This can be useful when used in conjunction with profiles, should you have different configuration for different profiles.</p>
+<p>In our use case, we will simply put all the imagenet classes in this file, so that they are readily acessible by the webservice.</p>
+<p>Download <a href="https://s3.amazonaws.com/deep-learning-models/image-models/imagenet_class_index.json">this file</a> and copy it as <code>config.json</code> </p>
+<p>Imagenet classes can then be loaded in <code>process.py</code> as follows:</p>
+<div class="highlight"><table class="highlighttable"><tr><th class="filename" colspan="2"><span class="filename">process.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Load Classes</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">"/etc/pesto/"</span><span class="p">,</span> <span class="s2">"config.json"</span><span class="p">),</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">IMAGENET_CLASS_INDEX</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>Now we have to define the json schema (<code>config_schema.json</code>) that validates it. Here it is:</p>
+<div class="highlight"><table class="highlighttable"><tr><th class="filename" colspan="2"><span class="filename">api/config_schema.json</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"$schema"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://json-schema.org/draft-06/schema#"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tile-object-detection-config"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Geo Process API config Schema for Deployment Tutorial"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"patternProperties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"^.*$"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"array"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can use the following code snippet to check for json schema validity in python</p>
+</div>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jsonschema</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'./config.json'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'./config_schema.json'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="n">schema</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="hll"><span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="descriptionjson">description.json</h3>
+<p>The <code>description.json</code> file contains information that describe your processing. Feel free to fill as much information as possible. Note that those information are INFORMATIVE only and not used anywhere <strong>except for</strong> the <code>stateful</code> key which has to set. For now, leave it to <code>false</code>, we will come back on it later. </p>
+<p>Here is an example of a <code>description.json</code> file that you can copy:</p>
+<div class="highlight"><table class="highlighttable"><tr><th class="filename" colspan="2"><span class="filename">api/description.json</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pytorch-deployment-tutorial"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pytorch-deployment-tutorial"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0.dev0"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"My first deployment with PESTO"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"family"</span><span class="p">:</span><span class="w"> </span><span class="s2">"classification"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"template"</span><span class="p">:</span><span class="w"> </span><span class="s2">"image-classification"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"keywords"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">"classification"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"resnet"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"imagenet"</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"resources"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"cpu"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"gpu"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"ram"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"asynchronous"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"organization"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Computer Vision"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"computervision@airbus.com"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"licence"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Property of Computer Vision, all rights reserved"</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h2 id="defining-our-packaging-dependencies">Defining our packaging &amp; dependencies</h2>
+<p>Now that we have specified our API, let's take on the building part of PESTO.</p>
+<p>The principle of PESTO is that a <code>Docker</code> image with a webservice containing your processing will be constructed when we call <code>pesto build</code>. The next steps will be configuring PESTO to build a correct docker.</p>
+<h3 id="python-dependencies-for-the-project-requirementstxt">Python dependencies for the project &amp; requirements.txt</h3>
+<p>The project we created is a python package and will be installed as such inside our docker. It is possible to specify the python requirements directly in <code>requirements.txt</code> as it will be parsed when doing <code>pip install {our project}</code></p>
+<p>The alternative method would be to provide a docker base image with everything already installed, but this is a more advanced usage.</p>
+<p>For now, the <code>requirements.txt</code> file at the root of our project should look like this:</p>
+<div class="highlight"><pre><span></span><code>numpy
+Pillow
+torch&gt;=1.5.0
+torchvision&gt;=0.6.0
+</code></pre></div>
+<p>Now let's look at the <code>pesto/build</code> folder</p>
+<div class="highlight"><pre><span></span><code>build/
+├── build.json
+├── requirements.cpu.json
+└── requirements.json
+</code></pre></div>
+<h3 id="service-name-buildjson">Service Name &amp; build.json</h3>
+<p>The <code>build.json</code> contains automatically generated information that will be used by PESTO later. You should not have to modify it except if you want to change the version</p>
+<div class="highlight"><table class="highlighttable"><tr><th class="filename" colspan="2"><span class="filename">build/build.json</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pytorch-deployment-tutorial"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0.dev0"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"algorithm_path"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"workspace"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>The docker image you will generate during build will be tagged <code>name:version</code>.</p>
+<h3 id="file-dependencies-requirementsjson">File Dependencies &amp; requirements.json</h3>
+<p>There are two <code>requirements.json</code> files automatically generated. <code>requirements.gpu.json</code> defines a profile for GPU support and we will see later how to configure it.</p>
+<p>The <code>requirements.json</code> file default as such</p>
+<div class="highlight"><table class="highlighttable"><tr><th class="filename" colspan="2"><span class="filename">requirements.json</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"environments"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nt">"requirements"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nt">"dockerBaseImage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"python:3.6-stretch"</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>dockerBaseImage</code> is a pointer towards a docker image that will be used to build the webservice. PESTO will inherit from this base image to install itself as well as the process and its dependencies. For now, <code>python:3.6-stretch</code> is a good starting point as it contains the necessary resources installed. You can pass a custom docker image to this step, provided your docker client can access it.</p>
+<p><code>environments</code> is used to set environment variables. We will set the <code>$TORCH_HOME</code> environment variable to ensure we know its location. The <code>$TORCH_HOME</code> variable is used by <code>torchvision</code> to download weights in specific locations, check <a href="https://pytorch.org/docs/stable/hub.html">the torch Hub documentation</a> for more details </p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nt">"environments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"TORCH_HOME"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/opt/torch/"</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>requirements</code> is helpful to add static resources such as model weights, configs, as well as custom python package. For now, <code>requirements</code> support two types of resources:</p>
+<ul>
+<li>static resources inside <code>.tar.gz</code> archives that will be uncompressed in environment</li>
+<li>python wheel <code>.whl</code> files that can be pip installed</li>
+</ul>
+<p>In order to try ourselves this mechanism, we will download the weights for our model. Torchvision models automatically do this by default when the models are called if the weights are not in <code>$TORCH_HOME</code>, but in our case we will put the weights ourselves so that no download step is done during runtime</p>
+<p>First, download this <a href="https://download.pytorch.org/models/resnet50-19c8e357.pth">file</a></p>
+<div class="highlight"><pre><span></span><code>wget<span class="w"> </span>https://download.pytorch.org/models/resnet50-19c8e357.pth
+</code></pre></div>
+<p>Then put it into a <code>.tar.gz</code> archive accessible via either a uri (<code>file://</code>), or an url (<code>gs://</code> and <code>http://</code> are supported for now). Note that if you would deploy a model into production we recommend uploading resources to a server or committing them alongside your project so that everything is 100% reproducible</p>
+<div class="highlight"><pre><span></span><code>tar<span class="w"> </span>-zcvf<span class="w"> </span>checkpoint.tar.gz<span class="w"> </span>resnet50-19c8e357.pth
+</code></pre></div>
+<p>Now, note the uri of this <code>checkpoint.tar.gz</code>. We want to uncompress this file in <code>/opt/torch/checkpoints/</code> in our docker. So your requirements file will look like:</p>
+<div class="highlight"><table class="highlighttable"><tr><th class="filename" colspan="2"><span class="filename">build/requirements.json</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"environments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"TORCH_HOME"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/opt/torch/"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"requirements"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"checkpoints"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"from"</span><span class="p">:</span><span class="w"> </span><span class="s2">"file://{PATH_TO_ARCHIVE}/checkpoint.tar.gz"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"to"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/opt/torch/checkpoints/"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"dockerBaseImage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"python:3.6-stretch"</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h2 id="building-the-service">Building the Service</h2>
+<p>Now we have everything we need to build our service. The building part is simple:</p>
+<p><code>pesto build {root of your project}/pytorch-deployment-tutorial</code></p>
+<p>There will be a lot of logging informing you about what is happening. PESTO is using <code>/home/$USER/.pesto/{process name}/{process version}</code> to store resources needed to build the docker containing the service.</p>
+<p>Example in our case:</p>
+<div class="highlight"><pre><span></span><code>pytorch-deployment-tutorial/
+└── 1.0.0.dev0
+    ├── checkpoints
+    │   └── resnet50-19c8e357.pth
+    ├── dist
+    │   └── pesto_cli-1.0.0rc1-py3-none-any.whl
+    ├── Dockerfile
+    ├── pesto
+    │   └── api_geo_process_v1.0.yaml
+    ├── pytorch-deployment-tutorial
+    │   ├── algorithm
+    │   │   ├── __init__.py
+    │   │   └── process.py
+    │   ├── __init__.py
+    │   ├── Makefile
+    │   ├── MANIFEST.in
+    │   ├── pesto
+    │   │   ├── api
+    │   │   │   ├── config.json
+    │   │   │   ├── config_schema.json
+    │   │   │   ├── description.json
+    │   │   │   ├── input_schema.json
+    │   │   │   ├── output_schema.json
+    │   │   │   ├── service.json
+    │   │   │   └── version.json
+    │   │   ├── build
+    │   │   │   ├── build.json
+    │   │   │   └── requirements.json
+    │   │   └── tests
+    │   │       ├── (...)
+    │   ├── README.md
+    │   ├── requirements.txt
+    │   └── setup.py
+    └── requirements
+        └── checkpoint.tar.gz
+</code></pre></div>
+<p>If docker build fails you can debug your service directly in this folder.</p>
+<p>If the build succeeds you should be able to see your image <code>docker image ls</code>:</p>
+<div class="highlight"><pre><span></span><code>REPOSITORY                   TAG          IMAGE ID       CREATED        SIZE
+pytorch-deployment-tutorial  1.0.0.dev0   08342775a658   4 minutes ago  3.48GB
+</code></pre></div>
+<h2 id="testing-and-usage">Testing and Usage</h2>
+<p>Now we want to test if everything goes well, which means:</p>
+<ul>
+<li>Launching the docker container and checking that it responds to http requests</li>
+<li>Checking that the process we just deployed is working correctly</li>
+</ul>
+<p>Fortunately, PESTO features a test/usage framework which is the purpose of the <code>pesto/test</code> folder</p>
+<h3 id="booting-up-the-container-first-http-requests">Booting up the container &amp; first http requests</h3>
+<p>First, we can verify that we are able to start the container and send very basic requests to it; </p>
+<p>Run <code>docker run --rm -p 4000:8080 pytorch-deployment-tutorial:1.0.0.dev0</code> (check the docker documentation should you need help about the various arguments)</p>
+<p>This should start the container so that it can be accessed from http://localhost:4000.</p>
+<p>In your browser (or using <a href="https://curl.haxx.se/docs/httpscripting.html">CURL</a>) you can send basic GET requests to your container, such as</p>
+<ul>
+<li>
+<p><a href="http://localhost:4000/api/v1/health">http://localhost:4000/api/v1/health</a> (<code>CURL -X GET http://localhost:4000/api/v1/health</code>) with should answer "OK"</p>
+</li>
+<li>
+<p><a href="http://localhost:4000/api/v1/describe">http://localhost:4000/api/v1/describe</a> (<code>CURL -X GET http://localhost:4000/api/v1/describe</code>) which should return a json file</p>
+</li>
+</ul>
+<p>It is recommended that you save said json file, it will be used later on <code>CURL -X GET http://localhost:4000/api/v1/describe &gt; description.json</code></p>
+<p>Now the question is: How can I send a properly formated processing request with the payload (my image) that I want to send ?</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you know all about base64 encoding or sending URI with POST requests, feel free to skip this part.</p>
+</div>
+<p>For the next parts you can safely stop your running container</p>
+<h3 id="defining-test-resources">Defining Test Resources</h3>
+<p>Let's take a look at the <code>pesto/test</code> directory</p>
+<div class="highlight"><pre><span></span><code>tests
+├── README.md
+├── resources/
+│   ├── expected_describe.json
+│   ├── test_1/
+│   └── test_2/
+</code></pre></div>
+<p>The <code>resources</code> folder will be used by the PESTO Test API and be converted to processing requests that will be sent to <code>/api/v1/process</code> with the right format. The response will then be compared to the expected response, and act as unit tests. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the later part of this tutorial we will showcase three different ways of generating processing payloads and getting responses / comparing to expected responses. Each method can be used in different context, using different abstraction levels.</p>
+</div>
+<p>The first file of interest is the <code>expected_describe.json</code>. This file will be compared to the <code>http://localhost:4000/api/v1/describe</code> json document returned by the API. This description file can be used to parse the information about the API (input / output schema, description etc...)</p>
+<p>You will learn in time how to manually create an <code>expected_describe.json</code> from the <code>pesto/api</code> folder, for now it is best to copy the <code>describe.json</code> file that we generated earlier and to put it as <code>expected_describe.json</code>. You can compare this file to the default <code>expected_describe.json</code> and notice how the differences translate themselves to the default processing</p>
+<p>Now, there are several folders named <code>test_*</code>. The purpose of these test folders is that the input payload files are deposited in <code>input</code> and the expected response is in <code>output</code></p>
+<p>Let's take a look at the test folder:</p>
+<div class="highlight"><pre><span></span><code>test_1
+├── input
+│   ├── dict_parameter.json
+│   ├── image.png
+│   ├── integer_parameter.int
+│   ├── number_parameter.float
+│   ├── object_parameter.json
+│   └── string_parameter.string
+└── output
+    ├── areas
+    │   ├── 0.json
+    │   └── 1.json
+    ├── dict_output.json
+    ├── geojson.json
+    ├── image_list
+    │   ├── 0.png
+    │   └── 1.png
+    ├── image.png
+    ├── integer_output.integer
+    ├── number_output.float
+    └── string_output.string
+</code></pre></div>
+<p>You can see that both input and output have files with extension corresponding to input types. The filenames are matched with the json payload keys.</p>
+<p>Now, we are going to write two tests with those two images as input:</p>
+<p><img alt="" src="img/chelsea.png"/></p>
+<p>We know that the input key is <code>image</code> and the output key is <code>category</code> the model should predict  <code>{"category": "Egyptian_cat"}</code></p>
+<p><img alt="" src="img/favicon.jpg"/></p>
+<p>We know that the input key is <code>image</code> and the output key is <code>category</code> the model should predict  <code>{"category": "mortar"}</code></p>
+<p>So, your folder structure should now look like:</p>
+<div class="highlight"><pre><span></span><code>tests/
+├── resources
+│   ├── expected_describe.json
+│   ├── test_1 (cat)
+│   │   ├── input
+│   │   │   └── image.png &lt;- copy the cat image here
+│   │   └── output
+│   │       └── category.string &lt;- this should be Egypcatian_cat
+│   └── test_2 (pesto)
+│       ├── input
+│       │   └── image.jpg &lt;- copy the pesto image here
+│       └── output
+│           └── category.string &lt;- this should be mortar
+</code></pre></div>
+<h3 id="using-pesto-test-command">Using <code>pesto test</code> command</h3>
+<p>The first way of testing your service is to call <code>pesto test</code> utility the same way you called <code>pesto build</code>.
+In order, this command will:</p>
+<ul>
+<li>Run the docker container (the same way we did previously)</li>
+<li>Send requests to <code>api/v1/describe</code> and compare with the <code>expected_describe.json</code></li>
+<li>Send process payloads to <code>api/v1/process</code> and compare them to the desired outputs</li>
+</ul>
+<p>In your project root, run <code>pesto test .</code> and check what happens. The logs should show different steps being processed.</p>
+<p>You can check the responses and differences between dictionnaries in the .pesto workspace: <code>/home/$USER/.pesto/tests/pytorch-deployment-tutorial/1.0.0.dev0</code></p>
+<p>You will find there the results / responses of all the requests, including describes and processings requests. This is a useful folder to debug potential differences.</p>
+<p>Should everything goes well, the <code>results.json</code> file should look like this</p>
+<div class="highlight"><table class="highlighttable"><tr><th class="filename" colspan="2"><span class="filename">results.json</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"describe"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"NoDifference"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"test_1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"NoDifference"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"test_2"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"NoDifference"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>pesto test</code> is designed not to fail if the requests pass; Instead it will simply compare dictionaries and display / save the differences as well as the responses, so that the user can go look at what happened and check if this is correct. <code>pesto test</code> should be used for debug purposed and not for unit test purposes. We will see later how we can use the PESTO test API with pytest to actually run unit tests</p>
+</div>
+<h3 id="bonus-using-pytest-unit-testing">Bonus: Using Pytest &amp; unit testing</h3>
+<p>Once you're sure and have debugged properly you can write or edit unit tests in <code>PESTO_PROJECT_ROOT/tests/</code> (check the autogenerated file <code>tests/test_service.py</code> ) and run it with <code>pytest tests</code> on your root project</p>
+<p>This can be used to ensure non regression on further edits or if you want to do test driver development</p>
+<h3 id="bonus-using-pesto-python-api-to-run-tests-send-requests-to-model">Bonus: Using PESTO Python API to run tests &amp; send requests to model</h3>
+<p>Should you want to use in a non-scalable way or further test your services, you can have a look at the <code>{PESTO_PROJECT_ROOT}/scripts/example_api_usage.py</code> file that exposes the low level python API that is used in <code>pesto test</code></p>
+<ul>
+<li>The <code>ServiceManager</code> class is the class used as a proxy for the python Docker API, and is used to pull / run /attach / stop the containers</li>
+<li>The <code>PayloadGenerator</code> class is used to translate files to actual json payload for the REST API</li>
+<li>The <code>EndpointManager</code> manages the various endpoints of the processes, and act as a front to post/get requests</li>
+<li>The <code>ServiceTester</code> is used to validate payloads &amp; responses against their expected values</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This API is a simple example of how to use services packaged with pesto in python scripts. We encourage you to copy/paste and modify the classes should you feel the need for specific use cases, but both this and <code>pesto test</code> is not designed for robustness and scalability</p>
+<p>We consider the target of <code>pesto test</code> capabilities to be the data scientist, integration testing &amp; scalability should be done at production level</p>
+</div>
+<h2 id="adding-a-gpu-profile">Adding a GPU profile</h2>
+<p>In order to create an image with GPU support, we can complete the proposed profile <code>gpu</code>.
+The file <code>requirements.gpu.json</code> can be updated as follows :</p>
+<div class="highlight"><table class="highlighttable"><tr><th class="filename" colspan="2"><span class="filename">requirements.gpu.json</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"environments"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nt">"requirements"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nt">"dockerBaseImage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pytorch/pytorch:1.5-cuda10.1-cudnn7-runtime"</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>You can now build your GPU enabled microservice :</p>
+<p><code>pesto build {root of your project}/pytorch-deployment-tutorial -p gpu</code></p>
+<h3 id="pesto-profiles">PESTO Profiles</h3>
+<p>in order to accomodate for different hardware targets or slight variations of the same process to deploy, PESTO has a built-in capabilities called <code>profiles</code></p>
+<p>Basically, PESTO profiles is a  list of <strong>ordered</strong> strings (<code>gpu stateless</code>) whose .json files in <code>build/api</code> folders sequentially <strong>update</strong> the base file.</p>
+<p>To use them, simply add the list of profiles to your PESTO commands: <code>pesto build {PESTO_PROJECT_ROOT} -p p1 p2</code> or <code>pesto test {PESTO_PROJECT_ROOT} -p p1 p2</code></p>
+<p>The profiles json files are named <code>{original_file}.{profile}.json</code>.</p>
+<p>For example, for a <code>description.json</code>, then the corresponding description.json for the profile gpu would be <code>description.gpu.json</code>.</p>
+<p>Profile jsons can be partially complete as they only update the base values if the files are present.</p>
+<p>Example:</p>
+<p><code>description.json</code>: <code>{"key":"value", "key2":"value2"}</code>
+<code>description.p1.json</code>: <code>{"key":"value3"}</code></p>
+<p>Then calling <code>pesto build . -p p1</code> will generate a <code>description.json</code>: <code>{"key":"value3", "key2":"value2"}</code> and take all the other files without additionnal profiles.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Due to the sequential nature of dictionary updates, the profiles are order dependent</p>
+</div>
+<p>If you have a computer with nvidia drivers &amp; a gpu you can try to run <code>pesto build . -p gpu</code> and <code>pesto test . -p gpu --nvidia</code> which should do the same as above but with gpu support (and actually run the process on gpu)</p>
+<h3 id="stateful-stateless-services">Stateful &amp; Stateless services</h3>
+<p>PESTO supports building <a href="https://nordicapis.com/defining-stateful-vs-stateless-web-services/">stateless services as well as stateful services</a>.</p>
+<p>With stateless services, it is expected that the processing replies directly to the processing request with the response. These services should have no internal state and should always return the same result when presented with the same payload</p>
+<p>Stateful services can have internal states, and store the processing results to be later queried.</p>
+<p>The main difference is that sending a processing request to <code>api/v1/process</code> to a stateful service will not return the result but a <code>jobID</code>. The job state can be quiered at <code>GET api/v1/jobs/{jobID}/status</code> and results can be queried at  <code>GET api/v1/jobs/{jobID}/results</code> when the job is done. The response of the latter request will be a json matching the output schema with URI to individual content (that should individually be queried using <code>GET requests</code>)</p>
+<p><img alt="" src="img/pesto_stateful.svg"/></p>
+<p>Try building your previous service with <code>pesto build . -p stateful</code> and starting it as previously, </p>
+<p><code>docker run --rm -p 4000:8080 pytorch-deployment-tutorial:1.0.0.dev0-stateful</code></p>
+<p>Then, run the API usage script (<code>python scripts/example_api_usage</code>) while having modified the image name to stateful.</p>
+<p>This script should send several requests (like pesto test), but the advantage is that it doesn't kill the service afterwards, so it is possible to look at what happened:</p>
+<ul>
+<li>Try doing a get request on <code>/api/v1/jobs/</code> you should see a list of jobs</li>
+<li>Grab a job id then do a GET request on <code>/api/v1/jobs/{jobID}/status</code>. It should be "DONE"</li>
+<li>Then do a GET request on <code>/api/v1/jobs/{jobID}/results</code> to get results</li>
+</ul>
+<p>You should get something like</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"category"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:4000/api/v1/jobs/1080019533/results/category"</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>A GET request on the aforementioned URL should return <code>Egyptian_cat</code> or <code>mortar</code></p>
+<h2 id="next-steps">Next Steps</h2>
+<p>The rest of the documentation should be more accessible now that you have completed this tutorial</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You should version your PESTO project using <strong>git</strong> so that it is reproducible </p>
+</div>
+<p>Feel free to send us feedback and ask any question on <a href="https://github.com/AirbusDefenceAndSpace/pesto">github</a></p>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+<div class="md-copyright__highlight">
+      Copyright © 2023 Airbus Defence and Space
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="assets/javascripts/bundle.c8b220af.min.js"></script>
+<script src="js/mermaid.min.js"></script>
+</body>
+</html>

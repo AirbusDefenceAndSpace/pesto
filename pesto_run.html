@@ -1,0 +1,633 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Documentation for the PESTO toolbox" name="description"/>
+<meta content="Airbus Defence and Space - Processing Factory Team" name="author"/>
+<link href="https://airbusdefenceandspace.github.io/pesto/pesto_run.html" rel="canonical"/>
+<link href="pesto_test.html" rel="prev"/>
+<link href="pesto_list.html" rel="next"/>
+<link href="assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.6.11" name="generator"/>
+<title>run - PESTO : ProcESsing facTOry</title>
+<link href="assets/stylesheets/main.4af4bdda.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#pesto-run-run-the-packaged-algorithm">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="PESTO : ProcESsing facTOry" class="md-header__button md-logo" data-md-component="logo" href="index.html" title="PESTO : ProcESsing facTOry">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            PESTO : ProcESsing facTOry
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              run
+            
+          </span>
+</div>
+</div>
+</div>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="" tabindex="0">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/AirbusDefenceAndSpace/pesto" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"></path></svg>
+</div>
+<div class="md-source__repository">
+    AirbusDefenceAndSpace/pesto
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="PESTO : ProcESsing facTOry" class="md-nav__button md-logo" data-md-component="logo" href="index.html" title="PESTO : ProcESsing facTOry">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+    PESTO : ProcESsing facTOry
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/AirbusDefenceAndSpace/pesto" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"></path></svg>
+</div>
+<div class="md-source__repository">
+    AirbusDefenceAndSpace/pesto
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="index.html">
+<span class="md-ellipsis">
+    Home
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="get_started.html">
+<span class="md-ellipsis">
+    Get started
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+<span class="md-ellipsis">
+    Package an Algorithm
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            Package an Algorithm
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="package_pesto_project.html">
+<span class="md-ellipsis">
+    Create a PESTO project
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="package_configuration.html">
+<span class="md-ellipsis">
+    Project configuration
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="package_docker_image.html">
+<span class="md-ellipsis">
+    Build the Docker image
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="package_test.html">
+<span class="md-ellipsis">
+    Test the Docker image
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+<span class="md-ellipsis">
+    Run the Algorithm
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+            Run the Algorithm
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="deploy_run_docker_image.html">
+<span class="md-ellipsis">
+    Run the packaged algorithm
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="deploy_web_service.html">
+<span class="md-ellipsis">
+    Web-service
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+<span class="md-ellipsis">
+    PESTO commands
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+            PESTO commands
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="pesto_init.html">
+<span class="md-ellipsis">
+    init
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="pesto_schemagen.html">
+<span class="md-ellipsis">
+    schemagen
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="pesto_build.html">
+<span class="md-ellipsis">
+    build
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="pesto_test.html">
+<span class="md-ellipsis">
+    test
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    run
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="pesto_run.html">
+<span class="md-ellipsis">
+    run
+    
+  </span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#pesto-run-docker">
+<span class="md-ellipsis">
+      pesto run docker
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#pesto-run-local">
+<span class="md-ellipsis">
+      pesto run local
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#note-on-ssl">
+<span class="md-ellipsis">
+      Note on SSL
+    </span>
+</a>
+<nav aria-label="Note on SSL" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#method-1-pesto-generated-certificate">
+<span class="md-ellipsis">
+      Method 1: PESTO generated certificate
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#method-2-self-generated-certificate">
+<span class="md-ellipsis">
+      Method 2: self generated certificate
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#method-3-lets-encrypt-certificate">
+<span class="md-ellipsis">
+      Method 3: Let's Encrypt certificate
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="pesto_list.html">
+<span class="md-ellipsis">
+    list
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_6" type="checkbox"/>
+<label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+<span class="md-ellipsis">
+    Tutorial
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_6_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_6">
+<span class="md-nav__icon md-icon"></span>
+            Tutorial
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="tutorial_pytorch.html">
+<span class="md-ellipsis">
+    Deploying a pytorch model
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_7" type="checkbox"/>
+<label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+<span class="md-ellipsis">
+    PESTO in details
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_7_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_7">
+<span class="md-nav__icon md-icon"></span>
+            PESTO in details
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="details_conventions.html">
+<span class="md-ellipsis">
+    Conventions
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="details_design.html">
+<span class="md-ellipsis">
+    Design
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="details_cookbook.html">
+<span class="md-ellipsis">
+    Cookbook
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="details_troubleshooting.html">
+<span class="md-ellipsis">
+    Troubleshooting
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#pesto-run-docker">
+<span class="md-ellipsis">
+      pesto run docker
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#pesto-run-local">
+<span class="md-ellipsis">
+      pesto run local
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#note-on-ssl">
+<span class="md-ellipsis">
+      Note on SSL
+    </span>
+</a>
+<nav aria-label="Note on SSL" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#method-1-pesto-generated-certificate">
+<span class="md-ellipsis">
+      Method 1: PESTO generated certificate
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#method-2-self-generated-certificate">
+<span class="md-ellipsis">
+      Method 2: self generated certificate
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#method-3-lets-encrypt-certificate">
+<span class="md-ellipsis">
+      Method 3: Let's Encrypt certificate
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="pesto-run-run-the-packaged-algorithm"><code>pesto run</code> : Run the packaged algorithm</h1>
+<p>Once the processing library is built, it can be run.<br/>
+The <code>pesto run</code> command comes with 2 variants which are described below.</p>
+<h2 id="pesto-run-docker">pesto run docker</h2>
+<p>This variant starts the service container, calls the <code>process</code> endpoint with the provided payload and writes the 
+result at the provided output location. Once done, it stops the container.</p>
+<div class="highlight"><pre><span></span><code>Usage: pesto run docker [OPTIONS] PAYLOAD DOCKER_IMAGE OUTPUT_PATH
+
+  (Experimental) Run a pesto algorithm in a docker. Work only for stateless
+  services. Payload can be a path to a posix file or a json string
+
+Arguments:
+PAYLOAD       [required]
+DOCKER_IMAGE  [required]
+OUTPUT_PATH   [required]
+
+Options:
+--host-volume-path TEXT             Volume to be mounted from host
+--image-volume-path TEXT            Where the volume is mounted in image
+--nvidia / --no-nvidia              use nvidia runtime  [default: no-nvidia]
+--ssl / --no-ssl                    run with SSL  [default: no-ssl]
+--network TEXT                      Network driver to be used  [default: host]
+--web-service / --no-web-service    Run the docker in WS mode, true by default. 
+                                    Otherwise processing is exec in container after start  [default: web-service]
+--help                              Show this message and exit.
+</code></pre></div>
+<p>Example:<br/>
+<div class="highlight"><pre><span></span><code>pesto<span class="w"> </span>run<span class="w"> </span>docker<span class="w"> </span><span class="s1">'{"image":"file:///opt/algo-service/pesto/tests/resources/test_1/input/image.png"}'</span><span class="w"> </span>algo-service:1.0.0.dev0<span class="w"> </span>/tmp/output_pesto.json
+</code></pre></div></p>
+<p>If the payload references files that are not already in the image container (as in the example given), it is required
+to specify host and image volume path to be mounted as parameters.</p>
+<h2 id="pesto-run-local">pesto run local</h2>
+<p>This variant can be used to run the algorithm locally. It requires to have pesto, the algorithm and all its
+dependencies installed at system level, which is not an easy setup.<br/>
+Alternatively, it can be used within the container image which already meet this requirement. 
+The interest is then to save on the initialisation time of the container and execute several runs within the container once started.</p>
+<div class="highlight"><pre><span></span><code>Usage: pesto run local [OPTIONS] PAYLOAD OUTPUT_PATH
+
+  (Experimental) Run a pesto algorithm locally (not in docker). Payload can be
+  a path to a posix file or a json string, or an url
+
+Arguments:
+  PAYLOAD      [required]
+  OUTPUT_PATH  [required]
+
+Options:
+  --help  Show this message and exit.
+</code></pre></div>
+<p>Examples:<br/>
+Either from your local environment:
+<div class="highlight"><pre><span></span><code>pesto<span class="w"> </span>run<span class="w"> </span><span class="nb">local</span><span class="w"> </span><span class="s1">'{"image":"file:///opt/algo-service/pesto/tests/resources/test_1/input/image.png"}'</span><span class="w"> </span>/tmp/result.txt
+</code></pre></div></p>
+<p>Or from inside the container that has been generated:
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>/tmp:/tmp<span class="w"> </span>algo-service:1.0.0.dev0<span class="w"> </span>bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">"pesto run local '{\"image\":\"file:///opt/algo-service/pesto/tests/resources/test_1/input/image.png\"}' /tmp/result.txt"</span><span class="sb">```</span>
+</code></pre></div></p>
+<h2 id="note-on-ssl">Note on SSL</h2>
+<p>The service can be started in <code>https</code> mode. For instance:
+<div class="highlight"><pre><span></span><code>pesto<span class="w"> </span>run<span class="w"> </span>docker<span class="w"> </span>--ssl<span class="w"> </span><span class="s1">'{"image":"file:///opt/algo-service/pesto/tests/resources/test_1/input/image.png"}'</span><span class="w"> </span>algo-service:1.0.0.dev0<span class="w"> </span>/tmp/output_pesto.json
+</code></pre></div>
+or </p>
+<p><div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-p<span class="w"> </span><span class="m">4000</span>:8080<span class="w"> </span>-e<span class="w"> </span><span class="nv">PESTO_USE_SSL</span><span class="o">=</span><span class="s1">'true'</span><span class="w"> </span>algo-service:1.0.0.dev0
+</code></pre></div>
+This should start the container so that it can be accessed from <code>https://localhost:4000/api/v1</code></p>
+<p>There are various ways to handle the certificates.
+They should be available in the docker image as <code>/etc/pesto/ssl/cert.pem</code> and <code>/etc/pesto/ssl/key.pem</code>.</p>
+<h3 id="method-1-pesto-generated-certificate">Method 1: PESTO generated certificate</h3>
+<p>By default, some self-signed certificates are generated and deployed in the docker image under <code>/etc/pesto/ssl/</code>.
+The certificate validity must be ignored in this case as it is not issued from a valid Certificate Authority.</p>
+<h3 id="method-2-self-generated-certificate">Method 2: self generated certificate</h3>
+<p>You can also use your own certificate (generated with <a href="https://github.com/FiloSottile/mkcert">mkcert</a> or openssl for instance).</p>
+<p>Once generated you must make an archive of the certificate and key and declare it as a requirement.
+<div class="highlight"><pre><span></span><code><span class="c1"># generate the cert and key</span>
+...
+<span class="c1"># put them in an archive for PESTO requirements</span>
+tar<span class="w"> </span>czf<span class="w"> </span>ssl.tar.gz<span class="w"> </span>cert.pem<span class="w"> </span>key.pem
+</code></pre></div></p>
+<p>Declare the resulting archive as a requirement in <code>requirements.json</code> (update the <code>from</code> path):
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"environments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"requirements"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"ssl"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"from"</span><span class="p">:</span><span class="w"> </span><span class="s2">"file:///path/to/your/ssl.tar.gz"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"to"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/etc/pesto/ssl/"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"dockerBaseImage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"python:3.8-buster"</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h3 id="method-3-lets-encrypt-certificate">Method 3: Let's Encrypt certificate</h3>
+<p>You need to get a DNS domain registered and follow the instructions from
+<a href="https://letsencrypt.org/getting-started/">Let's Encrypt</a> documentation.</p>
+<p>You can then add your key and certificate:
+<div class="highlight"><pre><span></span><code>tar<span class="w"> </span>czf<span class="w"> </span>ssl.tar.gz<span class="w"> </span>cert.pem<span class="w"> </span>key.pem
+</code></pre></div></p>
+<p>Declare the resulting archive as a requirement in <code>requirements.json</code> (update the <code>from</code> path):
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"environments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"requirements"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"ssl"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"from"</span><span class="p">:</span><span class="w"> </span><span class="s2">"file:///path/to/your/ssl.tar.gz"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"to"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/etc/pesto/ssl/"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"dockerBaseImage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"python:3.8-buster"</span>
+<span class="p">}</span>
+</code></pre></div></p>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+<div class="md-copyright__highlight">
+      Copyright © 2023 Airbus Defence and Space
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="assets/javascripts/bundle.c8b220af.min.js"></script>
+<script src="js/mermaid.min.js"></script>
+</body>
+</html>
