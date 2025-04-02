@@ -2,6 +2,8 @@ ARG ENV
 FROM ${base_image}
 CMD  [ "processing" ]
 ENTRYPOINT []
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD python3 -c "import requests; exit(0) if requests.get('http://localhost:8080/api/v1/health').status_code == 200 else exit(1)"
 
 {% if pip_config_file != None %}
 {% if use_buildkit != True %}
