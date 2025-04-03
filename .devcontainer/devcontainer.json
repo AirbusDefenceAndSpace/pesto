@@ -1,0 +1,15 @@
+{
+    "name": "Pesto Dev Container",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "settings": {
+        "python.pythonPath": "/usr/local/bin/python"
+    },
+    "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+    ],
+    "remoteUser": "vscode",
+    "postAttachCommand": "sudo chown -R vscode /workspaces"
+}
