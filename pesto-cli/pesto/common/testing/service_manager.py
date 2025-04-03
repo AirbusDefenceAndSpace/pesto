@@ -138,6 +138,14 @@ class ServiceManager:
             self._docker_container.stop()
 
     def __enter__(self) -> "ServiceManager":
+        # force restarting service
+        if self._existing_container:
+            logger.debug("Force restarting service to ensure resources properly mounted")
+            self.stop()
+            time.sleep(10)
+            self.run()
+            time.sleep(5)
+
         self.run()
         return self
 
