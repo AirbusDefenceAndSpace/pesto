@@ -73,7 +73,10 @@ class DockerBuilder(object):
         cmd = "{} -t {} {}".format(cmd, docker_image_name, self.build_config.workspace)
         PESTO_LOG.info('docker cmd : {}'.format(cmd))
 
-        subprocess.call(shlex.split(cmd))
+        result = subprocess.call(shlex.split(cmd))
+        if result != 0:
+            raise RuntimeError(f"Docker build failed with return code {result}")
+        
 
     def dockerfile(self):
         template = self.load_template()
