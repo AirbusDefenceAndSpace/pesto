@@ -2,10 +2,12 @@ import json
 import shutil
 from pathlib import Path
 import time
+import os
 from pesto.common.pesto import PESTO_WORKSPACE
 from pesto.common.testing import logger
 from pesto.common.testing.payload_generator import PayloadGenerator
 from pesto.common.testing.service_manager import ServiceManager
+from pesto.common.testing.remote_service_manager import RemoteServiceManager
 from pesto.common.testing.service_tester import ServiceTester
 
 TMP_PATH = Path("/tmp/pesto/")
@@ -46,28 +48,28 @@ class TestRunner:
 
         return tests, describe
 
-    def run_all(self, test_resources_path: Path):
-        tests, expected_describe = self.prepare_resources(test_resources_path)
-
-        if self.nvidia:
-            logger.info("Running with nvidia runtime")
-
-        with ServiceManager(
+    def build_service_manager(self):
+        if os.environ.get("PESTO_REMOTE_SERVICE_URL") is not None:
+            logger.info("Running with remote service")
+            return RemoteServiceManager()
+        else:
+            logger.info("Running with managed Docker container")
+            return ServiceManager(
                 docker_image=self.docker_image_name,
                 nvidia=self.nvidia,
                 attach_when_running=True,
                 image_volume_path="/tmp/",
                 host_volume_path="/tmp",
                 use_ssl=self.ssl
-        ) as service:
+        )
+    
+    def run_all(self, test_resources_path: Path):
+        tests, expected_describe = self.prepare_resources(test_resources_path)
 
-            # force restarting service
-            if service._existing_container:
-                logger.debug("Force restarting service to ensure resources properly mounted")
-                service.stop()
-                time.sleep(10)
-                service.run()
-                time.sleep(5)
+        if self.nvidia:
+            logger.info("Running with nvidia runtime")
+
+        with self.build_service_manager() as service:
 
             service_tester = ServiceTester(server_url=service.server_url)
 

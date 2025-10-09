@@ -14,12 +14,27 @@ class ServiceTester:
     def validate_health(self):
         return self.endpoint_manager.is_alive
 
+    # Walk recursively the dict in order to substitute "http://localhost:4000" with actual base URL in the value of key "href"
+    def update_hrefs(self, data):
+        if isinstance(data, dict):
+            for key, value in data.items():
+                if key == "href" and isinstance(value, str):
+                    data[key] = value.replace("http://localhost:4000", self.server_url)
+                else:
+                    self.update_hrefs(value)
+        elif isinstance(data, list):
+            for item in data:
+                self.update_hrefs(item)
+
     def validate_metrics(self):
         return self.endpoint_manager.metrics_available
 
     def validate_describe(self, expected_describe: dict):
         describe = self.endpoint_manager.describe
         expected = expected_describe
+
+        # normalize expected data
+        self.update_hrefs(expected)
 
         # We can afford new keys in the describe
         # as it reflect a newer runtime (new endpoints) than the stored reference.
