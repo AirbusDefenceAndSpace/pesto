@@ -1,6 +1,11 @@
 
 # Change Log
 
+## 1.8.0
+- Add a /metrics endpoint that returns the service version, lock state & jobs progress
+- Add a docker HEALTHCHECK
+- Convert tests to unit tests
+
 ## 1.7.2
 - Removed misleading error message at run time, when process does not use Input/Output classes
 - Added message to clarify that not importing Input/Output remains nominal (legacy behaviour).
