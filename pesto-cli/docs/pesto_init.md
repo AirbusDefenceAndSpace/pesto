@@ -27,7 +27,7 @@ maintainer_fullname [pesto]:
 maintainer_email [pesto@airbus.com]: 
 project_name [algo-service]: xxx-service
 project_sname [algo-service]: xxx-service
-project_short_description [Pesto Template contains all the boilerplate you need to create a processing-factory project]: 
+project_short_description [Pesto Template contains all the boilerplate you need to create a proc-factory project]:
 project_version [1.0.0.dev0]: 
 
 Service generated at /path/to/your/workspace/xxx-service
@@ -75,7 +75,7 @@ If you have many project sharing some information (your company, email, requirem
 - Copy the default template to a new place for your own template :
 
 ```bash
-$ pip show processing-factory | grep Location | awk '{print $NF}' > /tmp/pesto_site_packages.txt
+$ pip show proc-factory | grep Location | awk '{print $NF}' > /tmp/pesto_site_packages.txt
 $ cp -r `cat /tmp/pesto_site_packages.txt`/pesto_cli/resources/pesto-template /path/to/my_pesto_template
 ```
 

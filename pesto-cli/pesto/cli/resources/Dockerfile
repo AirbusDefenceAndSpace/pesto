@@ -33,8 +33,8 @@ RUN echo '***** fix certificates for rasterio ******************************'
 
 RUN echo '***** install PESTO ******************************'
     COPY dist /opt/tmp/pesto/dist
-    RUN ${secret_mount} if test -e /opt/tmp/pesto/dist/*.whl; then pip install /opt/tmp/pesto/dist/processing_factory*.whl; fi
-    RUN ${secret_mount} if test ! -e /opt/tmp/pesto/dist/*.whl; then pip install processing-factory; fi
+    RUN ${secret_mount} if test -e /opt/tmp/pesto/dist/*.whl; then pip install /opt/tmp/pesto/dist/proc_factory*.whl; fi
+    RUN ${secret_mount} if test ! -e /opt/tmp/pesto/dist/*.whl; then pip install proc-factory; fi
 
 ARG CACHE_UP_TO_PESTO=1
 ARG C1=1

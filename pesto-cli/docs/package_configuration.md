@@ -250,7 +250,7 @@ We then use [JSON schema](https://json-schema.org/) to validate input payloads.
 
 The `json` files contain the input/output variables name and their information (`type`/`$ref`, `description`)
 
-Default PESTO types can be found in the source code : `processing-factory/pesto-cli/pesto/cli/resources/schema/definitions.json`
+Default PESTO types can be found in the source code : `proc-factory/pesto-cli/pesto/cli/resources/schema/definitions.json`
 
 ## Requirements
 

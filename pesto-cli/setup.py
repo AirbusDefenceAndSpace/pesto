@@ -10,7 +10,7 @@ entry_points = {
 }
 
 setup(
-    name='processing-factory',
+    name='proc-factory',
     version=version.PESTO_VERSION,
     packages=find_packages(),
     maintainer='Airbus Defense & Space',

@@ -21,7 +21,7 @@ from pesto.common.testing.service_manager import ServiceManager
 sname = "algo-service"
 version = "1.0.0.dev0"
 image_name = "{}:{}".format(sname, version)
-description = "Pesto Template contains all the boilerplate you need to create a processing-factory project"
+description = "Pesto Template contains all the boilerplate you need to create a proc-factory project"
 organization = "pesto"
 licence = "Property of pesto, all rights reserved"
 email = "pesto@airbus.com"

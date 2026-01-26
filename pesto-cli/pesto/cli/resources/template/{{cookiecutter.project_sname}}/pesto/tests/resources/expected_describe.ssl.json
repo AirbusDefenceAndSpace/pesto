@@ -8,7 +8,7 @@
   },
   "version": "1.0.0.dev0",
   "organization": "pesto",
-  "description": "Pesto Template contains all the boilerplate you need to create a processing-factory project",
+  "description": "Pesto Template contains all the boilerplate you need to create a proc-factory project",
   "family": "detection",
   "email": "pesto@airbus.com",
   "name": "algo-service",

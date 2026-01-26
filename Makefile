@@ -27,11 +27,11 @@ build-whl:
 	rm -rf pesto-cli/dist/
 	cd pesto-cli && python3 setup.py bdist_wheel
 	mkdir -p ~/.pesto/dist/
-	cp -f pesto-cli/dist/processing_factory*.whl ~/.pesto/dist/
+	cp -f pesto-cli/dist/proc_factory*.whl ~/.pesto/dist/
 	rm -rf pesto-cli/build
 
 install: uninstall build-whl
-	$(PIP) install ~/.pesto/dist/processing_factory*.whl
+	$(PIP) install ~/.pesto/dist/proc_factory*.whl
 
 install-dev: uninstall
 	cd pesto-cli && $(PIP) install -e .
@@ -44,7 +44,7 @@ clean:
 	cd pesto-cli && rm -rf build dist *egg-info .eggs .pytest_cache
 
 uninstall:
-	$(PIP) uninstall processing-factory -y
+	$(PIP) uninstall proc-factory -y
 
 test:
 	rm -rf /tmp/pesto/service-template-test

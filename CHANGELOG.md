@@ -1,6 +1,9 @@
 
 # Change Log
 
+## 1.8.1
+- Change the package name from `processing-factory` to `proc-factory`
+
 ## 1.8.0
 - Add a /metrics endpoint that returns the service version, lock state & jobs progress
 - Add a docker HEALTHCHECK

@@ -27,7 +27,7 @@ First, ensure you have PESTO installed in a python 3.6+ environment. Typically, 
 To install PESTO with pip (see [Get Started](get_started.md)): 
 
 ```bash
-$ pip install processing-factory
+$ pip install proc-factory
 ``` 
 
 ## Create PESTO project
@@ -56,7 +56,7 @@ maintainer_fullname [pesto]: Computer Vision
 maintainer_email [pesto@airbus.com]: computervision@airbus.com
 project_name [algo-service]: pytorch-deployment-tutorial
 project_sname [pytorch-deployment-tutorial]:                            
-project_short_description [Pesto Template contains all the boilerplate you need to create a processing-factory project]: My first deployment with PESTO
+project_short_description [Pesto Template contains all the boilerplate you need to create a proc-factory project]: My first deployment with PESTO
 project_version [1.0.0.dev0]: 1.0.0
 [2022-12-13 17:44:24,345] 28731-INFO app::init():l44:
 Service generated at /tmp/pesto/pytorch-deployment-tutorial

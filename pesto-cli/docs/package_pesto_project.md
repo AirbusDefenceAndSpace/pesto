@@ -27,7 +27,7 @@ maintainer_fullname [pesto]:
 maintainer_email [pesto@airbus.com]: 
 project_name [algo-service]: 
 project_sname [algo-service]: 
-project_short_description [Pesto Template contains all the boilerplate you need to create a processing-factory project]: 
+project_short_description [Pesto Template contains all the boilerplate you need to create a proc-factory project]:
 project_version [1.0.0.dev0]: 
 
 Service generated at /path/to/your/workspace/algo-service

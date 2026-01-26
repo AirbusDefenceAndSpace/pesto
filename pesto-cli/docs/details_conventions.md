@@ -62,7 +62,7 @@ Here is a description of the paths where PESTO could write some files :
 
 ```
 pesto-cli build :                           $HOME/.pesto/service-name/x.y.z/
-pesto-cli build requirements (local cache): $HOME/.pesto/.processing-factory-requirements/
+pesto-cli build requirements (local cache): $HOME/.pesto/.proc-factory-requirements/
 pesto-ws async jobs files :                 $HOME/.pesto/.processing/jobs/${job_id}/
 pesto-template (unit testing) :             /tmp/pesto/test
 ```

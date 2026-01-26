@@ -3,7 +3,7 @@
 {{cookiecutter.project_short_description}}
 
 This template allows to create new image processing algorithm.
-It is designed to fit the processing-factory.
+It is designed to fit the proc-factory.
 
 The template folders reflect the development process :
 - api : define the algorithm interface (input, output, config)
@@ -54,7 +54,7 @@ The interface of the algorithm must be defined in the following files :
     - environment variables ('environment')
 - local_requirements.json : optional file used to override requirements.json.
     Each dependency defined in requirements.json is ignored if the same key is defined in local_requirements.json.
-- build.json : default build configuration. This is used by the processing-factory to build or deploy the algorithm.
+- build.json : default build configuration. This is used by the proc-factory to build or deploy the algorithm.
 
 ### pesto/tests
 
